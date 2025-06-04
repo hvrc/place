@@ -1,0 +1,79 @@
+.container {
+    background-color: #483C32;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.canvas {
+    display: block;
+}
+
+.helpBox {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #302720;
+    color: #fff;
+    z-index: 50;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.helpBoxMinimized {
+    padding: 0;
+}
+
+.helpBoxMaximized {
+    padding: 15px;
+    max-width: 1920px;
+}
+
+.toggleButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #483C32;
+    color: #fff;
+    padding: 4px 8px;
+    font-family: monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+    background-color: #59593c;
+}
+
+.instructions {
+    margin: 12px 0 0 0;
+    padding-left: 20px;
+}
+
+
+.refsBox {
+    top: calc(2rem + 270px);
+}
+
+.refsBox.helpBoxMinimized {
+    top: calc(2rem + 270px);
+}
+
+.refsBox a {
+    color: #87CEEB;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.refsBox a:hover {
+    color: #D8BFD8;
+}
+
+.refsBox a:active {
+    color: #FFA500;
+}
