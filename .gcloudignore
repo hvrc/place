@@ -2,6 +2,5 @@
 .git
 .gitignore
 node_modules/
-public/videos/
 misc/
 public/hom/

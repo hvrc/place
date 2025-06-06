@@ -1,11 +1,22 @@
 import "./globals.css";
+import { Metadata } from "next";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "hvrc",
+  description: "place",
+  icons: {
+    icon: "/icons/icon.png", // Updated path to match your icon location
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
