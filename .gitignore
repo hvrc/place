@@ -25,4 +25,4 @@ next-env.d.ts
 # .gitignore
 node_modules/
 misc/
-public/hom/
+public/images/hom

@@ -1,4 +1,4 @@
-'use client'; // Make this a Client Component
+'use client';
 
 import Link from 'next/link';
 
@@ -29,7 +29,12 @@ const ImageWall = () => {
 
 export default function HomePage() {
   return (
-    <div className="max-w-screen-xl mx-auto">
+    <div className="max-w-screen-xl mx-auto relative">
+      <div className="absolute left-4 top-4">
+        <Link href="/" className="text-xl font hover:text-gray-600 transition-colors">
+          back
+        </Link>
+      </div>
       <br /><br />
       <h1 className="text-center text-4xl mb-8">hॐ</h1>
       <ImageWall />

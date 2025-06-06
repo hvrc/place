@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "hvrc",
   description: "place",
   icons: {
-    icon: "/icons/icon.png", // Updated path to match your icon location
+    icon: "/images/logos/icon.png",
   },
 };
 
