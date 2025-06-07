@@ -5,6 +5,11 @@ env_variables:
   NODE_ENV: "production"
 
 handlers:
+  - url: /_next/static/(.*)
+    static_files: .next/static/\1
+    upload: .next/static/(.*)
+    secure: always
+
   - url: /.*
     script: auto
     secure: always

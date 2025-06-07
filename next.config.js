@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     domains: ['storage.googleapis.com'],
+    allowedDevOrigins: ['http://localhost:3000'],
   },
   webpack: (config) => {
     config.module.rules.push({
