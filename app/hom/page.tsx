@@ -14,13 +14,11 @@ const ImageWall = () => {
     <div className="image-wall grid grid-cols-5 gap-4 p-4">
       {images.map((imageName, index) => (
         <div key={index} className="image-item">
-          <Link href={`/hom/${imageName}`} passHref>
-            <img 
+          <img 
               src={`/thumbs/${imageName}.jpeg`} 
               alt={imageName} 
               className="w-full h-auto object-cover cursor-pointer" 
             />
-          </Link>
         </div>
       ))}
     </div>

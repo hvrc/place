@@ -5,11 +5,13 @@
 @font-face {
   font-family: 'Profilen';
   src: url('/fonts/Profilen.ttf') format('truetype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'PublicSans-Regular';
   src: url('/fonts/PublicSans-Regular.ttf') format('truetype');
+  font-display: swap;
 }
 
 html,
@@ -128,4 +130,43 @@ a.custom-link:active {
   .pdf-container iframe {
     transform-origin: top left;
   }
+  
+  video {
+    position: relative;
+    z-index: 1;
+    background: #f1ebe5;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  button[class*="absolute bottom-2"] {
+    z-index: 2;
+    padding: 8px 12px;
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 9999px;
+  }
+
+  .opacity-100 video {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+}
+
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }

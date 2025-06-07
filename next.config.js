@@ -1,9 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true,
+    domains: ['storage.googleapis.com'],
   },
-}
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(ttf|woff|woff2)$/,
+      type: 'asset/resource',
+    });
+    return config;
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

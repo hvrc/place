@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 
 export default function HomePage() {
   const [resumeLink, setResumeLink] = useState('/resume');
@@ -10,14 +11,8 @@ export default function HomePage() {
 
   useEffect(() => {
     setPageLoaded(true);
-    
-    // const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    // if (isIOS) {
-    //   setResumeLink('https://drive.google.com/file/d/12fquEKoM93U2SjwHcsw_CwyCZnZh7viF/view?usp=sharing');
-    // }
   }, []);
 
-  // Track loading state for each component separately
   const [titleLoaded, setTitleLoaded] = useState(false);
   const [floaterLoaded, setFloaterLoaded] = useState(false);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
@@ -33,6 +28,55 @@ export default function HomePage() {
       setTimeout(() => setContactLoaded(true), 1600);
     }
   }, [pageLoaded]);
+
+  const useVideoAutoplay = () => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+      const playVideo = async () => {
+        if (videoRef.current) {
+          try {
+            videoRef.current.load();
+            await videoRef.current.play();
+          } catch (err) {
+            console.log("Autoplay failed:", err);
+          }
+        }
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && showAllProjects) {
+              playVideo();
+            }
+          });
+        },
+        { 
+          threshold: 0.1,
+          rootMargin: '50px'
+        }
+      );
+
+      if (videoRef.current) {
+        observer.observe(videoRef.current);
+      }
+
+      return () => {
+        if (videoRef.current) {
+          observer.unobserve(videoRef.current);
+        }
+      };
+    }, [showAllProjects]);
+
+    return videoRef;
+  };
+
+  const carromVideoRef = useVideoAutoplay();
+  const botehVideoRef = useVideoAutoplay();
+  const rtsVideoRef = useVideoAutoplay();
+  const homVideoRef = useVideoAutoplay();
+  const gameOfLifeVideoRef = useVideoAutoplay();
 
   return (
     <div className="max-w-[95%] sm:max-w-[80%] md:max-w-[65%] lg:max-w-[750px] mx-auto space-y-4 px-4 pt-8">
@@ -51,7 +95,7 @@ export default function HomePage() {
           <a href="https://www.youtube.com/@hvrc0" target="_blank" rel="noopener noreferrer">youtube</a>
           <a href="https://github.com/hvrc" target="_blank" rel="noopener noreferrer">github</a>
           <a href="https://www.linkedin.com/in/hvrc/" target="_blank" rel="noopener noreferrer">linkedin</a>
-          <a href={resumeLink} target="_blank" rel="noopener noreferrer">resume</a>
+          <Link href="/resume" target="_blank">resume</Link>
         </div>
       </div>
 
@@ -85,11 +129,13 @@ export default function HomePage() {
               </p>
               <div className="mt-4 w-full rounded-lg overflow-hidden">
                 <video 
+                  ref={carromVideoRef}
                   className="w-full"
-                  autoPlay 
-                  loop 
-                  muted 
+                  autoPlay
+                  loop
+                  muted
                   playsInline
+                  preload="auto"
                 >
                   <source src="/videos/demos/carrom_demo.mp4" type="video/mp4" />
                 </video>
@@ -113,18 +159,20 @@ export default function HomePage() {
               </p>
               <div className="mt-4 w-full rounded-lg overflow-hidden relative">
                 <video 
+                  ref={botehVideoRef}
                   className="w-full"
-                  autoPlay 
-                  loop 
+                  autoPlay
+                  loop
                   muted={isBotehMuted}
                   playsInline
+                  preload="auto"
                   id="botehVideo"
                 >
                   <source src="/videos/demos/boteh_demo.mp4" type="video/mp4" />
                 </video>
                 <button
                   onClick={() => setIsBotehMuted(!isBotehMuted)}
-                  className="absolute bottom-2 right-2 text-xs bg-white bg-opacity-50 px-2 py-1 rounded hover:bg-opacity-75 transition-all"
+                  className="absolute bottom-2 right-2 text-xs md:text-sm bg-black text-black bg-opacity-5 px-3 py-1.5 rounded-full hover:bg-opacity-10 transition-all z-10"
                 >
                   {isBotehMuted ? 'Sound Off' : 'Sound On'}
                 </button>
@@ -148,10 +196,11 @@ export default function HomePage() {
               </p>
               <div className="mt-4 w-full rounded-lg overflow-hidden">
                 <video 
+                  ref={rtsVideoRef}
                   className="w-full"
-                  autoPlay 
-                  loop 
-                  muted 
+                  autoPlay
+                  loop
+                  muted
                   playsInline
                 >
                   <source src="/videos/demos/rts_demo.mp4" type="video/mp4" />
@@ -179,7 +228,7 @@ export default function HomePage() {
                 {/* 1. Place */}
                 <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
-                    <a href="https://hvrc.place" target="_blank" className="custom-link">
+                    <a href="/" target="_blank" className="custom-link">
                       <h1 className="text-2xl md:text-4xl font-bold">Place</h1>
                     </a>
                   </div>
@@ -189,7 +238,7 @@ export default function HomePage() {
                   </p>
                   <div className="mt-4 w-full rounded-lg overflow-hidden">
                     <iframe 
-                      src="https://hvrc.place"
+                      src="/"
                       className="w-full aspect-video"
                       title="Place Demo"
                     />
@@ -199,9 +248,9 @@ export default function HomePage() {
                 {/* 2. hom */}
                 <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
-                    <a href="/hom" target="_blank" className="custom-link">
+                    <Link href="/hom" target="_blank" className="custom-link">
                       <h1 className="text-2xl md:text-4xl font-bold">hom</h1>
-                    </a>
+                    </Link>
                   </div>
                   <p className="text-sm md:text-lg text-left">
                     Generative art created using flocking, dithering and other algorithms <br/>
@@ -209,13 +258,19 @@ export default function HomePage() {
                   </p>
                   <div className="mt-4 w-full rounded-lg overflow-hidden">
                     <video 
-                      className="w-full"
-                      autoPlay 
-                      loop 
-                      muted 
+                      ref={homVideoRef}
+                      className={`w-full transition-opacity duration-500 ${showAllProjects ? 'opacity-100' : 'opacity-0'}`}
+                      autoPlay
+                      loop
+                      muted
                       playsInline
+                      preload="none" // Changed from metadata
+                      style={{ visibility: showAllProjects ? 'visible' : 'hidden' }}
                     >
-                      <source src="/videos/demos/hom_demo.mp4" type="video/mp4" />
+                      <source 
+                        src="/videos/demos/hom_demo.mp4" 
+                        type="video/mp4"
+                      />
                     </video>
                   </div>
                 </div>
@@ -238,13 +293,19 @@ export default function HomePage() {
                   </p>
                   <div className="mt-4 w-full rounded-lg overflow-hidden">
                     <video 
-                      className="w-full"
-                      autoPlay 
-                      loop 
-                      muted 
+                      ref={gameOfLifeVideoRef}
+                      className={`w-full transition-opacity duration-500 ${showAllProjects ? 'opacity-100' : 'opacity-0'}`}
+                      autoPlay
+                      loop
+                      muted
                       playsInline
+                      preload="none"
+                      style={{ visibility: showAllProjects ? 'visible' : 'hidden' }}
                     >
-                      <source src="/videos/demos/game_of_life_demo.mp4" type="video/mp4" />
+                      <source 
+                        src="/videos/demos/game_of_life_demo.mp4" 
+                        type="video/mp4"
+                      />
                     </video>
                   </div>
                 </div>
@@ -369,9 +430,9 @@ export default function HomePage() {
                 {/* 9. Prim's Organism */}
                 <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
-                    <a href="https://hvrc.place/prim/" target="_blank" className="custom-link">
+                    <Link href="/prim" target="_blank" className="custom-link">
                       <h1 className="text-2xl md:text-4xl font-bold">Prim's Organism</h1>
-                    </a>
+                    </Link>
                   </div>
                   <p className="text-sm md:text-lg text-left">
                     A game based on Prim's Maze Generation Algorithm <br/>
