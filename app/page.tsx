@@ -1,65 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-// Updated hook with better loading logic
-const useOptimizedVideo = (videoSrc: string, shouldLoad: boolean = true) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    if (!shouldLoad || !videoRef.current) return;
-
-    const video = videoRef.current;
-    
-    const handleLoadStart = () => setIsLoading(true);
-    const handleCanPlay = () => setIsLoading(false);
-    const handleError = () => {
-      setHasError(true);
-      setIsLoading(false);
-    };
-
-    video.addEventListener('loadstart', handleLoadStart);
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('error', handleError);
-
-    // Force load the video when shouldLoad becomes true
-    if (video.src === '' || video.src !== videoSrc) {
-      video.src = videoSrc;
-      video.load();
-    }
-
-    return () => {
-      video.removeEventListener('loadstart', handleLoadStart);
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('error', handleError);
-    };
-  }, [shouldLoad, videoSrc]);
-
-  return { videoRef, isLoading, hasError };
-};
-
 export default function HomePage() {
-  const [resumeLink, setResumeLink] = useState('/resume');
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isBotehMuted, setIsBotehMuted] = useState(true);
-
-  // Add loading states for show all videos
-  const [homVideoLoaded, setHomVideoLoaded] = useState(false);
-  const [gameOfLifeVideoLoaded, setGameOfLifeVideoLoaded] = useState(false);
-
-  // Add individual video loading states
-  const [carromVideoLoaded, setCarromVideoLoaded] = useState(false);
-  const [botehVideoLoaded, setBotehVideoLoaded] = useState(false);
-  const [rtsVideoLoaded, setRtsVideoLoaded] = useState(false);
-
-  useEffect(() => {
-    setPageLoaded(true);
-  }, []);
-
   const [titleLoaded, setTitleLoaded] = useState(false);
   const [floaterLoaded, setFloaterLoaded] = useState(false);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
@@ -67,44 +14,18 @@ export default function HomePage() {
   const [contactLoaded, setContactLoaded] = useState(false);
 
   useEffect(() => {
+    setPageLoaded(true);
+  }, []);
+
+  useEffect(() => {
     if (pageLoaded) {
       setTitleLoaded(true);
-      setTimeout(() => setFloaterLoaded(true), 400);
-      setTimeout(() => setProjectsLoaded(true), 800);
-      setTimeout(() => setExperienceLoaded(true), 1200);
-      setTimeout(() => setContactLoaded(true), 1600);
+      setFloaterLoaded(true);
+      setProjectsLoaded(true);
+      setExperienceLoaded(true);
+      setContactLoaded(true);
     }
   }, [pageLoaded]);
-
-  // Stagger video loading to prevent all loading at once
-  useEffect(() => {
-    if (projectsLoaded) {
-      // Load videos one by one with delays
-      setTimeout(() => setCarromVideoLoaded(true), 200);
-      setTimeout(() => setBotehVideoLoaded(true), 800);
-      setTimeout(() => setRtsVideoLoaded(true), 1400);
-    }
-  }, [projectsLoaded]);
-
-  const carromVideoRef = useRef<HTMLVideoElement>(null);
-  const botehVideoRef = useRef<HTMLVideoElement>(null);
-  const rtsVideoRef = useRef<HTMLVideoElement>(null);
-
-  // Update video hooks to use individual loading states
-  const homVideo = useOptimizedVideo('/videos/demos/hom_demo_optimized.mp4', homVideoLoaded);
-  const gameOfLifeVideo = useOptimizedVideo('/videos/demos/game_of_life_demo_optimized.mp4', gameOfLifeVideoLoaded);
-
-  useEffect(() => {
-    if (showAllProjects) {
-      // Delay loading of show all videos
-      setTimeout(() => setHomVideoLoaded(true), 500);
-      setTimeout(() => setGameOfLifeVideoLoaded(true), 1000);
-    } else {
-      // Reset when hiding
-      setHomVideoLoaded(false);
-      setGameOfLifeVideoLoaded(false);
-    }
-  }, [showAllProjects]);
 
   return (
     <div className="max-w-[95%] sm:max-w-[80%] md:max-w-[65%] lg:max-w-[750px] mx-auto space-y-4 px-4 pt-8">
@@ -140,7 +61,7 @@ export default function HomePage() {
           
           <div className="border border-gray-300 p-5 space-y-6">
             
-            {/* Carrom - UPDATE TO OPTIMIZED */}
+            {/* Carrom */}
             <div className={`${projectsLoaded ? 'fade-in' : 'opacity-0'}`}>
               <div className="flex items-baseline gap-x-4 mb-1">
                 <a href="https://carrom-461712.ue.r.appspot.com/" target="_blank" className="custom-link">
@@ -155,27 +76,19 @@ export default function HomePage() {
                 Using <b>Phaser.js, Express.js, Node.js</b>
               </p>
               <div className="mt-4 w-full rounded-lg overflow-hidden relative">
-                {!carromVideoLoaded ? (
-                  <div className="w-full aspect-video bg-gray-200 flex items-center justify-center">
-                    <div className="text-gray-500">Loading...</div>
-                  </div>
-                ) : (
-                  <video 
-                    ref={carromVideoRef}
-                    className="w-full"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="none"
-                  >
-                    <source src="/videos/demos/carrom_demo_optimized.mp4" type="video/mp4" />
-                  </video>
-                )}
+                <video 
+                  className="w-full"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
+                  <source src="/videos/demos/optimized/carrom_demo_optimized.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
 
-            {/* Boteh - UPDATE TO OPTIMIZED */}
+            {/* Boteh */}
             <div className={`${projectsLoaded ? 'fade-in fade-in-delay-300' : 'opacity-0'}`}>
               <div className="flex items-baseline gap-x-4 mb-1">
                 <a href="http://boteh-461905.appspot.com/" target="_blank" className="custom-link">
@@ -190,35 +103,25 @@ export default function HomePage() {
                 Using <b>Google MediaPipe, Web Audio API, Node.js</b>
               </p>
               <div className="mt-4 w-full rounded-lg overflow-hidden relative">
-                {!botehVideoLoaded ? (
-                  <div className="w-full aspect-video bg-gray-200 flex items-center justify-center">
-                    <div className="text-gray-500">Loading...</div>
-                  </div>
-                ) : (
-                  <video 
-                    ref={botehVideoRef}
-                    className="w-full"
-                    autoPlay
-                    loop
-                    muted={isBotehMuted}
-                    playsInline
-                    preload="none"
-                  >
-                    <source src="/videos/demos/boteh_demo_optimized.mp4" type="video/mp4" />
-                  </video>
-                )}
-                {botehVideoLoaded && (
-                  <button
-                    onClick={() => setIsBotehMuted(!isBotehMuted)}
-                    className="absolute bottom-2 right-2 text-xs md:text-sm bg-black text-white bg-opacity-70 px-3 py-1.5 rounded-full hover:bg-opacity-90 transition-all z-10"
-                  >
-                    {isBotehMuted ? 'Sound Off' : 'Sound On'}
-                  </button>
-                )}
+                <video 
+                  className="w-full"
+                  autoPlay
+                  loop
+                  muted={isBotehMuted}
+                  playsInline
+                >
+                  <source src="/videos/demos/optimized/boteh_demo_optimized.mp4" type="video/mp4" />
+                </video>
+                <button
+                  onClick={() => setIsBotehMuted(!isBotehMuted)}
+                  className="absolute bottom-2 right-2 text-xs md:text-sm bg-black text-white bg-opacity-25 px-3 py-1.5 rounded-full hover:bg-opacity-90 transition-all z-10"
+                >
+                  {isBotehMuted ? 'sound off' : 'sound on'}
+                </button>
               </div>
             </div>
 
-            {/* RTS - UPDATE TO OPTIMIZED */}
+            {/* RTS */}
             <div className={`${projectsLoaded ? 'fade-in fade-in-delay-450' : 'opacity-0'}`}>
               <div className="flex items-baseline gap-x-4 mb-1">
                 <a href="https://rts0-462101.ue.r.appspot.com/" target="_blank" className="custom-link">
@@ -232,24 +135,16 @@ export default function HomePage() {
                 A word association game powered by WordNet and natural language processing<br/>
                 Using <b>Python, WebNet, React, Vite</b>
               </p>
-              <div className="mt-4 w-full rounded-lg overflow-hidden">
-                {!rtsVideoLoaded ? (
-                  <div className="w-full aspect-video bg-gray-200 flex items-center justify-center">
-                    <div className="text-gray-500">Loading...</div>
-                  </div>
-                ) : (
-                  <video 
-                    ref={rtsVideoRef}
-                    className="w-full"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="none"
-                  >
-                    <source src="/videos/demos/rts_demo_optimized.mp4" type="video/mp4" />
-                  </video>
-                )}
+              <div className="mt-4 w-full rounded-lg overflow-hidden relative">
+                <video 
+                  className="w-full"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
+                  <source src="/videos/demos/optimized/rts_demo_optimized.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
 
@@ -290,7 +185,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* 2. hom - FIXED LOADING */}
+                {/* 2. hom */}
                 <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
                     <Link href="/hom" target="_blank" className="custom-link">
@@ -302,39 +197,26 @@ export default function HomePage() {
                     Using <b>p5.js</b>
                   </p>
                   <div className="mt-4 w-full rounded-lg overflow-hidden">
-                    {!homVideoLoaded ? (
-                      <div className="w-full aspect-video bg-gray-200 flex items-center justify-center">
-                        <div className="text-gray-500">Loading...</div>
-                      </div>
-                    ) : (
-                      <video 
-                        ref={homVideo.videoRef}
-                        className="w-full"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="none"
-                      >
-                        <source 
-                          src="/videos/demos/hom_demo_optimized.mp4" 
-                          type="video/mp4"
-                        />
-                      </video>
-                    )}
+                    <video 
+                      className="w-full"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    >
+                      <source src="/videos/demos/optimized/hom_demo_optimized.mp4" type="video/mp4" />
+                    </video>
                   </div>
                 </div>
 
-                {/* 3. Game of Life - FIXED LOADING */}
+                {/* 3. Game of Life */}
                 <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
                     <a href="https://generative-380518.ue.r.appspot.com/gameoflife" target="_blank" className="custom-link">
                       <h1 className="text-2xl md:text-4xl font-bold">Game of Life</h1>
                     </a>
                     <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/game-of-life' target="_blank">
-                        Github
-                      </a>
+                      <a href='https://github.com/hvrc/game-of-life' target="_blank">Github</a>
                     </div>
                   </div>
                   <p className="text-sm md:text-lg text-left">
@@ -342,26 +224,15 @@ export default function HomePage() {
                     Using <b>p5.js, Flask, Google Cloud Platform</b>. Github version uses <b>Python & Pygame</b>
                   </p>
                   <div className="mt-4 w-full rounded-lg overflow-hidden">
-                    {!gameOfLifeVideoLoaded ? (
-                      <div className="w-full aspect-video bg-gray-200 flex items-center justify-center">
-                        <div className="text-gray-500">Loading...</div>
-                      </div>
-                    ) : (
-                      <video 
-                        ref={gameOfLifeVideo.videoRef}
-                        className="w-full"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="none"
-                      >
-                        <source 
-                          src="/videos/demos/game_of_life_demo_optimized.mp4" 
-                          type="video/mp4"
-                        />
-                      </video>
-                    )}
+                    <video 
+                      className="w-full"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    >
+                      <source src="/videos/demos/optimized/game_of_life_demo_optimized.mp4" type="video/mp4" />
+                    </video>
                   </div>
                 </div>
 
@@ -372,9 +243,7 @@ export default function HomePage() {
                       <h1 className="text-2xl md:text-4xl font-bold">Bunshi</h1>
                     </a>
                     <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/bunshi' target="_blank">
-                        Github
-                      </a>
+                      <a href='https://github.com/hvrc/bunshi' target="_blank">Github</a>
                     </div>
                   </div>
                   <p className="text-sm md:text-lg text-left">
@@ -419,9 +288,7 @@ export default function HomePage() {
                       <h1 className="text-2xl md:text-4xl font-bold">Newsletter Generator</h1>
                     </a>
                     <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/newsletter' target="_blank">
-                        Github
-                      </a>
+                      <a href='https://github.com/hvrc/newsletter' target="_blank">Github</a>
                     </div>
                   </div>
                   <p className="text-sm md:text-lg text-left">
@@ -509,7 +376,6 @@ export default function HomePage() {
                     Using <b>Python, Prolog, HP-GL</b>
                   </p>
                 </div>
-
               </div>
             </div>
           </div>
