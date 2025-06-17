@@ -32,8 +32,9 @@ export default function HomePage() {
       {/* title */}
       <section id="header" className={`flex justify-center items-center p-4 top-0 bg-opacity-50 z-10 ${titleLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="w-full text-center space-y-3">
-          <h1 className="text-4xl md:text-6xl font-extrabold">Harsh Rajmachikar</h1>
-          <p className="text-lg md:text-xl">making things on a computer</p>
+          <h1 className="text-4xl md:text-6xl font-extrabold">HARSH RAJMACHIKAR</h1>
+            {/* <h2 className="text-2xl md:text-4xl font-extrabold">HVRC.PLACE</h2> */}
+          <p className="text-lg md:text-xl">hvrc.place</p>
         </div>
       </section>
 
@@ -59,7 +60,7 @@ export default function HomePage() {
             Show All
           </button>
           
-          <div className="border border-gray-300 p-5 space-y-6">
+          <div className="p-5 space-y-16">
             
             {/* Carrom */}
             <div className={`${projectsLoaded ? 'fade-in' : 'opacity-0'}`}>
@@ -166,7 +167,7 @@ export default function HomePage() {
               <div className="space-y-12">
 
                 {/* 1. Place */}
-                <div>
+                {/* <div>
                   <div className="flex items-baseline gap-x-4 mb-2">
                     <a href="/" target="_blank" className="custom-link">
                       <h1 className="text-2xl md:text-4xl font-bold">Place</h1>
@@ -183,7 +184,7 @@ export default function HomePage() {
                       title="Place Demo"
                     />
                   </div>
-                </div>
+                </div> */}
 
                 {/* 2. hom */}
                 <div>
@@ -384,7 +385,7 @@ export default function HomePage() {
 
       {/* experience */}
       <section id="experience" className={`p-6 space-y-8 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
-        <div className="border border-gray-300 p-6 space-y-8">
+        <div className="p-6 space-y-8">
           <div>
             <h1 className="text-2xl md:text-4xl font-bold text-left">Freelance Software Developer</h1> <br />
             <p className="text-sm md:text-lg text-left">Getafix Design, Independent | Sep 2020 - Present (4+ years) | Remote</p>
