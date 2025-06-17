@@ -9,6 +9,12 @@
 }
 
 @font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/HelveticaforTarget.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'PublicSans-Regular';
   src: url('/fonts/PublicSans-Regular.ttf') format('truetype');
   font-display: swap;
@@ -18,7 +24,7 @@ html,
 body,
 header,
 section {
-  background: #f1ebe5;
+  background: #fff;
 }
 
 div {
@@ -30,7 +36,7 @@ div {
 }
 
 header, h1, h2, h3 {
-  font-family: 'Profilen', sans-serif;
+  font-family: 'Helvetica', sans-serif;
 }
 
 a {
