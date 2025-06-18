@@ -12,6 +12,65 @@ export default function HomePage() {
   const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [experienceLoaded, setExperienceLoaded] = useState(false);
   const [contactLoaded, setContactLoaded] = useState(false);
+  const [nameTransform, setNameTransform] = useState({
+    h1: 'H',
+    a: 'A',
+    r: 'R',
+    s: 'S',
+    h2: 'H'
+  });
+
+  useEffect(() => {
+    if (!titleLoaded) return;
+
+    const transformLetters = () => {
+      const randomLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+      
+      let aChangeCount = 0;
+      const aInterval = setInterval(() => {
+        const randomLetter = randomLetters[Math.floor(Math.random() * randomLetters.length)];
+        setNameTransform(prev => ({ ...prev, a: randomLetter }));
+        aChangeCount++;
+        if (aChangeCount >= 40) {
+          clearInterval(aInterval);
+          setTimeout(() => {
+            setNameTransform(prev => ({ ...prev, a: 'V' }));
+          }, 100);
+        }
+      }, 80);
+
+      setTimeout(() => {
+        let sChangeCount = 0;
+        const sInterval = setInterval(() => {
+          const randomLetter = randomLetters[Math.floor(Math.random() * randomLetters.length)];
+          setNameTransform(prev => ({ ...prev, s: randomLetter }));
+          sChangeCount++;
+          if (sChangeCount >= 40) {
+            clearInterval(sInterval);
+            setTimeout(() => {
+              setNameTransform(prev => ({ ...prev, s: 'C' }));
+            }, 100);
+          }
+        }, 80);
+      }, 800);
+
+      setTimeout(() => {
+        setNameTransform(prev => ({ ...prev, s: 'S' }));
+      }, 6000);
+
+      setTimeout(() => {
+        setNameTransform(prev => ({ ...prev, a: 'A' }));
+      }, 6500);
+    };
+
+    const initialTimer = setTimeout(transformLetters, 3000);
+    const interval = setInterval(transformLetters, 12000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [titleLoaded]);
 
   useEffect(() => {
     setPageLoaded(true);
@@ -32,8 +91,14 @@ export default function HomePage() {
       {/* title */}
       <section id="header" className={`flex justify-center items-center p-4 top-0 bg-opacity-50 z-10 ${titleLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="w-full text-center space-y-3">
-          <h1 className="text-4xl md:text-6xl font-extrabold">HARSH RAJMACHIKAR</h1>
-            {/* <h2 className="text-2xl md:text-4xl font-extrabold">HVRC.PLACE</h2> */}
+          <h1 className="text-4xl md:text-6xl font-extrabold">
+            <span className="letter-transform">{nameTransform.h1}</span>
+            <span className={`letter-transform ${nameTransform.a === 'V' ? 'mechanical-switch' : ''}`}>{nameTransform.a}</span>
+            <span className="letter-transform">{nameTransform.r}</span>
+            <span className={`letter-transform ${nameTransform.s === 'C' ? 'mechanical-switch' : ''}`}>{nameTransform.s}</span>
+            <span className="letter-transform">{nameTransform.h2}</span>
+            <span> RAJMACHIKAR</span>
+          </h1>
           <p className="text-lg md:text-xl">making things on a computer</p>
         </div>
       </section>
@@ -348,7 +413,7 @@ export default function HomePage() {
 
       {/* experience */}
       <section id="experience" className={`p-6 space-y-8 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
-        <div className="p-6 space-y-8">
+        <div className="p-6 space-y-8 max-w-4xl mx-auto">
           <div>
             <h1 className="text-2xl md:text-4xl font-bold text-left">Freelance Software Developer</h1> <br />
             <p className="text-sm md:text-lg text-left">Getafix Design, Independent | Sep 2020 - Present (4+ years) | Remote</p>
