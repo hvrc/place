@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, MouseEvent, TouchEvent } from 'react';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -19,6 +19,7 @@ export default function HomePage() {
     s: 'S',
     h2: 'H'
   });
+  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
 
   useEffect(() => {
     if (!titleLoaded) return;
@@ -86,9 +87,183 @@ export default function HomePage() {
     }
   }, [pageLoaded]);
 
+  const handleProjectToggle = (projectId: string, e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLElement && (e.target.tagName === 'A' || e.target.tagName === 'VIDEO' || e.target.tagName === 'IMG')) return;
+    setHoveredProject(prev => (prev === projectId ? null : projectId));
+  };
+
+  const projects = [
+    {
+      id: 'carrom',
+      title: 'Carrom',
+      link: 'https://carrom-461712.ue.r.appspot.com/',
+      github: 'https://github.com/hvrc/carrom',
+      description: 'Indian tabletop game similar to billiards<br/>Using <b>Phaser.js, Express.js, Node.js</b>',
+      media: (
+        <video className="w-full" autoPlay loop muted playsInline>
+          <source src="/videos/demos/optimized/carrom_demo_optimized.mp4" type="video/mp4" />
+        </video>
+      ),
+      delay: 'fade-in'
+    },
+    {
+      id: 'hom',
+      title: 'hom',
+      link: '/hom',
+      description: 'Generative art created using flocking, dithering and other algorithms<br/>Using <b>p5.js</b>',
+      media: (
+        <video className="w-full" autoPlay loop muted playsInline>
+          <source src="/videos/demos/optimized/hom_demo_optimized.mp4" type="video/mp4" />
+        </video>
+      ),
+      delay: 'fade-in fade-in-delay-400'
+    },
+    {
+      id: 'game-of-life',
+      title: 'Game of Life',
+      link: 'https://generative-380518.ue.r.appspot.com/gameoflife',
+      github: 'https://github.com/hvrc/game-of-life',
+      description: 'Simulates Conway\'s Game of Life<br/>Using <b>p5.js, Flask, Google Cloud Platform</b>. Github version uses <b>Python & Pygame</b>',
+      media: (
+        <video className="w-full" autoPlay loop muted playsInline>
+          <source src="/videos/demos/optimized/game_of_life_demo_optimized.mp4" type="video/mp4" />
+        </video>
+      ),
+      delay: 'fade-in fade-in-delay-800'
+    },
+    {
+      id: 'newsletter',
+      title: 'Newsletter Generator',
+      link: 'https://newsletter-419717.an.r.appspot.com/newsletter-app/',
+      github: 'https://github.com/hvrc/newsletter',
+      description: 'Web application that takes links to articles from client\'s news website and generates .html newsletters<br/>Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>',
+      media: <img src="/images/demos/newsletter_demo.png" alt="Newsletter Generator Demo" className="w-full" />,
+      delay: 'fade-in fade-in-delay-1200'
+    },
+    {
+      id: 'shutdowner',
+      title: 'Shutdown Scheduler',
+      link: 'https://github.com/hvrc/shutdowner',
+      download: 'https://github.com/hvrc/shutdowner/releases/download/v1.1.0/shutdowner-windows.zip',
+      description: 'Windows app to schedule a shutdown<br/>Using <b>Python & Tkinter</b>',
+      media: <img src="/images/demos/shutdowner_demo.png" alt="Shutdown Scheduler Demo" className="w-full" />,
+      delay: 'fade-in fade-in-delay-1600'
+    },
+    {
+      id: 'pngtoplt',
+      title: 'PNG to PLT',
+      link: 'https://github.com/hvrc/pngtoplt',
+      description: 'Converts a .png file of a qr code into a .plt file used by laser engravers<br/>Using <b>Python, Prolog, HP-GL</b>',
+      delay: 'fade-in fade-in-delay-2000'
+    },
+    {
+      id: 'boteh',
+      title: 'Boteh',
+      link: 'http://boteh-461905.appspot.com/',
+      github: 'https://github.com/hvrc/boteh',
+      description: 'Synthesizer played with hand gestures tracked by a camera<br/>Using <b>Google MediaPipe, Web Audio API, Node.js</b>',
+      media: (
+        <div className="relative">
+          <video className="w-full" autoPlay loop muted={isBotehMuted} playsInline>
+            <source src="/videos/demos/optimized/boteh_demo_optimized.mp4" type="video/mp4" />
+          </video>
+          <button
+            onClick={() => setIsBotehMuted(!isBotehMuted)}
+            className="absolute bottom-2 right-2 text-xs md:text-sm bg-black text-white bg-opacity-25 px-3 py-1.5 rounded-full hover:bg-opacity-90 transition-all z-10"
+          >
+            {isBotehMuted ? 'sound off' : 'sound on'}
+          </button>
+        </div>
+      ),
+      delay: 'fade-in fade-in-delay-200'
+    },
+    {
+      id: 'rts',
+      title: 'RTS',
+      link: 'https://rts0-462101.ue.r.appspot.com/',
+      github: 'https://github.com/hvrc/rts',
+      description: 'A word association game powered by WordNet and natural language processing<br/>Using <b>Python, WebNet, React, Vite</b>',
+      media: (
+        <video className="w-full" autoPlay loop muted playsInline>
+          <source src="/videos/demos/optimized/rts_demo_optimized.mp4" type="video/mp4" />
+        </video>
+      ),
+      delay: 'fade-in fade-in-delay-600'
+    },
+    {
+      id: 'bunshi',
+      title: 'Bunshi',
+      link: 'https://bunshi.ue.r.appspot.com/',
+      github: 'https://github.com/hvrc/bunshi',
+      description: 'Displays the bond line structure of any chemical<br/>Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>',
+      media: <img src="/images/demos/bunshi_demo_1.png" alt="Bunshi Demo 1" className="w-full" />,
+      delay: 'fade-in fade-in-delay-1000'
+    },
+    {
+      id: 'loan-reports',
+      title: 'Loan Reports',
+      link: 'https://github.com/hvrc/reportsapi',
+      description: 'API that Generates custom loan reports and visualizes data<br/>Using <b>Python, Pandas, High charts, Django</b>',
+      media: <img src="/images/demos/reports_demo.png" alt="Loan Reports Demo" className="w-full" />,
+      delay: 'fade-in fade-in-delay-1400'
+    },
+    {
+      id: 'midi-controller',
+      title: 'Midi Controller',
+      link: 'https://github.com/hvrc/midicontroller',
+      description: 'A MIDI controller with buttons and potentiometers to control a DAW<br/>Using <b>C++ and Arduino</b>',
+      media: <img src="/images/demos/midicontroller_demo.png" alt="MIDI Controller Demo" className="w-full" />,
+      delay: 'fade-in fade-in-delay-1800'
+    },
+    {
+      id: 'prims-organism',
+      title: 'Prim\'s Organism',
+      link: '/prim',
+      description: 'A game based on Prim\'s Maze Generation Algorithm<br/>Using <b>React with JSX</b>',
+      delay: 'fade-in fade-in-delay-2200'
+    }
+  ];
+
   return (
     <div className="w-full sm:max-w-[95%] md:max-w-[80%] lg:max-w-[1500px] mx-auto space-y-4 px-4 sm:px-4 pt-8">
-      {/* title */}
+      <style jsx>{`
+        .project-container {
+          position: relative;
+          overflow: hidden;
+          border: 2px solid black;
+        }
+        .project-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: white;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          color: black;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .project-container:hover .project-overlay {
+          opacity: 1;
+        }
+        @media (max-width: 1024px) {
+          .project-container:hover .project-overlay {
+            opacity: 0;
+          }
+          .project-overlay.active {
+            opacity: 1;
+          }
+        }
+        .project-overlay a, .project-overlay p {
+          color: black !important;
+        }
+      `}</style>
+
       <section id="header" className={`flex justify-center items-center p-4 top-0 bg-opacity-50 z-10 ${titleLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="w-full text-center space-y-3">
           <h1 className="text-4xl md:text-6xl font-extrabold">
@@ -99,11 +274,9 @@ export default function HomePage() {
             <span className="letter-transform">{nameTransform.h2}</span>
             <span> RAJMACHIKAR</span>
           </h1>
-          <p className="text-lg md:text-xl">making things on a computer</p>
         </div>
       </section>
 
-      {/* floater */}
       <div className={`fixed top-0 right-4 md:right-8 p-4 z-20 ${floaterLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="flex flex-col space-y-1 text-right text-sm md:text-base">
           <a href="https://www.instagram.com/hvrc2000" target="_blank" rel="noopener noreferrer">instagram</a>
@@ -114,304 +287,75 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* projects */}
       <section id="projects" className={`p-2 sm:p-6 space-y-6 ${projectsLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="relative">
-          
           <div className="p-1 sm:p-5">
-            {/* Projects Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              
-              {/* Left Column */}
               <div className="space-y-8 lg:space-y-16">
-                {/* Carrom */}
-                <div className={`${projectsLoaded ? 'fade-in' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://carrom-461712.ue.r.appspot.com/" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Carrom</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/carrom' target="_blank">Github</a>
+                {projects.slice(0, 6).map(project => (
+                  <div 
+                    key={project.id} 
+                    className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
+                    onMouseEnter={() => setHoveredProject(project.id)}
+                    onMouseLeave={() => setHoveredProject(null)}
+                    onClick={(e) => handleProjectToggle(project.id, e)}
+                    onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                  >
+                    {project.media}
+                    <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                      <div className="flex items-baseline gap-x-4 mb-1">
+                        {project.link && (
+                          <a href={project.link} target="_blank" className="custom-link">
+                            <h1 className="text-2xl md:text-4xl font-bold">{project.title}</h1>
+                          </a>
+                        )}
+                        {(project.github || project.download) && (
+                          <div className="text-sm md:text-lg self-baseline space-x-2">
+                            {project.github && <a href={project.github} target="_blank">Github</a>}
+                            {project.download && <a href={project.download} target="_blank">Download</a>}
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
                     </div>
                   </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Indian tabletop game similar to billiards <br/>
-                    Using <b>Phaser.js, Express.js, Node.js</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden relative border-2 border-black">
-                    <video 
-                      className="w-full"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src="/videos/demos/optimized/carrom_demo_optimized.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
-
-                {/* hom */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-400' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <Link href="/hom" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">hom</h1>
-                    </Link>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Generative art created using flocking, dithering and other algorithms <br/>
-                    Using <b>p5.js</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <video 
-                      className="w-full"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src="/videos/demos/optimized/hom_demo_optimized.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
-
-                {/* Game of Life */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-800' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://generative-380518.ue.r.appspot.com/gameoflife" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Game of Life</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/game-of-life' target="_blank">Github</a>
-                    </div>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Simulates Conway's Game of Life <br/>
-                    Using <b>p5.js, Flask, Google Cloud Platform</b>. Github version uses <b>Python & Pygame</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <video 
-                      className="w-full"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src="/videos/demos/optimized/game_of_life_demo_optimized.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
-
-                {/* Newsletter Generator */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-1200' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://newsletter-419717.an.r.appspot.com/newsletter-app/" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Newsletter Generator</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/newsletter' target="_blank">Github</a>
-                    </div>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Web application that takes links to articles from client's news website and generates .html newsletters <br/>
-                    Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <img 
-                      src="/images/demos/newsletter_demo.png" 
-                      alt="Newsletter Generator Demo"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                {/* Shutdown Scheduler */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-1600' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://github.com/hvrc/shutdowner" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Shutdown Scheduler</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/shutdowner/releases/download/v1.1.0/shutdowner-windows.zip' target="_blank">
-                        Download
-                      </a>
-                    </div>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Windows app to schedule a shutdown <br/>
-                    Using <b>Python & Tkinter</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <img 
-                      src="/images/demos/shutdowner_demo.png" 
-                      alt="Shutdown Scheduler Demo"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                {/* PNG to PLT */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-2000' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://github.com/hvrc/pngtoplt" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">PNG to PLT</h1>
-                    </a>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Converts a .png file of a qr code into a .plt file used by laser engravers <br/>
-                    Using <b>Python, Prolog, HP-GL</b>
-                  </p>
-                </div>
+                ))}
               </div>
-
-              {/* Right Column */}
               <div className="space-y-8 lg:space-y-16">
-                {/* Boteh */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-200' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="http://boteh-461905.appspot.com/" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Boteh</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/boteh' target="_blank">Github</a>
+                {projects.slice(6).map(project => (
+                  <div 
+                    key={project.id} 
+                    className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
+                    onMouseEnter={() => setHoveredProject(project.id)}
+                    onMouseLeave={() => setHoveredProject(null)}
+                    onClick={(e) => handleProjectToggle(project.id, e)}
+                    onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                  >
+                    {project.media}
+                    <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                      <div className="flex items-baseline gap-x-4 mb-1">
+                        {project.link && (
+                          <a href={project.link} target="_blank" className="custom-link">
+                            <h1 className="text-2xl md:text-4xl font-bold">{project.title}</h1>
+                          </a>
+                        )}
+                        {(project.github || project.download) && (
+                          <div className="text-sm md:text-lg self-baseline space-x-2">
+                            {project.github && <a href={project.github} target="_blank">Github</a>}
+                            {project.download && <a href={project.download} target="_blank">Download</a>}
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
                     </div>
                   </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Synthesizer played with hand gestures tracked by a camera<br/>
-                    Using <b>Google MediaPipe, Web Audio API, Node.js</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden relative border-2 border-black">
-                    <video 
-                      className="w-full"
-                      autoPlay
-                      loop
-                      muted={isBotehMuted}
-                      playsInline
-                    >
-                      <source src="/videos/demos/optimized/boteh_demo_optimized.mp4" type="video/mp4" />
-                    </video>
-                    <button
-                      onClick={() => setIsBotehMuted(!isBotehMuted)}
-                      className="absolute bottom-2 right-2 text-xs md:text-sm bg-black text-white bg-opacity-25 px-3 py-1.5 rounded-full hover:bg-opacity-90 transition-all z-10"
-                    >
-                      {isBotehMuted ? 'sound off' : 'sound on'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* RTS */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-600' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://rts0-462101.ue.r.appspot.com/" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">RTS</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/rts' target="_blank">Github</a>
-                    </div>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    A word association game powered by WordNet and natural language processing<br/>
-                    Using <b>Python, WebNet, React, Vite</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden relative border-2 border-black">
-                    <video 
-                      className="w-full"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src="/videos/demos/optimized/rts_demo_optimized.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
-
-                {/* Bunshi */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-1000' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://bunshi.ue.r.appspot.com/" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Bunshi</h1>
-                    </a>
-                    <div className="text-sm md:text-lg self-baseline space-x-2">
-                      <a href='https://github.com/hvrc/bunshi' target="_blank">Github</a>
-                    </div>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    Displays the bond line structure of any chemical <br/>
-                    Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <div className="flex flex-col gap-4">
-                      <img 
-                        src="/images/demos/bunshi_demo_1.png" 
-                        alt="Bunshi Demo 1"
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Loan Reports */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-1400' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://github.com/hvrc/reportsapi" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Loan Reports</h1>
-                    </a>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    API that Generates custom loan reports and visualizes data <br/>
-                    Using <b>Python, Pandas, High charts, Django</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <img 
-                      src="/images/demos/reports_demo.png" 
-                      alt="Loan Reports Demo"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                {/* MIDI Controller */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-1800' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <a href="https://github.com/hvrc/midicontroller" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Midi Controller</h1>
-                    </a>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    A MIDI controller with buttons and potentiometers to control a DAW <br/>
-                    Using <b>C++ and Arduino</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden border-2 border-black">
-                    <img 
-                      src="/images/demos/midicontroller_demo.png" 
-                      alt="MIDI Controller Demo"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                {/* Prim's Organism */}
-                <div className={`${projectsLoaded ? 'fade-in fade-in-delay-2200' : 'opacity-0'}`}>
-                  <div className="flex items-baseline gap-x-4 mb-1">
-                    <Link href="/prim" target="_blank" className="custom-link">
-                      <h1 className="text-2xl md:text-4xl font-bold">Prim's Organism</h1>
-                    </Link>
-                  </div>
-                  <p className="text-sm md:text-lg text-left">
-                    A game based on Prim's Maze Generation Algorithm <br/>
-                    Using <b>React with JSX</b>
-                  </p>
-                  <div className="mt-4 w-full overflow-hidden">
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* experience */}
       <section id="experience" className={`p-6 space-y-8 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="p-6 space-y-8 max-w-4xl mx-auto">
           <div>
@@ -429,7 +373,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* footer, contact */}
       <br /><br /><br /><br /><br />
       <section id="contact" className={`p-8 text-center ${contactLoaded ? 'fade-in' : 'opacity-0'}`}>
         <h1 className="text-lg md:text-xl font-bold">harshrajmachikar@gmail.com</h1>
