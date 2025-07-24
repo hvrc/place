@@ -32,6 +32,8 @@ export default function HomePage() {
     h2: 'H'
   });
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
+  const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
+  const [touchMoved, setTouchMoved] = useState(false);
 
   useEffect(() => {
     if (!titleLoaded) return;
@@ -99,9 +101,40 @@ export default function HomePage() {
     }
   }, [pageLoaded]);
 
-  const handleProjectToggle = (projectId: string, e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) => {
-    if (e.target instanceof HTMLElement && (e.target.tagName === 'A' || e.target.tagName === 'VIDEO' || e.target.tagName === 'IMG')) return;
-    setHoveredProject(prev => (prev === projectId ? null : projectId));
+  const handleTouchStart = (projectId: string, e: TouchEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLElement && (e.target.tagName === 'A' || e.target.tagName === 'VIDEO' || e.target.tagName === 'IMG' || e.target.tagName === 'BUTTON')) return;
+    setTouchStartTime(Date.now());
+    setTouchMoved(false);
+  };
+
+  const handleTouchMove = () => {
+    setTouchMoved(true);
+  };
+
+  const handleTouchEnd = (projectId: string, e: TouchEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLElement && (e.target.tagName === 'A' || e.target.tagName === 'VIDEO' || e.target.tagName === 'IMG' || e.target.tagName === 'BUTTON')) return;
+    
+    const touchDuration = touchStartTime ? Date.now() - touchStartTime : 0;
+    const isTap = touchDuration < 250 && !touchMoved; // Consider tap if duration < 250ms and no movement
+
+    if (isTap) {
+      // Single tap and release: toggle overlay on/off
+      setHoveredProject(prev => (prev === projectId ? null : projectId));
+    } else if (touchMoved) {
+      // Tap and drag: turn overlay on and keep it on
+      setHoveredProject(projectId);
+    }
+
+    setTouchStartTime(null);
+    setTouchMoved(false);
+  };
+
+  const handleMouseEnter = (projectId: string) => {
+    setHoveredProject(projectId);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredProject(null);
   };
 
   const projects: Project[] = [
@@ -245,11 +278,13 @@ export default function HomePage() {
           border: 2px solid black;
           width: 100%;
           max-width: 700px;
+          touch-action: manipulation; /* Prevent default touch behaviors like zoom */
         }
         .project-container img, .project-container video {
           width: 100%;
           height: auto;
           display: block;
+          pointer-events: none; /* Prevent media from capturing touch events */
         }
         .project-overlay {
           position: absolute;
@@ -324,10 +359,11 @@ export default function HomePage() {
                     <div 
                       key={project.id} 
                       className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
-                      onMouseEnter={() => setHoveredProject(project.id)}
-                      onMouseLeave={() => setHoveredProject(null)}
-                      onClick={(e) => handleProjectToggle(project.id, e)}
-                      onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                      onMouseEnter={() => handleMouseEnter(project.id)}
+                      onMouseLeave={() => handleMouseLeave()}
+                      onTouchStart={(e) => handleTouchStart(project.id, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={(e) => handleTouchEnd(project.id, e)}
                     >
                       {project.media}
                       <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
@@ -373,10 +409,11 @@ export default function HomePage() {
                     <div 
                       key={project.id} 
                       className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
-                      onMouseEnter={() => setHoveredProject(project.id)}
-                      onMouseLeave={() => setHoveredProject(null)}
-                      onClick={(e) => handleProjectToggle(project.id, e)}
-                      onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                      onMouseEnter={() => handleMouseEnter(project.id)}
+                      onMouseLeave={() => handleMouseLeave()}
+                      onTouchStart={(e) => handleTouchStart(project.id, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={(e) => handleTouchEnd(project.id, e)}
                     >
                       {project.media}
                       <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
