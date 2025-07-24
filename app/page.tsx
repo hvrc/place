@@ -34,6 +34,16 @@ export default function HomePage() {
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
   const [touchMoved, setTouchMoved] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!titleLoaded) return;
@@ -353,8 +363,12 @@ export default function HomePage() {
         <div className="relative">
           <div className="p-1 sm:p-5">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-10">
-              <div className="space-y-4 lg:space-y-12">
-                {projects.slice(0, 6).map(project => (
+              <div className="space-y-6 lg:space-y-12">
+                {/* On mobile: show all media projects first, then text projects. On desktop: split in half */}
+                {(isMobile ? 
+                  projects.filter(p => p.media) : 
+                  projects.slice(0, 6)
+                ).map(project => (
                   project.media ? (
                     <div 
                       key={project.id} 
@@ -403,8 +417,11 @@ export default function HomePage() {
                   )
                 ))}
               </div>
-              <div className="space-y-4 lg:space-y-12">
-                {projects.slice(6).map(project => (
+              <div className="space-y-6 lg:space-y-12">
+                {(isMobile ? 
+                  projects.filter(p => !p.media) : 
+                  projects.slice(6)
+                ).map(project => (
                   project.media ? (
                     <div 
                       key={project.id} 
@@ -458,8 +475,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="experience" className={`p-6 space-y-4 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
-        <div className="p-6 space-y-4 max-w-4xl mx-auto">
+      <div className="mt-24 lg:mt-0"></div>
+      <br />
+      <section id="experience" className={`p-2 sm:p-6 space-y-4 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
+        <div className="p-1 sm:p-5 space-y-4 max-w-[700px] mx-auto">
           <div>
             <h1 className="text-2xl md:text-4xl font-bold text-left">Freelance Software Developer</h1> <br />
             <p className="text-sm md:text-lg text-left">Getafix Design, Independent | Sep 2020 - Present (4+ years) | Remote</p>
