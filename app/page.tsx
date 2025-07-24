@@ -1,7 +1,19 @@
 "use client";
 
-import { useEffect, useState, MouseEvent, TouchEvent } from 'react';
+import { useEffect, useState, MouseEvent, TouchEvent, JSX } from 'react';
 import Link from 'next/link';
+
+// Define Project interface to type the projects array
+interface Project {
+  id: string;
+  title: string;
+  link?: string;
+  github?: string;
+  download?: string;
+  description: string;
+  media?: JSX.Element;
+  delay: string;
+}
 
 export default function HomePage() {
   const [showAllProjects, setShowAllProjects] = useState(false);
@@ -92,7 +104,7 @@ export default function HomePage() {
     setHoveredProject(prev => (prev === projectId ? null : projectId));
   };
 
-  const projects = [
+  const projects: Project[] = [
     {
       id: 'carrom',
       title: 'Carrom',
@@ -231,6 +243,13 @@ export default function HomePage() {
           position: relative;
           overflow: hidden;
           border: 2px solid black;
+          width: 100%;
+          max-width: 700px;
+        }
+        .project-container img, .project-container video {
+          width: 100%;
+          height: auto;
+          display: block;
         }
         .project-overlay {
           position: absolute;
@@ -247,6 +266,7 @@ export default function HomePage() {
           color: black;
           opacity: 0;
           transition: opacity 0.3s ease;
+          padding: 2rem;
         }
         .project-container:hover .project-overlay {
           opacity: 1;
@@ -261,6 +281,13 @@ export default function HomePage() {
         }
         .project-overlay a, .project-overlay p {
           color: black !important;
+        }
+        .project-overlay a:hover {
+          color: #f28c38 !important;
+        }
+        /* Hide vsc-controller elements */
+        .vsc-controller {
+          display: none !important;
         }
       `}</style>
 
@@ -290,19 +317,38 @@ export default function HomePage() {
       <section id="projects" className={`p-2 sm:p-6 space-y-6 ${projectsLoaded ? 'fade-in' : 'opacity-0'}`}>
         <div className="relative">
           <div className="p-1 sm:p-5">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              <div className="space-y-8 lg:space-y-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-10">
+              <div className="space-y-4 lg:space-y-12">
                 {projects.slice(0, 6).map(project => (
-                  <div 
-                    key={project.id} 
-                    className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
-                    onMouseEnter={() => setHoveredProject(project.id)}
-                    onMouseLeave={() => setHoveredProject(null)}
-                    onClick={(e) => handleProjectToggle(project.id, e)}
-                    onTouchStart={(e) => handleProjectToggle(project.id, e)}
-                  >
-                    {project.media}
-                    <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                  project.media ? (
+                    <div 
+                      key={project.id} 
+                      className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
+                      onMouseEnter={() => setHoveredProject(project.id)}
+                      onMouseLeave={() => setHoveredProject(null)}
+                      onClick={(e) => handleProjectToggle(project.id, e)}
+                      onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                    >
+                      {project.media}
+                      <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                        <div className="flex items-baseline gap-x-4 mb-1">
+                          {project.link && (
+                            <a href={project.link} target="_blank" className="custom-link">
+                              <h1 className="text-2xl md:text-4xl font-bold">{project.title}</h1>
+                            </a>
+                          )}
+                          {(project.github || project.download) && (
+                            <div className="text-sm md:text-lg self-baseline space-x-2">
+                              {project.github && <a href={project.github} target="_blank">Github</a>}
+                              {project.download && <a href={project.download} target="_blank">Download</a>}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={project.id} className={`${projectsLoaded ? project.delay : 'opacity-0'}`}>
                       <div className="flex items-baseline gap-x-4 mb-1">
                         {project.link && (
                           <a href={project.link} target="_blank" className="custom-link">
@@ -316,23 +362,42 @@ export default function HomePage() {
                           </div>
                         )}
                       </div>
-                      <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
+                      <p className="text-sm md:text-lg text-left" dangerouslySetInnerHTML={{ __html: project.description }} />
                     </div>
-                  </div>
+                  )
                 ))}
               </div>
-              <div className="space-y-8 lg:space-y-16">
+              <div className="space-y-4 lg:space-y-12">
                 {projects.slice(6).map(project => (
-                  <div 
-                    key={project.id} 
-                    className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
-                    onMouseEnter={() => setHoveredProject(project.id)}
-                    onMouseLeave={() => setHoveredProject(null)}
-                    onClick={(e) => handleProjectToggle(project.id, e)}
-                    onTouchStart={(e) => handleProjectToggle(project.id, e)}
-                  >
-                    {project.media}
-                    <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                  project.media ? (
+                    <div 
+                      key={project.id} 
+                      className={`project-container ${projectsLoaded ? project.delay : 'opacity-0'}`} 
+                      onMouseEnter={() => setHoveredProject(project.id)}
+                      onMouseLeave={() => setHoveredProject(null)}
+                      onClick={(e) => handleProjectToggle(project.id, e)}
+                      onTouchStart={(e) => handleProjectToggle(project.id, e)}
+                    >
+                      {project.media}
+                      <div className={`project-overlay ${hoveredProject === project.id ? 'active' : ''}`}>
+                        <div className="flex items-baseline gap-x-4 mb-1">
+                          {project.link && (
+                            <a href={project.link} target="_blank" className="custom-link">
+                              <h1 className="text-2xl md:text-4xl font-bold">{project.title}</h1>
+                            </a>
+                          )}
+                          {(project.github || project.download) && (
+                            <div className="text-sm md:text-lg self-baseline space-x-2">
+                              {project.github && <a href={project.github} target="_blank">Github</a>}
+                              {project.download && <a href={project.download} target="_blank">Download</a>}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={project.id} className={`${projectsLoaded ? project.delay : 'opacity-0'}`}>
                       <div className="flex items-baseline gap-x-4 mb-1">
                         {project.link && (
                           <a href={project.link} target="_blank" className="custom-link">
@@ -346,9 +411,9 @@ export default function HomePage() {
                           </div>
                         )}
                       </div>
-                      <p className="text-sm md:text-lg text-center" dangerouslySetInnerHTML={{ __html: project.description }} />
+                      <p className="text-sm md:text-lg text-left" dangerouslySetInnerHTML={{ __html: project.description }} />
                     </div>
-                  </div>
+                  )
                 ))}
               </div>
             </div>
@@ -356,14 +421,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="experience" className={`p-6 space-y-8 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
-        <div className="p-6 space-y-8 max-w-4xl mx-auto">
+      <section id="experience" className={`p-6 space-y-4 ${experienceLoaded ? 'fade-in' : 'opacity-0'}`}>
+        <div className="p-6 space-y-4 max-w-4xl mx-auto">
           <div>
             <h1 className="text-2xl md:text-4xl font-bold text-left">Freelance Software Developer</h1> <br />
             <p className="text-sm md:text-lg text-left">Getafix Design, Independent | Sep 2020 - Present (4+ years) | Remote</p>
           </div>
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold text-left">Software Developer  /  Integration Engineer</h1> <br />
+            <h1 className="text-2xl md:text-4xl font-bold text-left">Software Developer / Integration Engineer</h1> <br />
             <p className="text-sm md:text-lg text-left">Healthy Planet | Feb 2022 - May 2025 (3 years 4 months) | Toronto, Canada</p>
           </div>
           <div>
