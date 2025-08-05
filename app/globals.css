@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: 'Profilen';
   src: url('/fonts/Profilen.ttf') format('truetype');
   font-display: swap;
-}
+} */
 
 @font-face {
   font-family: 'Helvetica';
@@ -14,11 +14,11 @@
   font-display: swap;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'PublicSans-Regular';
   src: url('/fonts/PublicSans-Regular.ttf') format('truetype');
   font-display: swap;
-}
+} */
 
 html,
 body,

@@ -26,3 +26,5 @@ next-env.d.ts
 node_modules/
 misc/
 public/images/hom
+public/videos/demos/unoptimized
+public/images/logos

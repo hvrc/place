@@ -39,4 +39,6 @@ next-env.d.ts
 misc/
 
 # Specific project files
-# public/images/hom
+public/images/hom
+public/videos/demos/unoptimized
+public/images/logos

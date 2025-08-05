@@ -4,7 +4,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/videos/:path*',
+        source: '/(videos|images)/:path*',
         headers: [
           {
             key: 'Cache-Control',
