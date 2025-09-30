@@ -21,7 +21,7 @@ export default function Resume() {
   return (
     <div className="pdf-container w-full h-screen overflow-hidden">
       <iframe 
-        src="/files/resume.pdf" 
+        src="https://drive.google.com/file/d/1b74P7LtXxCZayEgAy6uPDWAJE9Akm98E/preview"
         className="w-full h-full"
         style={{ 
           width: "100%", 
@@ -30,6 +30,7 @@ export default function Resume() {
           overflow: "hidden" 
         }}
         title="Resume PDF"
+        allow="autoplay"
       />
     </div>
   );
