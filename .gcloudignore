@@ -23,6 +23,12 @@ yarn-error.log*
 # Environment and sensitive files
 .env*
 *.pem
+*.key
+*.p12
+*_key.json
+*service-account*.json
+*credentials*.json
+client_secret*.json
 .DS_Store
 
 # Vercel
