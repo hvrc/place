@@ -21,7 +21,7 @@ export default function Resume() {
   return (
     <div className="pdf-container w-full h-screen overflow-hidden">
       <iframe 
-        src="https://drive.google.com/file/d/1b74P7LtXxCZayEgAy6uPDWAJE9Akm98E/preview"
+        src="https://drive.google.com/file/d/1FHG0hwYmL9afZTrSivViFjktDqKQRXJ-/preview"
         className="w-full h-full"
         style={{ 
           width: "100%", 
