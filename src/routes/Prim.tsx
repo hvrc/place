@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { MazeCanvas, PrimsOrganism, Worm } from "@/lib/prim/organism";
+import { useEscapeTo } from "@/hooks/useEscapeTo";
 import styles from "./Prim.module.css";
 
 export default function Prim() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isHelpMinimized, setIsHelpMinimized] = useState(false);
   const [isRefsMinimized, setIsRefsMinimized] = useState(true);
+  useEscapeTo("/");
 
   useEffect(() => {
     document.title = "Prim's Organism";

@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { homImages } from "@/data/homManifest";
+import { useEscapeTo } from "@/hooks/useEscapeTo";
 
 export default function Hom() {
+  useEscapeTo("/");
   return (
     <div className="max-w-screen-xl mx-auto relative">
       <div className="absolute left-4 top-4">
