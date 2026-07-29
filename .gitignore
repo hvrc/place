@@ -10,6 +10,8 @@
 /.next/
 /out/
 /build
+/dist
+.vite
 .DS_Store
 *.pem
 npm-debug.log*

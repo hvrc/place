@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/HelveticaforTarget.ttf") format("truetype");
+  font-display: swap;
+}
+
+html,
+body {
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: #2b2722;
+  font-family: "Courier", "Courier New", monospace;
+}
+
+header,
+h1,
+h2,
+h3 {
+  font-family: "Helvetica", sans-serif;
+}
+
+a {
+  color: #3e3931;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #ff3801;
+}
+
+a:active {
+  color: #ff8800;
+}
+
+a.custom-link {
+  color: inherit;
+  transition: color 0.3s;
+}
+
+a.custom-link:hover {
+  color: #ff3801;
+}
+
+a.custom-link:active {
+  color: #ff8800;
+}
+
+/* --- fade-in intro animation --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+  opacity: 0;
+  transform: translateY(10px);
+  will-change: opacity, transform;
+}
+
+.fade-in-delay-200 { animation-delay: 200ms; }
+.fade-in-delay-400 { animation-delay: 400ms; }
+.fade-in-delay-600 { animation-delay: 600ms; }
+.fade-in-delay-800 { animation-delay: 800ms; }
+.fade-in-delay-1000 { animation-delay: 1000ms; }
+.fade-in-delay-1200 { animation-delay: 1200ms; }
+.fade-in-delay-1400 { animation-delay: 1400ms; }
+.fade-in-delay-1600 { animation-delay: 1600ms; }
+.fade-in-delay-1800 { animation-delay: 1800ms; }
+.fade-in-delay-2000 { animation-delay: 2000ms; }
+.fade-in-delay-2200 { animation-delay: 2200ms; }
+
+/* --- name letter-scramble --- */
+.letter-transform {
+  display: inline-block;
+  transition: color 0.3s ease-in-out;
+  width: 0.7em;
+  text-align: center;
+}
+
+.letter-transform:hover {
+  transform: scale(1.05);
+}
+
+.mechanical-switch {
+  color: #2b2722;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
