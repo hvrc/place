@@ -31,7 +31,8 @@ export function XmbWave() {
     resize();
     window.addEventListener("resize", resize);
 
-    const RIBBONS = 5;
+    // Two gentle bands, PSP-style: long wavelength, slow drift.
+    const RIBBONS = 2;
 
     const draw = (t: number) => {
       const time = t / 1000;
@@ -50,28 +51,69 @@ export function XmbWave() {
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, width, height);
 
-      for (let i = 0; i < RIBBONS; i++) {
-        const phase = i * 0.9;
-        const speed = 0.15 + i * 0.05;
-        const amp = height * (0.05 + i * 0.015);
-        const baseY = height * (0.35 + i * 0.09);
-        const light = theme === "dark" ? 60 + i * 4 : 55 + i * 3;
-        const alpha = theme === "dark" ? 0.06 + i * 0.015 : 0.08 + i * 0.02;
+      // Screen-blend the ribbons so overlapping regions compound into a distinctly
+      // brighter/deeper shade (the "Venn" intersection), like the real XMB.
+      ctx.globalCompositeOperation = theme === "dark" ? "screen" : "multiply";
 
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-        for (let x = 0; x <= width; x += 12) {
+      for (let i = 0; i < RIBBONS; i++) {
+        const phase = i * 2.2;
+        const speed = 0.04 + i * 0.015; // slow drift
+        const amp = height * 0.075; // taller swells, same lazy wavelength
+        const baseY = height * (0.42 + i * 0.15);
+        const hue = (waveHue + i * 10) % 360;
+
+        // sample the crest curve once, reuse it for the fill and the edge highlight
+        const crest: number[] = [];
+        for (let x = 0; x <= width; x += 6) {
           const y =
             baseY +
-            Math.sin(x * 0.006 + time * speed + phase) * amp +
-            Math.sin(x * 0.013 - time * (speed * 0.6) + phase) * amp * 0.4;
-          ctx.lineTo(x, y);
+            Math.sin(x * 0.0022 + time * speed + phase) * amp +
+            Math.sin(x * 0.0041 - time * (speed * 0.5) + phase) * amp * 0.35;
+          crest.push(y);
         }
+        const xAt = (k: number) => Math.min(k * 6, width);
+
+        // filled region from the crest down to the bottom, with a bright sheen band
+        // hugging the crest that falls off fast — this is the dramatic edge.
+        const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + height * 0.32);
+        if (theme === "dark") {
+          grad.addColorStop(0, `hsla(${hue}, 85%, 82%, 0.30)`); // crest sheen
+          grad.addColorStop(0.05, `hsla(${hue}, 78%, 66%, 0.16)`);
+          grad.addColorStop(0.4, `hsla(${hue}, 68%, 52%, 0.08)`);
+          grad.addColorStop(1, `hsla(${hue}, 60%, 42%, 0.05)`); // plateau (stacks in overlaps)
+        } else {
+          grad.addColorStop(0, `hsla(${hue}, 45%, 74%, 0.32)`); // crest shade
+          grad.addColorStop(0.05, `hsla(${hue}, 40%, 80%, 0.16)`);
+          grad.addColorStop(0.4, `hsla(${hue}, 38%, 86%, 0.1)`);
+          grad.addColorStop(1, `hsla(${hue}, 35%, 90%, 0.07)`); // plateau
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(0, crest[0]);
+        for (let k = 1; k < crest.length; k++) ctx.lineTo(xAt(k), crest[k]);
         ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
         ctx.closePath();
-        ctx.fillStyle = `hsla(${(waveHue + i * 12) % 360}, 80%, ${light}%, ${alpha})`;
+        ctx.fillStyle = grad;
         ctx.fill();
+
+        // crisp highlight line riding the crest — the sharp edge between shades
+        ctx.beginPath();
+        ctx.moveTo(0, crest[0]);
+        for (let k = 1; k < crest.length; k++) ctx.lineTo(xAt(k), crest[k]);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle =
+          theme === "dark"
+            ? `hsla(${hue}, 90%, 90%, 0.45)`
+            : `hsla(${hue}, 55%, 100%, 0.6)`;
+        ctx.shadowBlur = 14;
+        ctx.shadowColor =
+          theme === "dark" ? `hsla(${hue}, 90%, 85%, 0.5)` : `hsla(${hue}, 50%, 100%, 0.5)`;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
       }
+
+      ctx.globalCompositeOperation = "source-over";
 
       if (!reduceMotion) raf = requestAnimationFrame(draw);
     };

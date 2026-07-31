@@ -7,6 +7,7 @@ import { XmbWave } from "./XmbWave";
 import { XmbCategoryBar } from "./XmbCategoryBar";
 import { XmbItemColumn } from "./XmbItemColumn";
 import { XmbInfoPanel } from "./XmbInfoPanel";
+import { XmbBattery } from "./XmbBattery";
 import styles from "./Xmb.module.css";
 
 function useClock() {
@@ -15,7 +16,9 @@ function useClock() {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-  return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const date = `${now.getMonth() + 1}/${now.getDate()}`;
+  const time = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return `${date} ${time}`;
 }
 
 export default function Xmb() {
@@ -130,7 +133,10 @@ export default function Xmb() {
       <XmbWave />
       <div className={styles.vignette} />
 
-      <div className={styles.clock}>{clock}</div>
+      <div className={styles.clock}>
+        <span>{clock}</span>
+        <XmbBattery className={styles.battery} bars={3} />
+      </div>
 
       <XmbCategoryBar />
       <XmbItemColumn onActivate={activate} />

@@ -14,7 +14,7 @@ export interface XmbItem {
   id: string;
   label: string;
   sub?: string;
-  /** Emoji/glyph shown as the item icon. */
+  /** Material Symbols (rounded) icon name shown as the item icon. */
   glyph: string;
   detail: XmbDetail;
   /** Primary action target: route (internal) or url (external). */
@@ -24,36 +24,37 @@ export interface XmbItem {
 export interface XmbCategory {
   id: string;
   label: string;
+  /** Material Symbols (rounded) icon name. */
   glyph: string;
   items: XmbItem[];
 }
 
 const socialGlyph: Record<string, string> = {
-  instagram: "◈",
-  youtube: "▶",
-  github: "⌥",
-  linkedin: "in",
-  resume: "▤",
+  instagram: "photo_camera",
+  youtube: "smart_display",
+  github: "code",
+  linkedin: "work",
+  resume: "description",
 };
 
 export const categories: XmbCategory[] = [
   {
     id: "profile",
     label: "Profile",
-    glyph: "☺",
+    glyph: "person",
     items: [
       {
         id: "about",
         label: "About",
         sub: "who is this",
-        glyph: "☺",
+        glyph: "person",
         detail: { kind: "profile" },
       },
       {
         id: "email",
         label: "Email",
         sub: profile.email,
-        glyph: "✉",
+        glyph: "mail",
         detail: {
           kind: "link",
           href: `mailto:${profile.email}`,
@@ -65,7 +66,7 @@ export const categories: XmbCategory[] = [
         id: "resume",
         label: "Resume",
         sub: "the cv",
-        glyph: "▤",
+        glyph: "description",
         detail: { kind: "app", route: "/resume", blurb: "Open my resume." },
         action: { type: "route", target: "/resume" },
       },
@@ -74,12 +75,12 @@ export const categories: XmbCategory[] = [
   {
     id: "projects",
     label: "Projects",
-    glyph: "◆",
+    glyph: "grid_view",
     items: projects.map((p) => ({
       id: p.id,
       label: p.title,
       sub: p.tech,
-      glyph: "◆",
+      glyph: "folder",
       detail: { kind: "project", project: p },
       action: p.link
         ? { type: p.internal ? "route" : "external", target: p.link }
@@ -89,25 +90,25 @@ export const categories: XmbCategory[] = [
   {
     id: "experience",
     label: "Experience",
-    glyph: "▣",
+    glyph: "work",
     items: experience.map((r) => ({
       id: r.id,
       label: r.title,
       sub: r.company,
-      glyph: "▣",
+      glyph: "business_center",
       detail: { kind: "role", role: r },
     })),
   },
   {
     id: "play",
     label: "Play",
-    glyph: "▶",
+    glyph: "sports_esports",
     items: [
       {
         id: "hom",
         label: "hॐ",
         sub: "generative art wall",
-        glyph: "❋",
+        glyph: "auto_awesome",
         detail: { kind: "app", route: "/hom", blurb: "A wall of generative art made with p5.js. Press Enter to open." },
         action: { type: "route", target: "/hom" },
       },
@@ -115,7 +116,7 @@ export const categories: XmbCategory[] = [
         id: "prim",
         label: "Prim's Organism",
         sub: "interactive canvas",
-        glyph: "❀",
+        glyph: "blur_on",
         detail: {
           kind: "app",
           route: "/prim",
@@ -128,14 +129,14 @@ export const categories: XmbCategory[] = [
   {
     id: "links",
     label: "Links",
-    glyph: "⌘",
+    glyph: "public",
     items: socials
       .filter((s) => s.id !== "resume")
       .map((s) => ({
         id: s.id,
         label: s.label,
         sub: s.href.replace(/^https?:\/\/(www\.)?/, ""),
-        glyph: socialGlyph[s.id] ?? "⌘",
+        glyph: socialGlyph[s.id] ?? "link",
         detail: {
           kind: "link" as const,
           href: s.href,
@@ -148,12 +149,12 @@ export const categories: XmbCategory[] = [
   {
     id: "settings",
     label: "Settings",
-    glyph: "⚙",
+    glyph: "settings",
     items: [
-      { id: "theme", label: "Theme", glyph: "◐", detail: { kind: "profile" } },
-      { id: "wave", label: "Wave color", glyph: "≈", detail: { kind: "profile" } },
-      { id: "sound", label: "Navigation sound", glyph: "♪", detail: { kind: "profile" } },
-      { id: "motion", label: "Reduce motion", glyph: "❄", detail: { kind: "profile" } },
+      { id: "theme", label: "Theme", glyph: "contrast", detail: { kind: "profile" } },
+      { id: "wave", label: "Wave color", glyph: "waves", detail: { kind: "profile" } },
+      { id: "sound", label: "Navigation sound", glyph: "volume_up", detail: { kind: "profile" } },
+      { id: "motion", label: "Reduce motion", glyph: "motion_photos_off", detail: { kind: "profile" } },
     ],
   },
 ];

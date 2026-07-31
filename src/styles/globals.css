@@ -8,6 +8,27 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "New Rodin";
+  src: url("/fonts/new_rodin_pro_l.otf") format("opentype");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "New Rodin";
+  src: url("/fonts/new_rodin_pro_b.otf") format("opentype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "New Rodin";
+  src: url("/fonts/new_rodin_pro_eb.otf") format("opentype");
+  font-weight: 800;
+  font-display: swap;
+}
+
 html,
 body {
   background: #fff;
