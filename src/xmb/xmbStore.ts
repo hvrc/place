@@ -1,15 +1,23 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { categories } from "@/xmb/xmbData";
+import { groupProjects, type ProjectGroupId } from "@/xmb/projectsMenu";
 
 export type Theme = "dark" | "light";
 
 export interface XmbSettings {
   theme: Theme;
   waveHue: number; // 0-360
-  sound: boolean;
+  uiVolume: number; // 0-100
+  musicVolume: number; // 0-100 (no music source yet)
   reduceMotion: boolean;
 }
+
+const VOLUME_STEPS = [0, 25, 50, 75, 100];
+const nextVolume = (v: number) => {
+  const i = VOLUME_STEPS.indexOf(v);
+  return VOLUME_STEPS[i === -1 ? 2 : (i + 1) % VOLUME_STEPS.length];
+};
 
 interface XmbState {
   categoryIndex: number;
@@ -17,15 +25,27 @@ interface XmbState {
   itemIndexByCategory: Record<number, number>;
   settings: XmbSettings;
 
+  /** When set, the Projects "games menu" for this group is open (drilled in). */
+  openGroup: ProjectGroupId | null;
+  /** Remembered selected project per group. */
+  projectIndexByGroup: Record<string, number>;
+
   moveCategory: (dir: -1 | 1) => void;
   moveItem: (dir: -1 | 1) => void;
   setCategory: (index: number) => void;
   setItem: (index: number) => void;
   currentItemIndex: () => number;
 
+  openProjectGroup: (id: ProjectGroupId) => void;
+  closeProjectGroup: () => void;
+  moveProject: (dir: -1 | 1) => void;
+  setProject: (index: number) => void;
+  currentProjectIndex: () => number;
+
   cycleTheme: () => void;
   cycleWaveHue: (dir: -1 | 1) => void;
-  toggleSound: () => void;
+  cycleUiVolume: () => void;
+  cycleMusicVolume: () => void;
   toggleReduceMotion: () => void;
 }
 
@@ -36,10 +56,13 @@ export const useXmb = create<XmbState>()(
     (set, get) => ({
       categoryIndex: 0,
       itemIndexByCategory: {},
+      openGroup: null,
+      projectIndexByGroup: {},
       settings: {
         theme: "dark",
         waveHue: 205, // classic PSP blue
-        sound: false,
+        uiVolume: 50,
+        musicVolume: 50,
         reduceMotion:
           typeof window !== "undefined" &&
           window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
@@ -75,6 +98,35 @@ export const useXmb = create<XmbState>()(
           };
         }),
 
+      currentProjectIndex: () => {
+        const g = get().openGroup;
+        return g ? get().projectIndexByGroup[g] ?? 0 : 0;
+      },
+
+      openProjectGroup: (id) => set({ openGroup: id }),
+      closeProjectGroup: () => set({ openGroup: null }),
+
+      moveProject: (dir) =>
+        set((s) => {
+          if (!s.openGroup) return {};
+          const count = groupProjects(s.openGroup).length;
+          const current = s.projectIndexByGroup[s.openGroup] ?? 0;
+          const next = clamp(current + dir, 0, count - 1);
+          return { projectIndexByGroup: { ...s.projectIndexByGroup, [s.openGroup]: next } };
+        }),
+
+      setProject: (index) =>
+        set((s) => {
+          if (!s.openGroup) return {};
+          const count = groupProjects(s.openGroup).length;
+          return {
+            projectIndexByGroup: {
+              ...s.projectIndexByGroup,
+              [s.openGroup]: clamp(index, 0, count - 1),
+            },
+          };
+        }),
+
       cycleTheme: () =>
         set((s) => ({
           settings: { ...s.settings, theme: s.settings.theme === "dark" ? "light" : "dark" },
@@ -85,8 +137,11 @@ export const useXmb = create<XmbState>()(
           settings: { ...s.settings, waveHue: (s.settings.waveHue + dir * 30 + 360) % 360 },
         })),
 
-      toggleSound: () =>
-        set((s) => ({ settings: { ...s.settings, sound: !s.settings.sound } })),
+      cycleUiVolume: () =>
+        set((s) => ({ settings: { ...s.settings, uiVolume: nextVolume(s.settings.uiVolume) } })),
+
+      cycleMusicVolume: () =>
+        set((s) => ({ settings: { ...s.settings, musicVolume: nextVolume(s.settings.musicVolume) } })),
 
       toggleReduceMotion: () =>
         set((s) => ({ settings: { ...s.settings, reduceMotion: !s.settings.reduceMotion } })),
@@ -96,6 +151,14 @@ export const useXmb = create<XmbState>()(
       storage: createJSONStorage(() => localStorage),
       // Only persist user settings, not transient navigation position.
       partialize: (s) => ({ settings: s.settings }),
+      // Deep-merge so new setting keys keep their defaults for existing users.
+      merge: (persisted, current) => {
+        const p = persisted as Partial<XmbState> | undefined;
+        return {
+          ...current,
+          settings: { ...current.settings, ...(p?.settings ?? {}) },
+        };
+      },
     }
   )
 );

@@ -1,10 +1,21 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
 /**
- * PSP-style battery indicator: a horizontal body with a terminal cap and three
- * charge bars. `bars` (0–3) sets how many are filled; defaults to full.
- * Inherits color from `currentColor`, so it matches the clock text.
+ * PSP-style battery indicator, flipped so the terminal is on the left.
+ * The three charge bars animate on a loop: 0 -> 1 -> 2 -> 3 -> 0.
  */
-export function XmbBattery({ bars = 3, className }: { bars?: number; className?: string }) {
-  const barX = [3.4, 8.9, 14.4]; // left edge of each of the 3 bars
+export function XmbBattery({ className }: { className?: string }) {
+  const [level, setLevel] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setLevel((l) => (l + 1) % 4), 700);
+    return () => clearInterval(id);
+  }, []);
+
+  // bar left edges, left (terminal side) -> right; fill right -> left
+  const barX = [6.6, 12.1, 17.6];
+
   return (
     <svg
       className={className}
@@ -12,24 +23,16 @@ export function XmbBattery({ bars = 3, className }: { bars?: number; className?:
       width="1.9em"
       height="1.02em"
       fill="none"
-      aria-label={`Battery ${bars} of 3`}
+      aria-label={`Battery ${level} of 3`}
       role="img"
     >
+      {/* terminal cap (left) */}
+      <rect x="0.6" y="5" width="2.4" height="4" rx="1" fill="currentColor" />
       {/* body outline */}
-      <rect
-        x="1"
-        y="2"
-        width="21"
-        height="10"
-        rx="2.4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      {/* terminal cap */}
-      <rect x="23" y="5" width="2.4" height="4" rx="1" fill="currentColor" />
+      <rect x="4" y="2" width="21" height="10" rx="2.4" stroke="currentColor" strokeWidth="1.5" />
       {/* charge bars */}
       {barX.map((x, i) => (
-        <rect
+        <motion.rect
           key={x}
           x={x}
           y="4"
@@ -37,7 +40,9 @@ export function XmbBattery({ bars = 3, className }: { bars?: number; className?:
           height="6"
           rx="1"
           fill="currentColor"
-          opacity={i < bars ? 1 : 0.2}
+          initial={false}
+          animate={{ opacity: i >= barX.length - level ? 1 : 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         />
       ))}
     </svg>

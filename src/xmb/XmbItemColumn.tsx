@@ -2,7 +2,11 @@ import { motion } from "framer-motion";
 import { categories } from "@/xmb/xmbData";
 import { useXmb } from "@/xmb/xmbStore";
 import { CATEGORY_SPACING, CATEGORY_TOP_VH, PIVOT_LEFT } from "./XmbCategoryBar";
+import { XmbIcon } from "./XmbIcon";
 import styles from "./Xmb.module.css";
+
+/** Focus (highlighted) icon height for first-level items. */
+const ITEM_ICON_SIZE = 76;
 
 export const ITEM_SPACING = 122;
 /** Fixed icon cell; independent of category spacing so labels stay close to the icon. */
@@ -14,8 +18,27 @@ export function XmbItemColumn({ onActivate }: { onActivate: (index: number) => v
   const categoryIndex = useXmb((s) => s.categoryIndex);
   const activeItem = useXmb((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
   const setItem = useXmb((s) => s.setItem);
+  const settings = useXmb((s) => s.settings);
 
   const items = categories[categoryIndex].items;
+
+  // Live value shown under each Settings item (the info panel is hidden).
+  const settingSub = (id: string): string | undefined => {
+    if (categories[categoryIndex].id !== "settings") return undefined;
+    switch (id) {
+      case "theme":
+        return settings.theme;
+      case "wave":
+        return `${settings.waveHue}°`;
+      case "uiVolume":
+        return `${settings.uiVolume}%`;
+      case "musicVolume":
+        return `${settings.musicVolume}%`;
+      case "motion":
+        return settings.reduceMotion ? "on" : "off";
+    }
+    return undefined;
+  };
 
   // Resting Y of the active item: one full row below the category bar.
   const pivotTop = `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING}px)`;
@@ -51,17 +74,15 @@ export function XmbItemColumn({ onActivate }: { onActivate: (index: number) => v
                   style={{ height: ITEM_SPACING, paddingLeft: ROW_PAD_LEFT }}
                   aria-current={active}
                 >
-                  <span className={styles.itemIconCell} style={{ width: ITEM_ICON_CELL }}>
-                    <motion.span
-                      className={`material-symbols-rounded ${styles.glyph} ${active ? styles.glyphActive : ""}`}
-                      style={{ fontSize: "4.4rem" }}
-                      initial={false}
-                      animate={{ scale: active ? 1.12 : 0.9, opacity: rowOpacity }}
-                      transition={{ duration: 0.16, ease: "easeOut" }}
-                    >
-                      {item.glyph}
-                    </motion.span>
-                  </span>
+                  <motion.span
+                    className={styles.itemIconCell}
+                    style={{ width: ITEM_ICON_CELL }}
+                    initial={false}
+                    animate={{ opacity: rowOpacity }}
+                    transition={{ duration: 0.16, ease: "easeOut" }}
+                  >
+                    <XmbIcon icon={item.icon} focused={active} size={ITEM_ICON_SIZE} keepSize />
+                  </motion.span>
                   <motion.span
                     className={styles.itemLabelWrap}
                     initial={false}
@@ -69,7 +90,10 @@ export function XmbItemColumn({ onActivate }: { onActivate: (index: number) => v
                     transition={{ duration: 0.16, ease: "easeOut" }}
                   >
                     <span className={styles.itemLabel}>{item.label}</span>
-                    {item.sub && <span className={styles.itemSub}>{item.sub}</span>}
+                    {(() => {
+                      const sub = settingSub(item.id) ?? item.sub;
+                      return sub ? <span className={styles.itemSub}>{sub}</span> : null;
+                    })()}
                   </motion.span>
                 </button>
               </motion.li>

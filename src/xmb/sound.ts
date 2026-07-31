@@ -1,37 +1,24 @@
-// Tiny Web Audio "blip" generator for XMB navigation feedback.
-// Lazily creates a single AudioContext on first use (after a user gesture).
+// XMB navigation sounds. Plays short ogg clips; clones the element per play so
+// rapid navigation can overlap. Gated by the sound setting (see Xmb `play`).
 
-let ctx: AudioContext | null = null;
-
-function getCtx(): AudioContext | null {
-  if (typeof window === "undefined") return null;
-  if (!ctx) {
-    const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AC) return null;
-    ctx = new AC();
-  }
-  if (ctx.state === "suspended") void ctx.resume();
-  return ctx;
+function makePlayer(src: string) {
+  const base = typeof Audio !== "undefined" ? new Audio(src) : null;
+  if (base) base.preload = "auto";
+  return (volume = 0.6) => {
+    if (!base) return;
+    const a = base.cloneNode() as HTMLAudioElement;
+    a.volume = volume;
+    void a.play().catch(() => {});
+  };
 }
 
-function blip(freq: number, duration = 0.06, type: OscillatorType = "sine", gain = 0.05) {
-  const audio = getCtx();
-  if (!audio) return;
-  const osc = audio.createOscillator();
-  const g = audio.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  g.gain.setValueAtTime(0, audio.currentTime);
-  g.gain.linearRampToValueAtTime(gain, audio.currentTime + 0.005);
-  g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
-  osc.connect(g).connect(audio.destination);
-  osc.start();
-  osc.stop(audio.currentTime + duration);
-}
+const up = makePlayer("/sounds/up.ogg");
+const down = makePlayer("/sounds/down.ogg");
 
 export const sfx = {
-  move: () => blip(660, 0.05, "sine", 0.04),
-  category: () => blip(440, 0.07, "triangle", 0.05),
-  enter: () => blip(880, 0.12, "sine", 0.06),
-  back: () => blip(330, 0.09, "sine", 0.05),
+  move: (v = 0.5) => up(v),
+  category: (v = 0.5) => up(v),
+  enter: (v = 0.5) => up(v),
+  /** going back from a selected project (closing a folder) */
+  back: (v = 0.5) => down(v),
 };

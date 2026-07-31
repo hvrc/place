@@ -1,6 +1,7 @@
-import { projects, type Project } from "@/data/projects";
+import { type Project } from "@/data/projects";
 import { experience, type Role } from "@/data/experience";
 import { socials, profile } from "@/data/socials";
+import { projectGroups, type ProjectGroupId } from "@/xmb/projectsMenu";
 
 /** What the info panel renders for a given item. */
 export type XmbDetail =
@@ -8,14 +9,15 @@ export type XmbDetail =
   | { kind: "project"; project: Project }
   | { kind: "role"; role: Role }
   | { kind: "link"; href: string; internal?: boolean; blurb: string }
-  | { kind: "app"; route: string; blurb: string };
+  | { kind: "app"; route: string; blurb: string }
+  | { kind: "group"; groupId: ProjectGroupId };
 
 export interface XmbItem {
   id: string;
   label: string;
   sub?: string;
-  /** Material Symbols (rounded) icon name shown as the item icon. */
-  glyph: string;
+  /** Authentic PSP icon stem, e.g. "game" -> /icons/tex_game.32bit.png */
+  icon: string;
   detail: XmbDetail;
   /** Primary action target: route (internal) or url (external). */
   action?: { type: "route" | "external"; target: string };
@@ -24,37 +26,38 @@ export interface XmbItem {
 export interface XmbCategory {
   id: string;
   label: string;
-  /** Material Symbols (rounded) icon name. */
-  glyph: string;
+  /** Authentic PSP icon stem for the category (horizontal list). */
+  icon: string;
   items: XmbItem[];
 }
 
-const socialGlyph: Record<string, string> = {
-  instagram: "photo_camera",
-  youtube: "smart_display",
-  github: "code",
-  linkedin: "work",
-  resume: "description",
+// Map each social to the closest authentic PSP icon.
+const socialIcon: Record<string, string> = {
+  instagram: "camera",
+  youtube: "video",
+  github: "browser",
+  linkedin: "network",
+  resume: "savedata",
 };
 
 export const categories: XmbCategory[] = [
   {
     id: "profile",
     label: "Profile",
-    glyph: "person",
+    icon: "photo",
     items: [
       {
         id: "about",
         label: "About",
         sub: "who is this",
-        glyph: "person",
+        icon: "manual",
         detail: { kind: "profile" },
       },
       {
         id: "email",
         label: "Email",
         sub: profile.email,
-        glyph: "mail",
+        icon: "sharing",
         detail: {
           kind: "link",
           href: `mailto:${profile.email}`,
@@ -66,7 +69,7 @@ export const categories: XmbCategory[] = [
         id: "resume",
         label: "Resume",
         sub: "the cv",
-        glyph: "description",
+        icon: "savedata",
         detail: { kind: "app", route: "/resume", blurb: "Open my resume." },
         action: { type: "route", target: "/resume" },
       },
@@ -75,40 +78,39 @@ export const categories: XmbCategory[] = [
   {
     id: "projects",
     label: "Projects",
-    glyph: "grid_view",
-    items: projects.map((p) => ({
-      id: p.id,
-      label: p.title,
-      sub: p.tech,
-      glyph: "folder",
-      detail: { kind: "project", project: p },
-      action: p.link
-        ? { type: p.internal ? "route" : "external", target: p.link }
-        : undefined,
+    icon: "game",
+    // grouped like the PSP "Game" menu; activating a group drills into its thumbnails
+    items: projectGroups.map((g) => ({
+      id: g.id,
+      label: g.label,
+      sub: `${g.projectIds.length} projects`,
+      icon: g.icon,
+      detail: { kind: "group", groupId: g.id },
     })),
   },
   {
     id: "experience",
     label: "Experience",
-    glyph: "work",
+    // the one section that uses Google Material Symbols (rendered low-res)
+    icon: "g:workspace_premium",
     items: experience.map((r) => ({
       id: r.id,
       label: r.title,
       sub: r.company,
-      glyph: "business_center",
+      icon: "g:work",
       detail: { kind: "role", role: r },
     })),
   },
   {
     id: "play",
     label: "Play",
-    glyph: "sports_esports",
+    icon: "video",
     items: [
       {
         id: "hom",
         label: "hॐ",
         sub: "generative art wall",
-        glyph: "auto_awesome",
+        icon: "camera",
         detail: { kind: "app", route: "/hom", blurb: "A wall of generative art made with p5.js. Press Enter to open." },
         action: { type: "route", target: "/hom" },
       },
@@ -116,7 +118,7 @@ export const categories: XmbCategory[] = [
         id: "prim",
         label: "Prim's Organism",
         sub: "interactive canvas",
-        glyph: "blur_on",
+        icon: "game",
         detail: {
           kind: "app",
           route: "/prim",
@@ -129,14 +131,14 @@ export const categories: XmbCategory[] = [
   {
     id: "links",
     label: "Links",
-    glyph: "public",
+    icon: "network",
     items: socials
       .filter((s) => s.id !== "resume")
       .map((s) => ({
         id: s.id,
         label: s.label,
         sub: s.href.replace(/^https?:\/\/(www\.)?/, ""),
-        glyph: socialGlyph[s.id] ?? "link",
+        icon: socialIcon[s.id] ?? "network",
         detail: {
           kind: "link" as const,
           href: s.href,
@@ -149,12 +151,14 @@ export const categories: XmbCategory[] = [
   {
     id: "settings",
     label: "Settings",
-    glyph: "settings",
+    icon: "system",
+    // these map 1:1 to the PSP's own settings (cnf_*) icons
     items: [
-      { id: "theme", label: "Theme", glyph: "contrast", detail: { kind: "profile" } },
-      { id: "wave", label: "Wave color", glyph: "waves", detail: { kind: "profile" } },
-      { id: "sound", label: "Navigation sound", glyph: "volume_up", detail: { kind: "profile" } },
-      { id: "motion", label: "Reduce motion", glyph: "motion_photos_off", detail: { kind: "profile" } },
+      { id: "theme", label: "Theme", icon: "cnf_theme", detail: { kind: "profile" } },
+      { id: "wave", label: "Wave color", icon: "cnf_video", detail: { kind: "profile" } },
+      { id: "uiVolume", label: "UI volume", icon: "cnf_sound", detail: { kind: "profile" } },
+      { id: "musicVolume", label: "Music volume", icon: "music", detail: { kind: "profile" } },
+      { id: "motion", label: "Reduce motion", icon: "cnf_save_energy", detail: { kind: "profile" } },
     ],
   },
 ];

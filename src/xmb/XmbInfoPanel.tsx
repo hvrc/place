@@ -135,10 +135,15 @@ function SettingsDetail({
       value: `hue ${settings.waveHue}°`,
       hint: "Press ← / → or Enter to shift the wave hue",
     },
-    sound: {
-      title: "Navigation sound",
-      value: settings.sound ? "on" : "off",
-      hint: "Press Enter to toggle blips",
+    uiVolume: {
+      title: "UI volume",
+      value: `${settings.uiVolume}%`,
+      hint: "Press Enter to cycle the UI sound volume",
+    },
+    musicVolume: {
+      title: "Music volume",
+      value: `${settings.musicVolume}%`,
+      hint: "Press Enter to cycle the music volume",
     },
     motion: {
       title: "Reduce motion",
