@@ -5,8 +5,13 @@ import type { MenuModel } from "@engine/model/types";
 
 export type { Theme };
 
+/** `soft` upscales low-res PSP art and blurs the type, as the handheld did;
+ *  `crisp` renders Google icons and text at native resolution. */
+export type Fidelity = "soft" | "crisp";
+
 export interface MenuSettings {
   theme: Theme;
+  fidelity: Fidelity;
   colorIndex: number; // index into model.palette
   uiVolume: number; // 0-100
 }
@@ -52,6 +57,7 @@ export interface MenuState {
   drillActionTargets: () => string[];
 
   cycleUiVolume: () => void;
+  cycleFidelity: () => void;
 
   openColor: () => void;
   closeColor: () => void;
@@ -93,6 +99,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
           theme: themeForColor(palette[defaultColor]),
           colorIndex: defaultColor,
           uiVolume: 50,
+          fidelity: "soft",
         },
 
         currentItemIndex: () => get().itemIndexByCategory[get().categoryIndex] ?? 0,
@@ -210,6 +217,11 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
           });
           return moved;
         },
+
+        cycleFidelity: () =>
+          set((s) => ({
+            settings: { ...s.settings, fidelity: s.settings.fidelity === "soft" ? "crisp" : "soft" },
+          })),
 
         cycleUiVolume: () =>
           set((s) => ({ settings: { ...s.settings, uiVolume: nextVolume(s.settings.uiVolume) } })),

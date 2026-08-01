@@ -38,7 +38,7 @@ export function PspIcon({
   /** the pointer is over this icon's row — show the lit look */
   hovered?: boolean;
 }) {
-  const light = useIconLight({ focused, hovered, throb, dimOpacity: DIM });
+  const light = useIconLight({ focused, hovered, throb, keepSize, dimOpacity: DIM });
 
   return (
     <motion.img
@@ -55,8 +55,8 @@ export function PspIcon({
         imageRendering: "auto",
       }}
       initial={false}
-      animate={{ scale: focused ? 1 : keepSize ? 1 : 0.78, ...light.animate }}
-      transition={{ duration: 0.16, ease: "easeOut", ...light.transition }}
+      animate={light.animate}
+      transition={light.transition}
     />
   );
 }

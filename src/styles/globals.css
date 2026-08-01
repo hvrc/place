@@ -29,6 +29,13 @@
   font-display: swap;
 }
 
+/* Soft-focus strength for the menu's type; MenuShell overrides it per
+   fidelity and layout scale. Declared here so it has one default, and so the
+   nodes the menu portals out to <body> still resolve it. */
+:root {
+  --soft-blur: 0.45px;
+}
+
 html,
 body {
   background: #fff;

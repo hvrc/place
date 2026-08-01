@@ -2,41 +2,48 @@ import { useReducedMotion } from "framer-motion";
 import { useMenu } from "@engine/state/MenuContext";
 import { iconFilter, THROB_SEC, LIGHT_SEC } from "./iconFilter";
 
+/** Unfocused icons sit back at ~78% unless the caller keeps them full size. */
+const BODY_SCALE = 0.78;
+/** How long the size change takes; the light has its own, slower timing. */
+const RESIZE_SEC = 0.16;
+
 export interface IconLight {
-  /** true while focused or hovered — the caller uses it for its own opacity */
+  /** true while focused or hovered — callers use it for their own styling */
   on: boolean;
-  /** Framer `animate` values for opacity + filter */
-  animate: { opacity: number | number[]; filter: string | string[] };
-  /** matching per-key `transition` */
-  transition: {
-    opacity: Record<string, unknown>;
-    filter: Record<string, unknown>;
-  };
+  /** the complete Framer `animate` for an icon: size plus the two looks */
+  animate: { scale: number; opacity: number | number[]; filter: string | string[] };
+  /** the matching `transition` */
+  transition: Record<string, unknown>;
 }
 
 /**
  * An XMB icon only ever wears two looks: dim (greyed, no glow) and lit (bright
  * white with a glow). This resolves which one applies, and how to get there —
  *
- *   focused, in a column  → pulses between the two
+ *   focused, in a column   → pulses between the two
  *   focused, anywhere else → holds lit
  *   hovered                → holds lit, so it previews what clicking would do
  *   otherwise              → dim
  *
- * `prefix` is prepended to every filter (MaterialIcon softens its canvas with a
- * blur), and `dimOpacity` differs per renderer because the two icon sets don't
- * sit back equally.
+ * It returns the whole animate/transition pair rather than just the light, so
+ * every renderer moves and lights identically — they only differ in what they
+ * draw. `prefix` is prepended to every filter (the soft raster softens itself
+ * with a blur) and `dimOpacity` differs per renderer, because the two icon sets
+ * don't sit back equally.
  */
 export function useIconLight({
   focused,
   hovered = false,
   throb = false,
+  keepSize = false,
   dimOpacity,
   prefix = "",
 }: {
   focused: boolean;
   hovered?: boolean;
   throb?: boolean;
+  /** stay full size when unfocused (only dim, don't shrink) */
+  keepSize?: boolean;
   dimOpacity: number;
   prefix?: string;
 }): IconLight {
@@ -55,9 +62,10 @@ export function useIconLight({
   return {
     on,
     animate: {
+      scale: focused || keepSize ? 1 : BODY_SCALE,
       opacity: pulsing ? [dimOpacity, 1] : on ? 1 : dimOpacity,
       filter: pulsing ? [dim, lit] : on ? lit : dim,
     },
-    transition: { opacity: timing, filter: timing },
+    transition: { duration: RESIZE_SEC, ease: "easeOut", opacity: timing, filter: timing },
   };
 }

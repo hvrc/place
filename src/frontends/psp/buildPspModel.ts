@@ -10,6 +10,24 @@ import type {
 import { projectGroups, groupProjects } from "./projectGroups";
 import { pspPalette, pspDefaultColor } from "./pspTheme";
 
+/**
+ * Google stand-ins for the PSP icons, used when the menu runs crisp (that mode
+ * is Material-only — the PSP art exists solely at handheld resolution).
+ */
+const iconAlt: Record<string, string> = {
+  manual: "g:info",
+  umd: "g:album",
+  system: "g:business_center",
+  network: "g:public",
+  game: "g:sports_esports",
+  music: "g:music_note",
+  photo: "g:photo_camera",
+  video: "g:play_circle",
+  savedata: "g:save",
+  cnf_theme: "g:palette",
+  cnf_sound: "g:volume_up",
+};
+
 // Per-role Google Material Symbols for the Experience section.
 const experienceIcon: Record<string, string> = {
   iseehear: "g:genetics",
@@ -147,9 +165,10 @@ export function buildPspModel(): MenuModel {
       items: [
         { id: "wave", label: "Color", icon: "cnf_theme", setting: "color" },
         { id: "uiVolume", label: "UI volume", icon: "cnf_sound", setting: "volume" },
+        { id: "fidelity", label: "Fidelity", icon: "g:blur_on", setting: "fidelity" },
       ],
     },
   ];
 
-  return { categories, groups, palette: pspPalette, defaultColorHex: pspDefaultColor };
+  return { categories, groups, palette: pspPalette, defaultColorHex: pspDefaultColor, iconAlt };
 }

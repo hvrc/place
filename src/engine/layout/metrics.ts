@@ -14,6 +14,19 @@ const COMPACT_W = 720;
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
+/** Soft-focus blur at full size, in px. */
+const SOFT_BLUR = 0.45;
+
+/**
+ * How hard to blur the soft look at a given layout scale. A flat value eats far
+ * more of a glyph once icons and type are phone-sized, so it tracks the scale —
+ * text and icons both read this, which is what keeps them softened by the same
+ * amount.
+ */
+export function softBlurPx(scale: number): number {
+  return SOFT_BLUR * scale;
+}
+
 export interface Metrics {
   /** px multiplier applied to the design values (1 at or above the design size) */
   scale: number;

@@ -16,6 +16,7 @@ import { Hints } from "@engine/chrome/Hints";
 import { ColorPicker } from "@engine/settings/ColorPicker";
 import { useSound } from "@engine/sound/useSound";
 import { copyText, openTab } from "@engine/lib/browser";
+import { softBlurPx, useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
 // Runs once per full page load (module-scoped so SPA re-navigation doesn't
@@ -76,23 +77,51 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const store = useMenuStore();
   const { categories } = useMenuModel();
   const { play } = useSound();
+  const { scale } = useMetrics();
 
   const theme = useMenu((s) => s.settings.theme);
+  const fidelity = useMenu((s) => s.settings.fidelity);
   const openGroup = useMenu((s) => s.openGroup);
   const colorOpen = useMenu((s) => s.colorOpen);
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
 
-  // The menu is position:fixed, so anything iOS exposes past its edges is the
-  // document's own background — white by default. Paint it the menu's base
-  // colour while mounted, and hand it back to the other routes on the way out.
+  // Paint the whole document the menu's base colour, not just the menu. iOS
+  // exposes strips past a fixed element — the safe areas, and the gap the
+  // toolbar leaves as it collapses — and whatever shows there is the document's
+  // background (white by default) plus the browser's own chrome, which Safari
+  // tints from theme-color. Cover all three, and hand them back to the other
+  // routes on the way out.
   useEffect(() => {
-    const previous = document.body.style.background;
-    document.body.style.background = theme === "dark" ? "#0c0c12" : "#e9e8ef";
+    const base = theme === "dark" ? "#0c0c12" : "#e9e8ef";
+    const root = document.documentElement;
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    const previous = {
+      html: root.style.background,
+      body: document.body.style.background,
+      meta: meta?.content,
+    };
+
+    root.style.background = base;
+    document.body.style.background = base;
+    if (meta) meta.content = base;
+
     return () => {
-      document.body.style.background = previous;
+      root.style.background = previous.html;
+      document.body.style.background = previous.body;
+      if (meta && previous.meta !== undefined) meta.content = previous.meta;
     };
   }, [theme]);
+
+  // Set on <body> rather than .root because the project meta is portalled out
+  // to <body> and so can't inherit the variable from inside the menu.
+  useEffect(() => {
+    const blur = fidelity === "crisp" ? "0px" : `${softBlurPx(scale).toFixed(2)}px`;
+    document.body.style.setProperty("--soft-blur", blur);
+    return () => {
+      document.body.style.removeProperty("--soft-blur");
+    };
+  }, [fidelity, scale]);
 
   // As soon as the user navigates off the initial category, stop the intro so
   // nothing is held back on a timer — content just appears as it's available.
@@ -122,6 +151,11 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       }
       if (item.setting === "volume") {
         s.cycleUiVolume();
+        play("enter");
+        return;
+      }
+      if (item.setting === "fidelity") {
+        s.cycleFidelity();
         play("enter");
         return;
       }

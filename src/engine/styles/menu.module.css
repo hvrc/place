@@ -197,7 +197,7 @@
   border-top: 11px solid transparent;
   border-bottom: 11px solid transparent;
   border-right: 15px solid #ffffff;
-  filter: blur(0.45px) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  filter: blur(var(--soft-blur)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
 .pmMeta {
@@ -212,7 +212,7 @@
   font-weight: 700;
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* one-liner between the title and its rule */
@@ -223,7 +223,7 @@
   color: #ffffff;
   opacity: 0.75;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* XMB info rule: divides the title from the actions beneath it (width inline,
@@ -281,7 +281,7 @@
   left: 0;
   right: 0;
   top: auto;
-  bottom: 3.2rem;
+  bottom: calc(3.2rem + env(safe-area-inset-bottom, 0px));
   z-index: 30;
   transform: none;
   padding: 0 1.1rem;
@@ -304,7 +304,7 @@
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
   border-left: 17px solid #ffffff;
-  filter: blur(0.45px) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  filter: blur(var(--soft-blur)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
 /* soft top/bottom vignette to seat the bar like the real XMB */
@@ -359,7 +359,7 @@
   opacity: 0;
   transition: opacity 0.18s ease;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 .catButton:hover .catLabel {
@@ -446,7 +446,7 @@
   white-space: nowrap;
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 .itemSub {
@@ -461,7 +461,7 @@
   text-overflow: ellipsis;
   color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* wrapper handles positioning/centering so Framer can own the panel transform */
@@ -558,7 +558,7 @@
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   /* same soft, low-res upscale feel as the Google icons */
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* ===== wave colour picker (PSP-style right sidebar) ===== */
@@ -630,7 +630,7 @@
   letter-spacing: 0.4em;
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* focused item's note, set right of the column; left/top anchored inline */
@@ -656,7 +656,7 @@
   /* the dark shadow keeps it legible over any wallpaper; the white bloom is the
      lit glow the active icons carry, so the note reads as part of that state */
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 11px rgba(255, 255, 255, 0.5);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* stacked lines, all hanging off the same left edge */
@@ -669,7 +669,7 @@
 /* phone: centred horizontally still, but dropped clear of the item column */
 .noteCompact {
   align-items: flex-end;
-  padding-bottom: 3.6rem;
+  padding-bottom: calc(5.2rem + env(safe-area-inset-bottom, 0px));
   font-size: 1.05rem;
 }
 
@@ -706,7 +706,7 @@
   color: #ffffff;
   opacity: 0.72;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  filter: blur(0.45px);
+  filter: blur(var(--soft-blur));
 }
 
 /* PSP-style battery SVG; sized in em so it tracks the clock font-size */
@@ -726,14 +726,14 @@
 @media (max-width: 720px) {
   /* the wordmark and the clock were colliding in the middle of the top edge */
   .brand {
-    top: 0.7rem;
-    left: 0.9rem;
+    top: calc(0.7rem + env(safe-area-inset-top, 0px));
+    left: calc(0.9rem + env(safe-area-inset-left, 0px));
     font-size: 0.82rem;
     letter-spacing: 0.22em;
   }
   .clock {
-    top: 0.7rem;
-    right: 0.9rem;
+    top: calc(0.7rem + env(safe-area-inset-top, 0px));
+    right: calc(0.9rem + env(safe-area-inset-right, 0px));
     gap: 0.45rem;
     font-size: 0.82rem;
   }
@@ -778,8 +778,8 @@
   }
 
   .hints {
-    bottom: 0.7rem;
-    right: 0.9rem;
+    bottom: calc(1.3rem + env(safe-area-inset-bottom, 0px));
+    right: calc(0.9rem + env(safe-area-inset-right, 0px));
     font-size: 0.66rem;
     letter-spacing: 0.05em;
   }

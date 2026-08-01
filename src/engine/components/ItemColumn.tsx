@@ -22,6 +22,7 @@ export function ItemColumn({
   const activeItem = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
   const colorIndex = useMenu((s) => s.settings.colorIndex);
   const uiVolume = useMenu((s) => s.settings.uiVolume);
+  const fidelity = useMenu((s) => s.settings.fidelity);
   const setItem = useMenu((s) => s.setItem);
   const { play } = useSound();
   const { hovered, hoverProps } = useHoverIndex();
@@ -41,6 +42,7 @@ export function ItemColumn({
   const liveSub = (item: MenuItem): string | undefined => {
     if (item.setting === "color") return `#${palette[colorIndex] ?? ""}`;
     if (item.setting === "volume") return `${uiVolume}%`;
+    if (item.setting === "fidelity") return fidelity === "soft" ? "Soft" : "Crisp";
     return item.sub;
   };
 
