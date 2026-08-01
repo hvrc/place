@@ -25,6 +25,13 @@ export interface MenuState {
   /** Whether the wave-colour picker (right-side swatches) is open. */
   colorOpen: boolean;
 
+  /** Transient sub-threshold scroll offset (screen px) for fine "scrub" feel:
+   *  the row/column follows the scroll continuously; the selection only commits
+   *  when the accumulated delta crosses the threshold, then this springs back. */
+  scrubX: number;
+  scrubY: number;
+  setScrub: (x: number, y: number) => void;
+
   /** move functions return whether the selection actually changed (false at ends). */
   moveCategory: (dir: -1 | 1) => boolean;
   moveItem: (dir: -1 | 1) => boolean;
@@ -72,6 +79,8 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
         openGroup: null,
         itemIndexByGroup: {},
         colorOpen: false,
+        scrubX: 0,
+        scrubY: 0,
         settings: {
           theme: themeForColor(palette[defaultColor]),
           colorIndex: defaultColor,
@@ -151,6 +160,8 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
 
         cycleUiVolume: () =>
           set((s) => ({ settings: { ...s.settings, uiVolume: nextVolume(s.settings.uiVolume) } })),
+
+        setScrub: (x, y) => set({ scrubX: x, scrubY: y }),
 
         openColor: () => set({ colorOpen: true }),
         closeColor: () => set({ colorOpen: false }),

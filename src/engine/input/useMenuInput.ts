@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useMenuStore } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
+import { CATEGORY_SPACING, ITEM_SPACING, THUMB_SPACING } from "@engine/layout/metrics";
 
 interface InputHandlers {
   /** activate the currently focused first-level item */
@@ -9,9 +10,10 @@ interface InputHandlers {
   openDrillItem: () => void;
 }
 
-// accumulated pixels per move (higher = less sensitive) / min ms between moves
+// accumulated pixels per move (higher = less sensitive)
 const STEP = 85;
-const COOLDOWN = 160;
+// ms of scroll inactivity after which the sub-threshold scrub springs back
+const SETTLE_MS = 140;
 
 /**
  * All menu input in one place: keyboard (←/→/↑/↓/Enter/Esc), wheel + trackpad
@@ -23,7 +25,7 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
   const store = useMenuStore();
   const { play } = useSound();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const wheel = useRef({ ax: 0, ay: 0, lastMove: 0, lastEvt: 0 });
+  const wheel = useRef({ ax: 0, ay: 0, lastEvt: 0, settle: 0 });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -107,6 +109,17 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
     return () => window.removeEventListener("keydown", onKey);
   }, [store, play, activate, openDrillItem]);
 
+  // After scrolling stops, spring the sub-threshold scrub back to rest.
+  const scheduleSettle = () => {
+    const w = wheel.current;
+    if (w.settle) clearTimeout(w.settle);
+    w.settle = window.setTimeout(() => {
+      w.ax = 0;
+      w.ay = 0;
+      store.getState().setScrub(0, 0);
+    }, SETTLE_MS);
+  };
+
   const onWheel = (e: React.WheelEvent) => {
     const now = performance.now();
     const w = wheel.current;
@@ -126,33 +139,59 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
     w.ax += dx;
     w.ay += dy;
 
-    if (now - w.lastMove < COOLDOWN) return;
     const s = store.getState();
-    const horizontal = Math.abs(w.ax) > Math.abs(w.ay);
 
+    // colour picker keeps the simple discrete behaviour
     if (s.colorOpen) {
-      if (!horizontal && Math.abs(w.ay) >= STEP) {
-        if (s.moveColor(w.ay > 0 ? 1 : -1)) play("move");
-        w.ax = 0;
-        w.ay = 0;
-        w.lastMove = now;
+      while (Math.abs(w.ay) >= STEP) {
+        const dir = w.ay > 0 ? 1 : -1;
+        if (s.moveColor(dir)) play("move");
+        w.ay -= dir * STEP;
       }
+      w.ax = 0;
       return;
     }
 
-    if (!horizontal && Math.abs(w.ay) >= STEP) {
-      const dir = w.ay > 0 ? 1 : -1;
-      const moved = s.openGroup ? s.moveInDrill(dir) : s.moveItem(dir);
-      if (moved) play("move");
-      w.ax = 0;
+    const horizontal = Math.abs(w.ax) > Math.abs(w.ay);
+
+    if (horizontal && !s.openGroup) {
+      // categories: the row follows the scroll; a step commits at the threshold
       w.ay = 0;
-      w.lastMove = now;
-    } else if (horizontal && Math.abs(w.ax) >= STEP) {
-      if (!s.openGroup && s.moveCategory(w.ax > 0 ? 1 : -1)) play("category");
+      let blocked = false;
+      while (Math.abs(w.ax) >= STEP) {
+        const dir = w.ax > 0 ? 1 : -1;
+        if (s.moveCategory(dir)) {
+          play("category");
+          w.ax -= dir * STEP;
+        } else {
+          blocked = true;
+          break;
+        }
+      }
+      if (blocked) w.ax = 0; // at an end: don't drag past it
+      s.setScrub(-(w.ax / STEP) * CATEGORY_SPACING, 0);
+    } else if (!horizontal) {
+      // items (or drill leaves): the column follows the scroll; commit at threshold
       w.ax = 0;
-      w.ay = 0;
-      w.lastMove = now;
+      const drill = !!s.openGroup;
+      let blocked = false;
+      while (Math.abs(w.ay) >= STEP) {
+        const dir = w.ay > 0 ? 1 : -1;
+        const moved = drill ? s.moveInDrill(dir) : s.moveItem(dir);
+        if (moved) {
+          play("move");
+          w.ay -= dir * STEP;
+        } else {
+          blocked = true;
+          break;
+        }
+      }
+      if (blocked) w.ay = 0;
+      const spacing = drill ? THUMB_SPACING : ITEM_SPACING;
+      s.setScrub(0, -(w.ay / STEP) * spacing);
     }
+
+    scheduleSettle();
   };
 
   const onTouchStart = (e: React.TouchEvent) => {

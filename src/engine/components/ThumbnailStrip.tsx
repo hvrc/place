@@ -54,6 +54,8 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
 
   const items = groups[groupId]?.items ?? [];
   const drilled = openGroup === groupId;
+  // sub-threshold scrub only applies to the drilled-in strip (its leaves scroll)
+  const scrubY = useMenu((s) => (s.openGroup === groupId ? s.scrubY : 0));
   // when the active thumbnail expands, push its neighbours out by the extra
   // half-height so the visual gap around it matches the gap between the rest
   const push = drilled ? (THUMB_H * (THUMB_ACTIVE_SCALE - 1)) / 2 : 0;
@@ -88,7 +90,7 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               zIndex: highlight ? 30 : 1,
             }}
             initial={false}
-            animate={{ y: offset * THUMB_SPACING + Math.sign(offset) * push }}
+            animate={{ y: offset * THUMB_SPACING + Math.sign(offset) * push + scrubY }}
             transition={{ type: "spring", stiffness: 520, damping: 40 }}
           >
             {highlight && <span className={styles.pmTriangle} />}
