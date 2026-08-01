@@ -22,7 +22,6 @@ export interface IntroStagger {
 export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | null }) {
   const { categories } = useMenuModel();
   const categoryIndex = useMenu((s) => s.categoryIndex);
-  const scrubX = useMenu((s) => s.scrubX);
   const setCategory = useMenu((s) => s.setCategory);
   const { play } = useSound();
 
@@ -35,7 +34,7 @@ export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | nu
         zIndex: 30,
       }}
       initial={false}
-      animate={{ x: -categoryIndex * CATEGORY_SPACING + scrubX }}
+      animate={{ x: -categoryIndex * CATEGORY_SPACING }}
       transition={{ type: "spring", stiffness: 520, damping: 38 }}
     >
       {categories.map((cat, i) => {
