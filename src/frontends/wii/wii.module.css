@@ -189,8 +189,10 @@
   place-items: center;
 }
 
-.art video,
-.art img {
+/* Direct children only: the demo reel and the screenshot fill the tile, but the
+   company logo watermarked inside a drawn tile must keep its own box. */
+.art > video,
+.art > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -228,11 +230,18 @@
   letter-spacing: 0.03em;
 }
 
+/* Explicit width/height, not insets: Tailwind's preflight sets `height: auto`
+   on every img, which wins over an inset-derived box and lets the logo grow
+   past the tile. */
 .drawnLogo {
   position: absolute;
-  inset: 22% 24%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 38%;
   object-fit: contain;
-  opacity: 0.13;
+  opacity: 0.14;
   filter: grayscale(1);
 }
 
