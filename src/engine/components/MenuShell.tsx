@@ -28,19 +28,23 @@ let introPlayed = false;
  */
 export function MenuShell({ wordmark }: { wordmark: string }) {
   const [introActive, setIntroActive] = useState(!introPlayed);
+  const endIntro = () => {
+    if (introPlayed) return;
+    introPlayed = true;
+    setIntroActive(false);
+  };
   useEffect(() => {
     if (introPlayed) return;
-    const t = setTimeout(() => {
-      introPlayed = true;
-      setIntroActive(false);
-    }, 2400);
+    const t = setTimeout(endIntro, 1800);
     return () => clearTimeout(t);
   }, []);
 
-  // Per-element stagger (first load only): category icons cascade left→right,
-  // then — once the row is done — the column items cascade top→down.
-  const catIntro = introActive ? { base: 0.85, step: 0.1 } : null;
-  const colIntro = introActive ? { base: 1.5, step: 0.09 } : null;
+  // The ONLY artificial staggering is the first-load reveal of the essentials:
+  // category icons cascade left→right, then — once the row is done — the first
+  // column's items cascade top→down. Everything past that appears as available
+  // (no timers), in natural order.
+  const catIntro = introActive ? { base: 0.5, step: 0.08 } : null;
+  const colIntro = introActive ? { base: 1.1, step: 0.08 } : null;
 
   // Staggered fade-in props; a no-op (renders straight to visible) once the
   // intro has played, so nothing re-animates on later re-renders / drill toggles.
@@ -63,6 +67,13 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const colorOpen = useMenu((s) => s.colorOpen);
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
+
+  // As soon as the user navigates off the initial category, stop the intro so
+  // nothing is held back on a timer — content just appears as it's available.
+  useEffect(() => {
+    if (categoryIndex !== 0) endIntro();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryIndex]);
 
   // Thumbnails to show: the open group (drilled), or — while browsing a category
   // whose items drill in — the focused item's group (previewed).
@@ -119,15 +130,15 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <motion.div {...fadeIn(0, 0.7)}>
+      <motion.div {...fadeIn(0, 0.6)}>
         <Wave />
       </motion.div>
       <Backdrop />
 
-      <motion.div {...fadeIn(0.45)}>
+      <motion.div {...fadeIn(0.3)}>
         <Wordmark text={wordmark} />
       </motion.div>
-      <motion.div {...fadeIn(0.7)}>
+      <motion.div {...fadeIn(0.45)}>
         <Clock />
       </motion.div>
 

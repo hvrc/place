@@ -63,9 +63,10 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   return (
     <motion.div
       className={styles.pmThumbs}
-      // keep the slide (x); the per-thumbnail reveal below handles the fade-in
-      initial={{ x: drilled ? 0 : previewShift }}
-      animate={{ x: drilled ? 0 : previewShift }}
+      // appears as available (after the folder column); a quick group fade, no
+      // artificial per-item timeline
+      initial={{ opacity: 0, x: drilled ? 0 : previewShift }}
+      animate={{ opacity: 1, x: drilled ? 0 : previewShift }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.28, ease: "easeInOut" }}
     >
@@ -86,13 +87,9 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               top: `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP + ITEM_SPACING / 2 - THUMB_H / 2}px)`,
               zIndex: highlight ? 30 : 1,
             }}
-            initial={{ opacity: 0, y: offset * THUMB_SPACING + Math.sign(offset) * push }}
-            animate={{ opacity: 1, y: offset * THUMB_SPACING + Math.sign(offset) * push }}
-            transition={{
-              y: { type: "spring", stiffness: 520, damping: 40 },
-              // reveal thumbnails in order (first, then next, then next)
-              opacity: { delay: i * 0.06, duration: 0.3, ease: "easeOut" },
-            }}
+            initial={false}
+            animate={{ y: offset * THUMB_SPACING + Math.sign(offset) * push }}
+            transition={{ type: "spring", stiffness: 520, damping: 40 }}
           >
             {highlight && <span className={styles.pmTriangle} />}
             <motion.button
