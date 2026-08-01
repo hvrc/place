@@ -77,7 +77,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const store = useMenuStore();
   const { categories } = useMenuModel();
   const { play } = useSound();
-  const { scale, compact } = useMetrics();
+  const { scale, compact, density } = useMetrics();
 
   const theme = useMenu((s) => s.settings.theme);
   const fidelity = useMenu((s) => s.settings.fidelity);
@@ -112,6 +112,17 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       if (meta && previous.meta !== undefined) meta.content = previous.meta;
     };
   }, [theme]);
+
+  // The rem half of the layout density (see DENSITY in metrics.ts): rem is
+  // root-relative by definition, so this can't be scoped with a selector — set
+  // it while the menu is mounted and give it back to the other routes after.
+  useEffect(() => {
+    const previous = document.documentElement.style.fontSize;
+    document.documentElement.style.fontSize = `${(density * 100).toFixed(2)}%`;
+    return () => {
+      document.documentElement.style.fontSize = previous;
+    };
+  }, [density]);
 
   // `none`, not a smaller radius, on phones: the labels that read as mushy all
   // sit inside transformed rows, and a filtered layer inside a transformed

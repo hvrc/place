@@ -11,6 +11,15 @@ const DESIGN_H = 760;
 const MIN_SCALE = 0.5;
 /** Under this width the note can't sit beside the column, so the menu rearranges. */
 const COMPACT_W = 720;
+/**
+ * Above that width the menu is drawn this much smaller than the design — it
+ * reads better dense, and this is the same look as viewing it at 67% browser
+ * zoom. Browser zoom shrinks the px layout AND the rem type together, so this
+ * has to do both: metricsFor folds it into `scale`, and MenuShell applies the
+ * matching root font-size. Phones are left at 1 — they're already at MIN_SCALE
+ * and any denser is unreadable.
+ */
+const DENSITY = 0.67;
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
@@ -30,6 +39,9 @@ export function softBlurPx(scale: number): number {
 export interface Metrics {
   /** px multiplier applied to the design values (1 at or above the design size) */
   scale: number;
+  /** how much smaller than the design the menu is drawn — see DENSITY. The rem
+   *  type has to follow this or it won't match the px layout. */
+  density: number;
   /** narrow screen: the note moves out from beside the item column */
   compact: boolean;
 
@@ -80,7 +92,10 @@ export function lengthToPx(value: string, width: number): number {
 
 export function metricsFor(w: number, h: number): Metrics {
   const compact = w < COMPACT_W;
-  const scale = clamp(Math.min(w / DESIGN_W, h / DESIGN_H), MIN_SCALE, 1);
+  const density = compact ? 1 : DENSITY;
+  const fit = Math.min(Math.min(w / DESIGN_W, h / DESIGN_H), 1);
+  // floor AFTER density, or a small tablet ends up drawn smaller than a phone
+  const scale = clamp(fit * density, MIN_SCALE, 1);
   const px = (n: number) => Math.round(n * scale);
 
   const CATEGORY_SPACING = px(196);
@@ -95,6 +110,7 @@ export function metricsFor(w: number, h: number): Metrics {
 
   return {
     scale,
+    density,
     compact,
 
     CATEGORY_SPACING,

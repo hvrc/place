@@ -4,7 +4,7 @@ import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import type { BackdropSpec, MenuMedia } from "@engine/model/types";
 import styles from "@engine/styles/menu.module.css";
 
-const DWELL_MS = 4000;
+const DWELL_MS = 3000;
 /** Longest we wait for an embed to report itself loaded before fading in anyway. */
 const LOAD_GRACE_MS = 2500;
 /** The backdrop's fade, in and out. */
