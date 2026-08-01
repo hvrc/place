@@ -5,6 +5,10 @@ import type { BackdropSpec, MenuMedia } from "@engine/model/types";
 import styles from "@engine/styles/menu.module.css";
 
 const DWELL_MS = 4000;
+/** Longest we wait for an embed to report itself loaded before fading in anyway. */
+const LOAD_GRACE_MS = 2500;
+/** The backdrop's fade, in and out. */
+const FADE_SEC = 0.9;
 
 // lazily load SoundCloud's widget API (only when a SoundCloud backdrop is used)
 let scApi: Promise<unknown> | null = null;
@@ -61,6 +65,9 @@ export function Backdrop() {
 
   const [shown, setShown] = useState<Shown | null>(null);
   const [interacting, setInteracting] = useState(false);
+  // held at 0 opacity until the embed/media has actually painted, so the fade
+  // carries the content in rather than running on an empty frame
+  const [ready, setReady] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
   // clicking to interact is a user gesture — start playback with sound here
@@ -87,6 +94,15 @@ export function Backdrop() {
     const id = window.setTimeout(() => setShown(t), DWELL_MS);
     return () => clearTimeout(id);
   }, [target?.id, target?.link, target?.media]);
+
+  // Some embeds never fire load (cross-origin quirks, blocked frames) — reveal
+  // on a timer rather than leave the backdrop permanently blank.
+  useEffect(() => {
+    setReady(false);
+    if (!shown) return;
+    const t = window.setTimeout(() => setReady(true), LOAD_GRACE_MS);
+    return () => clearTimeout(t);
+  }, [shown]);
 
   // Esc releases interaction (works for same-origin frames like /hom, /prim)
   useEffect(() => {
@@ -127,9 +143,9 @@ export function Backdrop() {
           key={shown.id}
           className={styles.projBackdrop}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: ready ? 1 : 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: FADE_SEC, ease: "easeInOut" }}
         >
           {embeddable && shown.link ? (
             <>
@@ -142,6 +158,7 @@ export function Backdrop() {
                     src={shown.link}
                     title={shown.id}
                     allow="autoplay"
+                    onLoad={() => setReady(true)}
                   />
                 </div>
               ) : (
@@ -152,6 +169,7 @@ export function Backdrop() {
                   src={shown.link}
                   title={shown.id}
                   allow="autoplay"
+                  onLoad={() => setReady(true)}
                 />
               )}
 
@@ -173,9 +191,15 @@ export function Backdrop() {
               loop
               muted
               playsInline
+              onLoadedData={() => setReady(true)}
             />
           ) : shown.media ? (
-            <img className={styles.projBackdropMedia} src={shown.media.src} alt="" />
+            <img
+              className={styles.projBackdropMedia}
+              src={shown.media.src}
+              alt=""
+              onLoad={() => setReady(true)}
+            />
           ) : null}
         </motion.div>
       )}

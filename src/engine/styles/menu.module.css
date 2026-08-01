@@ -183,8 +183,7 @@
 /* left-pointing triangle sitting just left of the thumbnail column */
 .pmTriangle {
   position: absolute;
-  left: -42px;
-  top: 37px;
+  /* left / top set inline — they track the thumbnail's size */
   transform: translateY(-50%);
   width: 0;
   height: 0;
@@ -196,7 +195,7 @@
 
 .pmMeta {
   position: absolute;
-  top: 37px;
+  /* left / top set inline — they track the thumbnail's size */
   transform: translateY(-50%);
   white-space: nowrap;
 }
@@ -610,24 +609,26 @@
 /* focused item's note, set right of the column; left/top anchored inline */
 .note {
   position: fixed;
+  /* dead centre of the screen, independent of whichever row is focused */
+  inset: 0;
   z-index: 12;
   /* only the glyph runs are live, so the note never blocks the backdrop behind it */
   pointer-events: none;
   user-select: text;
-  /* spans the open area right of the column, text set from its left edge */
-  right: 4vw;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   /* the space that would follow the lead-in if it were one run of text */
   gap: 0.5ch;
-  /* drop the first line onto the centre line of the active item's row */
-  padding-top: calc((var(--rowH) - 1.5em) / 2);
+  padding: 0 4vw;
   font-size: 1.45rem;
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0.01em;
   color: #ffffff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  /* the dark shadow keeps it legible over any wallpaper; the white bloom is the
+     lit glow the active icons carry, so the note reads as part of that state */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 11px rgba(255, 255, 255, 0.5);
   filter: blur(0.45px);
 }
 
@@ -636,6 +637,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+/* phone: centred horizontally still, but dropped clear of the item column */
+.noteCompact {
+  align-items: flex-end;
+  padding-bottom: 3.6rem;
+  font-size: 1.05rem;
 }
 
 /* the text itself is selectable — and clickable when the item has an action */
@@ -677,4 +685,79 @@
 .toggleVal {
   color: #ff6a3d;
   font-weight: 700;
+}
+
+/* ===== phone / small viewport ============================================
+   The layout numbers scale in JS (see layout/metrics.ts); these are the type
+   and chrome sizes, which live in rem and don't scale with them. ========== */
+@media (max-width: 720px) {
+  /* the wordmark and the clock were colliding in the middle of the top edge */
+  .brand {
+    top: 0.7rem;
+    left: 0.9rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.22em;
+  }
+  .clock {
+    top: 0.7rem;
+    right: 0.9rem;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+  }
+
+  .catLabel {
+    margin-top: 0.4rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+  }
+
+  .itemLabel {
+    font-size: 0.95rem;
+  }
+  .itemSub {
+    font-size: 0.75rem;
+    max-width: 20ch;
+  }
+
+  /* the project meta sits under a much smaller thumbnail — let it wrap */
+  .pmMeta {
+    white-space: normal;
+    max-width: 52vw;
+  }
+  .pmTitle {
+    font-size: 1.1rem;
+  }
+  .pmBlurb {
+    font-size: 0.72rem;
+  }
+  .pmHint {
+    font-size: 0.68rem;
+  }
+  .pmHints {
+    gap: 0.85rem;
+  }
+
+  .hints {
+    bottom: 0.7rem;
+    right: 0.9rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+  }
+
+  .colorMenu {
+    width: 46vw;
+  }
+}
+
+/* the legend names the controls you actually have */
+.hintsTouch {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .hintsKeys {
+    display: none;
+  }
+  .hintsTouch {
+    display: inline;
+  }
 }

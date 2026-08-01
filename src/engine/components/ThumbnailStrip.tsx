@@ -2,28 +2,9 @@ import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
 import type { MenuMedia } from "@engine/model/types";
-import {
-  CATEGORY_TOP_VH,
-  COL_LEFT,
-  ITEM_SPACING,
-  FIRST_ITEM_GAP,
-  THUMB_W,
-  THUMB_H,
-  THUMB_SPACING,
-  THUMB_ACTIVE_SCALE,
-  THUMB_META_LEFT,
-  RULE_GAP_RIGHT,
-} from "@engine/layout/metrics";
+import { useMetrics } from "@engine/layout/metrics";
+import { openTab, viewportWidth } from "@engine/lib/browser";
 import styles from "@engine/styles/menu.module.css";
-
-function vw() {
-  return typeof window !== "undefined" ? window.innerWidth : 1440;
-}
-
-/** Projects always leave in their own tab, so the menu stays where you left it. */
-function openTab(url: string) {
-  window.open(url, "_blank", "noopener,noreferrer");
-}
 
 function Thumb({ media }: { media?: MenuMedia }) {
   if (!media) return <div className={styles.pmThumbFill} />;
@@ -59,6 +40,19 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const actionIndex = useMenu((s) => s.drillActionIndex);
   const setDrillAction = useMenu((s) => s.setDrillAction);
   const { play } = useSound();
+  const {
+    CATEGORY_TOP_VH,
+    COL_LEFT,
+    ITEM_SPACING,
+    FIRST_ITEM_GAP,
+    THUMB_W,
+    THUMB_H,
+    THUMB_SPACING,
+    THUMB_ACTIVE_SCALE,
+    THUMB_META_LEFT,
+    RULE_GAP_RIGHT,
+    scale,
+  } = useMetrics();
 
   // the rule runs from the title out to the right edge, less a small margin
   const ruleWidth = `calc(100vw - ${COL_LEFT} - ${THUMB_META_LEFT + RULE_GAP_RIGHT}px)`;
@@ -69,7 +63,7 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   // half-height so the visual gap around it matches the gap between the rest
   const push = drilled ? (THUMB_H * (THUMB_ACTIVE_SCALE - 1)) / 2 : 0;
   // preview sits right of the folder labels; drilling in slides it left into place
-  const previewShift = vw() * 0.16;
+  const previewShift = viewportWidth() * 0.16;
 
   return (
     <motion.div
@@ -102,7 +96,12 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
             animate={{ y: offset * THUMB_SPACING + Math.sign(offset) * push }}
             transition={{ type: "spring", stiffness: 520, damping: 40 }}
           >
-            {highlight && <span className={styles.pmTriangle} />}
+            {highlight && (
+              <span
+                className={styles.pmTriangle}
+                style={{ left: -Math.round(42 * scale), top: THUMB_H / 2 }}
+              />
+            )}
             <motion.button
               className={styles.pmThumb}
               style={{ width: THUMB_W, height: THUMB_H, transformOrigin: "left center" }}
@@ -148,7 +147,10 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
                   </button>
                 );
                 return (
-                  <div className={styles.pmMeta} style={{ left: THUMB_META_LEFT }}>
+                  <div
+                    className={styles.pmMeta}
+                    style={{ left: THUMB_META_LEFT, top: THUMB_H / 2 }}
+                  >
                     <div className={styles.pmTitle}>{p.title}</div>
                     {p.blurb && <div className={styles.pmBlurb}>{p.blurb}</div>}
                     <div className={styles.pmRule} style={{ width: ruleWidth }} />

@@ -61,10 +61,14 @@ export interface MenuState {
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-const VOLUME_STEPS = [0, 25, 50, 75, 100];
+/** 0, 10, 20 … 100 */
+const VOLUME_STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
 const nextVolume = (v: number) => {
+  // round an off-grid value (e.g. a 25 persisted before the steps changed) up
+  // to the next one on the grid rather than snapping back to the default
   const i = VOLUME_STEPS.indexOf(v);
-  return VOLUME_STEPS[i === -1 ? 2 : (i + 1) % VOLUME_STEPS.length];
+  if (i === -1) return VOLUME_STEPS.find((s) => s > v) ?? VOLUME_STEPS[0];
+  return VOLUME_STEPS[(i + 1) % VOLUME_STEPS.length];
 };
 
 /**

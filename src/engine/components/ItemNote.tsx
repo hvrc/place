@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { NOTE_SLOT } from "@engine/model/types";
 import { useScramble } from "@engine/text/useScramble";
-import { CATEGORY_TOP_VH, ITEM_SPACING, FIRST_ITEM_GAP, NOTE_LEFT } from "@engine/layout/metrics";
+import { useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
 const CYCLE_MS = 3000;
@@ -30,6 +30,7 @@ export function ItemNote({
   const openGroup = useMenu((s) => s.openGroup);
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
+  const { compact } = useMetrics();
 
   const item = categories[categoryIndex]?.items[itemIndex];
   // drilled-in leaves have their own right-hand column (the thumbnail strip)
@@ -82,14 +83,9 @@ export function ItemNote({
       {shown && (
         <motion.div
           key={`${item?.id}:${flashing ? "flash" : "note"}`}
-          className={`${styles.note} ${interactive ? styles.noteClickable : ""}`}
-          style={
-            {
-              left: NOTE_LEFT,
-              top: `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP}px)`,
-              "--rowH": `${ITEM_SPACING}px`,
-            } as React.CSSProperties
-          }
+          className={`${styles.note} ${compact ? styles.noteCompact : ""} ${
+            interactive ? styles.noteClickable : ""
+          }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

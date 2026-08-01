@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useMenu } from "@engine/state/MenuContext";
-import { iconFilter } from "./iconFilter";
+import { useIconLight } from "./useIconLight";
+
+/** Google icons render pure white — sit them further back than the PSP PNGs
+ *  when unfocused, so the two icon sets read as equally dim. */
+const DIM = 0.6;
 
 const FONT = '"Material Symbols Rounded"';
 /** Low native resolution — the canvas is drawn small then upscaled *smoothly*
@@ -22,6 +25,8 @@ export function MaterialIcon({
   keepSize = false,
   weight = 500,
   grade = 0,
+  throb = false,
+  hovered = false,
 }: {
   name: string;
   focused: boolean;
@@ -30,9 +35,13 @@ export function MaterialIcon({
   keepSize?: boolean;
   weight?: number;
   grade?: number;
+  /** pulse between the dim and lit looks while focused (column icons only) */
+  throb?: boolean;
+  /** the pointer is over this icon's row — show the lit look */
+  hovered?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const theme = useMenu((s) => s.settings.theme);
+  const light = useIconLight({ focused, hovered, throb, dimOpacity: DIM, prefix: "blur(0.45px) " });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -81,14 +90,8 @@ export function MaterialIcon({
       className={className}
       style={{ height: size, width: size, imageRendering: "auto" }}
       initial={false}
-      animate={{
-        scale: focused ? 1 : keepSize ? 1 : 0.78,
-        // Google icons render pure white; dim the inactive state more so it
-        // matches the softer inactive look of the PSP icon PNGs.
-        opacity: focused ? 1 : 0.6,
-        filter: `blur(0.45px) ${iconFilter(theme, focused)}`,
-      }}
-      transition={{ duration: 0.16, ease: "easeOut" }}
+      animate={{ scale: focused ? 1 : keepSize ? 1 : 0.78, ...light.animate }}
+      transition={{ duration: 0.16, ease: "easeOut", ...light.transition }}
     />
   );
 }

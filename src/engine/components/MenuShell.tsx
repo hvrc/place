@@ -15,6 +15,7 @@ import { Wordmark } from "@engine/chrome/Wordmark";
 import { Hints } from "@engine/chrome/Hints";
 import { ColorPicker } from "@engine/settings/ColorPicker";
 import { useSound } from "@engine/sound/useSound";
+import { copyText, openTab } from "@engine/lib/browser";
 import styles from "@engine/styles/menu.module.css";
 
 // Runs once per full page load (module-scoped so SPA re-navigation doesn't
@@ -25,26 +26,6 @@ let introPlayed = false;
 
 /** How long a copy confirmation sits in place of the item's note. */
 const FLASH_MS = 2000;
-
-/** Clipboard write with a fallback for browsers/contexts without the async API. */
-async function copyText(text: string): Promise<void> {
-  if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return;
-    } catch {
-      /* fall through to the textarea trick */
-    }
-  }
-  const el = document.createElement("textarea");
-  el.value = text;
-  el.style.position = "fixed";
-  el.style.opacity = "0";
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand("copy");
-  el.remove();
-}
 
 /**
  * The full cross-media-bar menu: ambient chrome (wave/clock/wordmark), the
@@ -106,7 +87,6 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   // nothing is held back on a timer — content just appears as it's available.
   useEffect(() => {
     if (categoryIndex !== 0) endIntro();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIndex]);
 
   // Thumbnails to show: the open group (drilled), or — while browsing a category
@@ -144,7 +124,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
             flashTimer.current = window.setTimeout(() => setFlash(null), FLASH_MS);
           });
         } else if (action.type === "route") navigate(action.target);
-        else window.open(action.target, "_blank", "noopener,noreferrer");
+        else openTab(action.target);
       }
     },
     [store, categories, navigate, play]
@@ -157,7 +137,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
     const target = s.drillActionTargets()[s.drillActionIndex];
     if (!target) return;
     play("enter");
-    window.open(target, "_blank", "noopener,noreferrer");
+    openTab(target);
   }, [store, play]);
 
   const { onWheel, onTouchStart, onTouchEnd } = useMenuInput({ activate, openDrillItem });

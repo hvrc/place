@@ -1,20 +1,12 @@
 import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { Icon } from "@engine/icons/Icon";
+import { LIGHT_SEC } from "@engine/icons/iconFilter";
 import { useSound } from "@engine/sound/useSound";
-import {
-  SIDE_LEFT,
-  SIDE_CELL,
-  CATEGORY_TOP_VH,
-  CATEGORY_GRID_NUDGE,
-  ITEM_SPACING,
-  FIRST_ITEM_GAP,
-} from "@engine/layout/metrics";
+import { useHoverIndex } from "@engine/input/useHoverIndex";
+import { useMetrics } from "@engine/layout/metrics";
+import { viewportWidth } from "@engine/lib/browser";
 import styles from "@engine/styles/menu.module.css";
-
-function vw() {
-  return typeof window !== "undefined" ? window.innerWidth : 1440;
-}
 
 /**
  * The parent-category icon + sibling group icons, shifted to the left when
@@ -27,11 +19,23 @@ export function DrillColumn({ groupId }: { groupId: string }) {
   const openDrill = useMenu((s) => s.openDrill);
   const closeDrill = useMenu((s) => s.closeDrill);
   const { play } = useSound();
+  const { hovered, hoverProps } = useHoverIndex();
+  const {
+    SIDE_LEFT,
+    SIDE_CELL,
+    CATEGORY_TOP_VH,
+    CATEGORY_GRID_NUDGE,
+    ITEM_SPACING,
+    FIRST_ITEM_GAP,
+    CATEGORY_ICON_SIZE,
+    ITEM_ICON_SIZE,
+    scale,
+  } = useMetrics();
 
   const parent = categories.find((c) => c.items.some((it) => it.drillId === groupId));
   const drillItems = (parent?.items ?? []).filter((it) => it.drillId);
   const activeIdx = drillItems.findIndex((it) => it.drillId === groupId);
-  const shiftBack = vw() * 0.09 + 54;
+  const shiftBack = viewportWidth() * 0.09 + 54 * scale;
 
   return (
     <motion.div className={styles.pmRoot}>
@@ -48,7 +52,7 @@ export function DrillColumn({ groupId }: { groupId: string }) {
         }}
       >
         <div className={styles.pmSideMain} style={{ width: SIDE_CELL }}>
-          <Icon icon={parent?.icon ?? ""} focused size={88} keepSize />
+          <Icon icon={parent?.icon ?? ""} focused size={CATEGORY_ICON_SIZE} keepSize />
           <span className={`${styles.catLabel} ${styles.labelShown}`}>{parent?.label}</span>
         </div>
       </motion.div>
@@ -57,7 +61,8 @@ export function DrillColumn({ groupId }: { groupId: string }) {
         const d = i - activeIdx;
         const offset = d >= 0 ? d : d - 1; // skip the parent-icon slot, like the item column
         const on = it.drillId === groupId;
-        const op = on ? 1 : Math.max(0.32, 0.75 - Math.abs(offset) * 0.12);
+        const hot = hovered === i && !on;
+        const op = on || hot ? 1 : Math.max(0.32, 0.75 - Math.abs(offset) * 0.12);
         return (
           <motion.div
             key={it.id}
@@ -74,7 +79,9 @@ export function DrillColumn({ groupId }: { groupId: string }) {
             initial={{ x: 90, y: offset * ITEM_SPACING, opacity: 0 }}
             animate={{ x: 0, y: offset * ITEM_SPACING, opacity: op }}
             exit={{ x: shiftBack, y: offset * ITEM_SPACING }}
-            transition={{ duration: 0.26, ease: "easeInOut" }}
+            // the slide keeps its own pace; the dimming fades with the icon
+            transition={{ duration: 0.26, ease: "easeInOut", opacity: { duration: LIGHT_SEC, ease: "easeOut" } }}
+            {...hoverProps(i)}
             onClick={() => {
               if (on) {
                 // clicking the folder we're already in backs out one layer
@@ -86,7 +93,7 @@ export function DrillColumn({ groupId }: { groupId: string }) {
               }
             }}
           >
-            <Icon icon={it.icon} focused={on} size={76} keepSize />
+            <Icon icon={it.icon} focused={on} hovered={hot} size={ITEM_ICON_SIZE} keepSize throb />
           </motion.div>
         );
       })}

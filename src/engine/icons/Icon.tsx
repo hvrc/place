@@ -13,12 +13,18 @@ export function Icon({
   size,
   className,
   keepSize = false,
+  throb = false,
+  hovered = false,
 }: {
   icon: string;
   focused: boolean;
   size: number;
   className?: string;
   keepSize?: boolean;
+  /** pulse between the dim and lit looks while focused (column icons only) */
+  throb?: boolean;
+  /** the pointer is over this icon's row — show the lit look */
+  hovered?: boolean;
 }) {
   if (icon.startsWith("g:")) {
     // "g:name", "g:name@700", or "g:name@700,200" (weight, grade) — for
@@ -34,10 +40,20 @@ export function Icon({
         size={size}
         className={className}
         keepSize={keepSize}
+        throb={throb}
+        hovered={hovered}
       />
     );
   }
   return (
-    <PspIcon name={icon} focused={focused} size={size} className={className} keepSize={keepSize} />
+    <PspIcon
+      name={icon}
+      focused={focused}
+      size={size}
+      className={className}
+      keepSize={keepSize}
+      throb={throb}
+      hovered={hovered}
+    />
   );
 }
