@@ -7,8 +7,12 @@ import { Triangle } from "@wii/ui/glyphs";
 import { openTab } from "@engine/lib/browser";
 import styles from "@wii/wii.module.css";
 
-/** How long the title card holds over a banner that never reports a load. */
-const TITLE_HOLD_MS = 2600;
+/**
+ * How long the title card holds over a banner that never reports a load. Long,
+ * deliberately: a slow site should leave you reading about the project rather
+ * than staring at a blank shelf.
+ */
+const TITLE_HOLD_MS = 6000;
 
 /**
  * The channel screen: banner on top, black rule, then the buttons — the
@@ -32,7 +36,9 @@ export function ChannelScreen({
   const [showTitle, setShowTitle] = useState(true);
   const timer = useRef<number | undefined>(undefined);
 
-  const framed = Boolean(channel.link) && !channel.noFrame;
+  const framed = Boolean(channel.frame) && !channel.noFrame;
+  /** Nothing to reveal behind the card, so it stays put. */
+  const cardStays = !framed && !channel.media;
 
   // The title card gets out of the way once the site is up (or after a beat,
   // for banners that can't tell us).
@@ -40,9 +46,9 @@ export function ChannelScreen({
     setLoaded(false);
     setShowTitle(true);
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setShowTitle(false), TITLE_HOLD_MS);
+    if (!cardStays) timer.current = window.setTimeout(() => setShowTitle(false), TITLE_HOLD_MS);
     return () => window.clearTimeout(timer.current);
-  }, [channel.id]);
+  }, [channel.id, cardStays]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -154,7 +160,8 @@ function Banner({
   if (channel.media?.type === "image") {
     return <img src={channel.media.src} alt={channel.media.alt} onLoad={onLoaded} />;
   }
-  return <DrawnArt channel={channel} />;
+  // Backdrop only: the title card above it is already naming the channel.
+  return <DrawnArt channel={channel} bare />;
 }
 
 /**
@@ -163,7 +170,11 @@ function Banner({
  */
 function ChannelActions({ channel, onShowInfo }: { channel: Channel; onShowInfo: () => void }) {
   if (channel.kind === "soon") {
-    return <Pill ghost onClick={onShowInfo}>Not Available</Pill>;
+    return (
+      <Pill ghost disabled style={{ opacity: 0.6, cursor: "default" }}>
+        Not Available
+      </Pill>
+    );
   }
 
   if (channel.kind === "disc") {

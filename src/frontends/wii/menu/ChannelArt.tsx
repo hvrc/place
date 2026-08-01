@@ -65,19 +65,28 @@ export function ChannelArt({ channel, live = true }: { channel: Channel; live?: 
   );
 }
 
-/** The text-only channel face, built from the channel's `tile` spec. */
-export function DrawnArt({ channel }: { channel: Channel }) {
+/**
+ * The text-only channel face, built from the channel's `tile` spec.
+ *
+ * `bare` drops the wording and keeps the backdrop — the channel screen wants
+ * that, because its own title card is already carrying the name.
+ */
+export function DrawnArt({ channel, bare }: { channel: Channel; bare?: boolean }) {
   const { from, to, ink, label, sub, logo, style } = channel.tile;
   return (
     <div
       className={styles.drawn}
       style={{ background: `linear-gradient(180deg, ${from}, ${to})`, color: ink }}
     >
-      {logo && <img className={styles.drawnLogo} src={logo} alt="" />}
-      <div className={[styles.drawnLabel, style === "glow" ? styles.glow : ""].join(" ")}>
-        {label ?? channel.title}
-      </div>
-      {sub && <div className={styles.drawnSub}>{sub}</div>}
+      {logo && !bare && <img className={styles.drawnLogo} src={logo} alt="" />}
+      {!bare && (
+        <>
+          <div className={[styles.drawnLabel, style === "glow" ? styles.glow : ""].join(" ")}>
+            {label ?? channel.title}
+          </div>
+          {sub && <div className={styles.drawnSub}>{sub}</div>}
+        </>
+      )}
     </div>
   );
 }

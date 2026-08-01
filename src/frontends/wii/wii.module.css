@@ -1331,6 +1331,28 @@
   transition: filter 1400ms ease;
 }
 
+/* ── reduced motion ─────────────────────────────────────────────────────── */
+
+/* Keep every state change, drop the movement: no spinning disc, no leaping
+   tile, no pulsing letters. */
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root *::before,
+  .root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .track {
+    transition: none;
+  }
+
+  .discFace {
+    animation: none;
+  }
+}
+
 .srOnly {
   position: absolute;
   width: 1px;
