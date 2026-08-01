@@ -18,13 +18,14 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 const SOFT_BLUR = 0.45;
 
 /**
- * How hard to blur the soft look at a given layout scale. A flat value eats far
- * more of a glyph once icons and type are phone-sized, so it tracks the scale —
- * text and icons both read this, which is what keeps them softened by the same
- * amount.
+ * How hard to blur the soft look at a given layout scale. Squared, not linear:
+ * a phone renders the type at roughly half size but on a 3x display, so the
+ * same blur eats several times more of each stroke than it does on a desktop.
+ * Falling away this fast keeps small text legible while the full-size look is
+ * untouched (scale 1 is unchanged). Text and icons both read this.
  */
 export function softBlurPx(scale: number): number {
-  return SOFT_BLUR * scale;
+  return SOFT_BLUR * scale * scale;
 }
 
 export interface Metrics {

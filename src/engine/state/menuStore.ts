@@ -98,7 +98,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
         settings: {
           theme: themeForColor(palette[defaultColor]),
           colorIndex: defaultColor,
-          uiVolume: 50,
+          uiVolume: 20,
           fidelity: "soft",
         },
 

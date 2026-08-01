@@ -197,7 +197,9 @@
   border-top: 11px solid transparent;
   border-bottom: 11px solid transparent;
   border-right: 15px solid #ffffff;
-  filter: blur(var(--soft-blur)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  /* no soft-focus blur: this is a CSS triangle, not upscaled art — blurring a
+     hard vector edge just makes it mushy, badly so at phone sizes */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
 .pmMeta {
@@ -304,7 +306,8 @@
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
   border-left: 17px solid #ffffff;
-  filter: blur(var(--soft-blur)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  /* vector edge — see .pmTriangle */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
 /* soft top/bottom vignette to seat the bar like the real XMB */

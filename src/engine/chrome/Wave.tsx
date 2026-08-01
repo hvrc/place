@@ -37,7 +37,11 @@ export function Wave() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    window.addEventListener("resize", resize);
+    // A ResizeObserver, not a window listener: iOS grows and shrinks the
+    // viewport as its toolbars collapse without always firing `resize`, and a
+    // stale canvas leaves an unpainted strip at the screen edge.
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
 
     // Two gentle bands, PSP-style: long wavelength, slow drift.
     const RIBBONS = 2;
@@ -137,9 +141,13 @@ export function Wave() {
     raf = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      observer.disconnect();
     };
   }, [theme, waveHue, sat, reduceMotion]);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 h-full w-full" aria-hidden="true" />;
+  // Absolute, not fixed: this fills .root exactly, and .root already tracks the
+  // live viewport via 100dvh. `h-full` resolved against the initial containing
+  // block instead, which on iOS does not follow the collapsing toolbar — the
+  // strip it left unpainted was the white gap at the top and bottom.
+  return <canvas ref={canvasRef} className="absolute inset-0" aria-hidden="true" />;
 }
