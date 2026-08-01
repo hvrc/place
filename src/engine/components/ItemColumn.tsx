@@ -4,8 +4,8 @@ import { Icon } from "@engine/icons/Icon";
 import { LIGHT_SEC } from "@engine/icons/iconFilter";
 import { useSound } from "@engine/sound/useSound";
 import { useHoverIndex } from "@engine/input/useHoverIndex";
-import type { MenuItem } from "@engine/model/types";
-import { useMetrics } from "@engine/layout/metrics";
+import type { IntroStagger, MenuItem } from "@engine/model/types";
+import { rowFade, useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
 /** The vertical items for the active category (the up/down menu): the active
@@ -15,7 +15,7 @@ export function ItemColumn({
   introStagger,
 }: {
   onActivate: (index: number) => void;
-  introStagger?: { base: number; step: number } | null;
+  introStagger?: IntroStagger | null;
 }) {
   const { categories, palette } = useMenuModel();
   const categoryIndex = useMenu((s) => s.categoryIndex);
@@ -27,10 +27,9 @@ export function ItemColumn({
   const { play } = useSound();
   const { hovered, hoverProps } = useHoverIndex();
   const {
-    CATEGORY_TOP_VH,
+    PIVOT_TOP,
     PIVOT_LEFT,
     ITEM_SPACING,
-    FIRST_ITEM_GAP,
     ITEM_ICON_SIZE,
     ITEM_ICON_CELL,
     ROW_PAD_LEFT,
@@ -46,10 +45,6 @@ export function ItemColumn({
     return item.sub;
   };
 
-  // Resting Y of the active item: one full row below the category bar (plus a
-  // little extra so the category label isn't crowded by the first item).
-  const pivotTop = `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP}px)`;
-
   return (
     <div className={styles.itemColumn} style={{ left: PIVOT_LEFT }}>
       <motion.ul
@@ -64,16 +59,17 @@ export function ItemColumn({
           // hovering anywhere on the row lights it fully — same look the active
           // row has, so it reads as "click to make this the active one"
           const hot = hovered === j && !active;
+          const sub = liveSub(item);
           const d = j - activeItem;
           // Items ABOVE the active one skip the slot the category icon occupies
           // (offset -1 is left empty), so no item ever sits on the category line.
           const offset = d >= 0 ? d : d - 1;
-          const rowOpacity = active || hot ? 1 : Math.max(0.3, 0.72 - Math.abs(offset) * 0.12);
+          const rowOpacity = active || hot ? 1 : rowFade(offset, 0.72, 0.3);
           return (
             <motion.li
               key={item.id}
               className={styles.itemRow}
-              style={{ top: pivotTop, height: ITEM_SPACING }}
+              style={{ top: PIVOT_TOP, height: ITEM_SPACING }}
               initial={introStagger ? { opacity: 0, y: offset * ITEM_SPACING } : false}
               animate={{ opacity: 1, y: offset * ITEM_SPACING }}
               transition={{
@@ -121,10 +117,7 @@ export function ItemColumn({
                   transition={{ duration: LIGHT_SEC, ease: "easeOut" }}
                 >
                   <span className={styles.itemLabel}>{item.label}</span>
-                  {(() => {
-                    const sub = liveSub(item);
-                    return sub ? <span className={styles.itemSub}>{sub}</span> : null;
-                  })()}
+                  {sub && <span className={styles.itemSub}>{sub}</span>}
                 </motion.span>
               </button>
             </motion.li>

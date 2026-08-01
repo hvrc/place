@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useMenu, useMenuModel, useMenuStore } from "@engine/state/MenuContext";
+import type { IntroStagger } from "@engine/model/types";
 import { useMenuInput } from "@engine/input/useMenuInput";
 import { CategoryBar } from "./CategoryBar";
 import { ItemColumn } from "./ItemColumn";
@@ -52,8 +53,8 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   // top→down. An item's note rides in with its own icon (never ahead of it), and
   // the control legend brings up the rear. Everything past that appears as
   // available (no timers), in natural order.
-  const catIntro = introActive ? { base: 0.5, step: 0.08 } : null;
-  const colIntro = introActive ? { base: 1.1, step: 0.08 } : null;
+  const catIntro: IntroStagger | null = introActive ? { base: 0.5, step: 0.08 } : null;
+  const colIntro: IntroStagger | null = introActive ? { base: 1.1, step: 0.08 } : null;
   /** Last thing in: one beat after the deepest column item has landed. */
   const HINTS_DELAY = 1.7;
 

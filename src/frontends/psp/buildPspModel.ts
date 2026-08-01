@@ -77,12 +77,7 @@ export function buildPspModel(): MenuModel {
 
   const groups: Record<string, DrillGroup> = {};
   for (const g of projectGroups) {
-    groups[g.id] = {
-      id: g.id,
-      label: g.label,
-      icon: g.icon,
-      items: groupProjects(g.id).map(toDrillItem),
-    };
+    groups[g.id] = { id: g.id, items: groupProjects(g.id).map(toDrillItem) };
   }
 
   const categories: MenuCategory[] = [
@@ -152,7 +147,7 @@ export function buildPspModel(): MenuModel {
             label: s.label,
             sub: s.href.replace(/^https?:\/\/(www\.)?/, ""),
             icon: socialIcon[s.id] ?? "network",
-            action: { type: s.internal ? "route" : "external", target: s.href },
+            action: { type: "external", target: s.href },
             backdrop: s.backdrop ? { link: s.backdrop, contain: s.backdropContain } : null,
           })
         ),

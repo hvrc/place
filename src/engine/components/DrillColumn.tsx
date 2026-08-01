@@ -4,7 +4,7 @@ import { Icon } from "@engine/icons/Icon";
 import { LIGHT_SEC } from "@engine/icons/iconFilter";
 import { useSound } from "@engine/sound/useSound";
 import { useHoverIndex } from "@engine/input/useHoverIndex";
-import { useMetrics } from "@engine/layout/metrics";
+import { rowFade, useMetrics } from "@engine/layout/metrics";
 import { viewportWidth } from "@engine/lib/browser";
 import styles from "@engine/styles/menu.module.css";
 
@@ -23,10 +23,9 @@ export function DrillColumn({ groupId }: { groupId: string }) {
   const {
     SIDE_LEFT,
     SIDE_CELL,
-    CATEGORY_TOP_VH,
-    CATEGORY_GRID_NUDGE,
+    CATEGORY_TOP,
+    PIVOT_TOP,
     ITEM_SPACING,
-    FIRST_ITEM_GAP,
     CATEGORY_ICON_SIZE,
     ITEM_ICON_SIZE,
     scale,
@@ -41,7 +40,7 @@ export function DrillColumn({ groupId }: { groupId: string }) {
     <motion.div className={styles.pmRoot}>
       <motion.div
         className={styles.pmSideItem}
-        style={{ left: SIDE_LEFT, top: `calc(${CATEGORY_TOP_VH}vh + ${CATEGORY_GRID_NUDGE}px)` }}
+        style={{ left: SIDE_LEFT, top: CATEGORY_TOP }}
         initial={{ x: 90, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: shiftBack }}
@@ -62,14 +61,14 @@ export function DrillColumn({ groupId }: { groupId: string }) {
         const offset = d >= 0 ? d : d - 1; // skip the parent-icon slot, like the item column
         const on = it.drillId === groupId;
         const hot = hovered === i && !on;
-        const op = on || hot ? 1 : Math.max(0.32, 0.75 - Math.abs(offset) * 0.12);
+        const op = on || hot ? 1 : rowFade(offset, 0.75, 0.32);
         return (
           <motion.div
             key={it.id}
             className={styles.pmSideItem}
             style={{
               left: SIDE_LEFT,
-              top: `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP}px)`,
+              top: PIVOT_TOP,
               width: SIDE_CELL,
               height: ITEM_SPACING,
               display: "flex",

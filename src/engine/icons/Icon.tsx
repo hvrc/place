@@ -17,7 +17,6 @@ export function Icon({
   icon,
   focused,
   size,
-  className,
   keepSize = false,
   throb = false,
   hovered = false,
@@ -25,7 +24,6 @@ export function Icon({
   icon: string;
   focused: boolean;
   size: number;
-  className?: string;
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
   throb?: boolean;
@@ -43,7 +41,6 @@ export function Icon({
         name={resolved.slice(2)}
         focused={focused}
         size={size}
-        className={className}
         keepSize={keepSize}
         throb={throb}
         hovered={hovered}
@@ -56,7 +53,6 @@ export function Icon({
       name={resolved}
       focused={focused}
       size={size}
-      className={className}
       keepSize={keepSize}
       throb={throb}
       hovered={hovered}

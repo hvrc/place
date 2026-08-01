@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
-import { NOTE_SLOT } from "@engine/model/types";
+import { NOTE_SLOT, type IntroStagger } from "@engine/model/types";
 import { useScramble } from "@engine/text/useScramble";
 import { useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
@@ -23,7 +23,7 @@ export function ItemNote({
   onActivate,
 }: {
   flash?: { id: string; text: string } | null;
-  introStagger?: { base: number; step: number } | null;
+  introStagger?: IntroStagger | null;
   onActivate?: (index: number) => void;
 }) {
   const { categories } = useMenuModel();
@@ -44,12 +44,17 @@ export function ItemNote({
   useEffect(() => {
     if (!cycle || cycle.length < 2) return;
     setTick(0);
-    const id = setInterval(() => setTick((t) => t + 1), note?.cycleMs ?? CYCLE_MS);
+    const id = setInterval(() => setTick((t) => t + 1), CYCLE_MS);
     return () => clearInterval(id);
-  }, [cycle, note?.cycleMs]);
+  }, [cycle]);
   const word = cycle?.length ? cycle[tick % cycle.length] : "";
   const scrambled = useScramble(word);
-  const slotWidth = cycle?.length ? Math.max(...cycle.map((w) => w.length)) : 0;
+  // recomputed only when the word list changes — this component re-renders
+  // on every scramble frame, ~60x a second while a word resolves
+  const slotWidth = useMemo(
+    () => (cycle?.length ? Math.max(...cycle.map((w) => w.length)) : 0),
+    [cycle]
+  );
 
   // On first load, ride in with the icon this note belongs to rather than
   // arriving ahead of a column that is still cascading in.
@@ -92,7 +97,6 @@ export function ItemNote({
           transition={{ duration: 0.28, ease: "easeOut", delay }}
           onClick={click}
         >
-          {shown.lead && <span>{shown.lead}</span>}
           <span className={styles.noteLines}>
             {shown.lines.map((line) => (
               <span key={line}>{renderLine(line)}</span>

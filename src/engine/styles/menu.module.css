@@ -24,35 +24,6 @@
   background: #e9e8ef;
 }
 
-/* project media shown as a plain rectangle, top-left anchored to the title */
-.backdropWrap {
-  position: fixed;
-  /* top / left set inline (anchored to the active item) */
-  width: min(48%, 620px);
-  aspect-ratio: 16 / 9;
-  z-index: 5;
-  pointer-events: none;
-}
-
-/* fade/slide wrapper (not clipped, so the arrow can sit outside the media box) */
-.backdropFade {
-  position: absolute;
-  inset: 0;
-}
-
-.backdrop {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.backdropMedia {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 /* ===== Projects "games" menu (drill-in) ===== */
 .pmRoot {
   position: fixed;
@@ -105,26 +76,6 @@
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
-}
-
-/* shown while the embed has control — click to hand it back to the menu */
-.projBackdropExit {
-  position: fixed;
-  bottom: 1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 42;
-  pointer-events: auto;
-  cursor: pointer;
-  padding: 0.4rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font: inherit;
-  font-size: 0.85rem;
-  letter-spacing: 0.06em;
-  backdrop-filter: blur(6px);
 }
 
 /* persistent thumbnail column (preview + drill-in); rows are absolute inside */
@@ -296,35 +247,6 @@
   width: 100%;
 }
 
-/* right-pointing triangle connecting the title label to the media rectangle */
-.backdropArrow {
-  position: absolute;
-  left: -28px;
-  top: 0;
-  width: 0;
-  height: 0;
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
-  border-left: 17px solid #ffffff;
-  /* vector edge — see .pmTriangle */
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
-}
-
-/* soft top/bottom vignette to seat the bar like the real XMB */
-.vignette {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.35) 0%,
-    rgba(0, 0, 0, 0) 28%,
-    rgba(0, 0, 0, 0) 62%,
-    rgba(0, 0, 0, 0.35) 100%
-  );
-}
-
 .rootLight .vignette {
   background: linear-gradient(
     to bottom,
@@ -467,86 +389,12 @@
   filter: var(--soft-text);
 }
 
-/* wrapper handles positioning/centering so Framer can own the panel transform */
-.panelWrap {
-  position: absolute;
-  right: 4%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: min(46%, 640px);
-}
-
-/* frosted info panel */
-.panel {
-  width: 100%;
-  max-height: 78vh;
-  overflow-y: auto;
-  padding: 1.4rem 1.6rem;
-  border-radius: 14px;
-  background: rgba(10, 20, 40, 0.28);
-  border: 1px solid rgba(180, 210, 255, 0.18);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-}
-
 .rootLight .panel {
   background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.panelMedia {
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(180, 210, 255, 0.2);
-  margin-bottom: 0.9rem;
-  background: rgba(0, 0, 0, 0.25);
-}
-
 .panelMedia img,
-.panelMedia video {
-  width: 100%;
-  display: block;
-}
-
-.panelTitle {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin-bottom: 0.4rem;
-}
-
-.panelBody {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  opacity: 0.9;
-}
-
-.panelBody a {
-  color: #ff6a3d;
-}
-
-.pill {
-  display: inline-block;
-  margin: 0.6rem 0.5rem 0 0;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.8rem;
-  border-radius: 999px;
-  border: 1px solid rgba(180, 210, 255, 0.35);
-  background: rgba(120, 170, 255, 0.12);
-}
-
-.hint {
-  position: fixed;
-  bottom: 1.1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  opacity: 0.6;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .clock {
   position: fixed;
   top: 1.1rem;
@@ -716,11 +564,6 @@
 .battery {
   display: block;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
-}
-
-.toggleVal {
-  color: #ff6a3d;
-  font-weight: 700;
 }
 
 /* ===== phone / small viewport ============================================

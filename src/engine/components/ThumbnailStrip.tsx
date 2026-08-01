@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
 import type { MenuMedia } from "@engine/model/types";
-import { useMetrics, lengthToPx } from "@engine/layout/metrics";
+import { lengthToPx, rowFade, useMetrics } from "@engine/layout/metrics";
 import { openTab, viewportWidth } from "@engine/lib/browser";
 import { ProjectMeta } from "./ProjectMeta";
 import styles from "@engine/styles/menu.module.css";
@@ -44,13 +44,12 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const openDrill = useMenu((s) => s.openDrill);
   const { play } = useSound();
   const {
-    CATEGORY_TOP_VH,
+    PIVOT_TOP,
     COL_LEFT,
     PIVOT_LEFT,
     ROW_PAD_LEFT,
     ITEM_ICON_CELL,
     ITEM_SPACING,
-    FIRST_ITEM_GAP,
     THUMB_W,
     THUMB_H,
     THUMB_SPACING,
@@ -78,6 +77,8 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const colLeft = lengthToPx(COL_LEFT, vw);
   const labelsEnd = lengthToPx(PIVOT_LEFT, vw) + ROW_PAD_LEFT + ITEM_ICON_CELL + LABEL_CLEARANCE;
   const previewShift = Math.max(colLeft + vw * (compact ? 0.32 : 0.16), labelsEnd) - colLeft;
+  // the active thumbnail centres on the focused folder's row (loop-invariant)
+  const thumbTop = `calc(${PIVOT_TOP} + ${ITEM_SPACING / 2 - THUMB_H / 2}px)`;
 
   return (
     <motion.div
@@ -95,15 +96,14 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
         // triangle/meta; a previewed group just stacks its thumbnails
         const highlight = drilled && active;
         const offset = i - sel;
-        const opacity = active ? 1 : Math.max(0.38, 0.78 - Math.abs(offset) * 0.12);
+        const opacity = active ? 1 : rowFade(offset, 0.78, 0.38);
         return (
           <motion.div
             key={p.id}
             className={styles.pmRow}
             style={{
               left: COL_LEFT,
-              // align the active thumbnail's row with the active folder's row
-              top: `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP + ITEM_SPACING / 2 - THUMB_H / 2}px)`,
+              top: thumbTop,
               zIndex: highlight ? 30 : 1,
             }}
             initial={false}

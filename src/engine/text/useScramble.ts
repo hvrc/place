@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { prefersReducedMotion } from "@engine/lib/browser";
 
 const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789#%&/*+<>";
-
-const reduceMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * Resolves one string into another the way a decoder does: each position runs
@@ -21,7 +18,7 @@ export function useScramble(target: string, frames = 68): string {
     const from = prev.current;
     prev.current = target;
 
-    if (reduceMotion()) {
+    if (prefersReducedMotion()) {
       setText(target);
       return;
     }

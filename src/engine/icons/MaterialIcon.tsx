@@ -41,7 +41,6 @@ export function MaterialIcon({
   name,
   focused,
   size,
-  className,
   keepSize = false,
   throb = false,
   hovered = false,
@@ -50,7 +49,6 @@ export function MaterialIcon({
   name: string;
   focused: boolean;
   size: number;
-  className?: string;
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
   throb?: boolean;
@@ -112,7 +110,7 @@ export function MaterialIcon({
   if (crisp) {
     return (
       <motion.span
-        className={`material-symbols-rounded ${className ?? ""}`}
+        className="material-symbols-rounded"
         style={{
           fontSize: size * GLYPH,
           lineHeight: 1,
@@ -131,7 +129,6 @@ export function MaterialIcon({
   return (
     <motion.canvas
       ref={canvasRef}
-      className={className}
       style={{ height: size, width: size, imageRendering: "auto" }}
       initial={false}
       animate={light.animate}

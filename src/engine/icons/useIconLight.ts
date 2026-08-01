@@ -8,8 +8,6 @@ const BODY_SCALE = 0.78;
 const RESIZE_SEC = 0.16;
 
 export interface IconLight {
-  /** true while focused or hovered — callers use it for their own styling */
-  on: boolean;
   /** the complete Framer `animate` for an icon: size plus the two looks */
   animate: { scale: number; opacity: number | number[]; filter: string | string[] };
   /** the matching `transition` */
@@ -60,7 +58,6 @@ export function useIconLight({
   const timing = pulsing ? pulse : fade;
 
   return {
-    on,
     animate: {
       scale: focused || keepSize ? 1 : BODY_SCALE,
       opacity: pulsing ? [dimOpacity, 1] : on ? 1 : dimOpacity,

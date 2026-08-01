@@ -24,12 +24,9 @@ export interface BackdropSpec {
  * line ("<name> is a" → "Photoshop GOAT" / "Ableton GOAT" / …).
  */
 export interface MenuNote {
-  lead?: string;
   lines: string[];
   /** Words swapped through the `{}` slot in a line, one at a time, forever. */
   cycle?: string[];
-  /** How long each cycled word is held (ms). */
-  cycleMs?: number;
 }
 
 /** The slot a MenuNote's cycled words are swapped into. */
@@ -63,8 +60,6 @@ export interface DrillItem {
 /** A drill-in group: a tree branch reached from a category item. */
 export interface DrillGroup {
   id: string;
-  label: string;
-  icon: string;
   items: DrillItem[];
 }
 
@@ -90,6 +85,12 @@ export interface MenuCategory {
   label: string;
   icon: string;
   items: MenuItem[];
+}
+
+/** First-load reveal: each element fades in `base + i*step` seconds in. */
+export interface IntroStagger {
+  base: number;
+  step: number;
 }
 
 /** The complete input to the menu engine. */

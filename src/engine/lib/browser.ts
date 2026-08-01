@@ -1,9 +1,26 @@
 // Small browser-facing helpers shared across the menu, each guarded for the
 // no-window case so components can call them freely during render.
 
-/** Viewport width, with the design width as a stand-in when there's no window. */
-export function viewportWidth(fallback = 1440): number {
-  return typeof window === "undefined" ? fallback : window.innerWidth;
+/** Viewport width, falling back to a typical desktop when there's no window. */
+export function viewportWidth(): number {
+  return typeof window === "undefined" ? 1440 : window.innerWidth;
+}
+
+/** Clamp `v` into [lo, hi]. */
+export function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+/**
+ * Whether the OS asks for reduced motion. A one-shot read for non-React
+ * callers; components inside the tree should prefer Framer's useReducedMotion,
+ * which also reacts to the preference changing.
+ */
+export function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  );
 }
 
 /** Everything leaves in its own tab, so the menu is still here when you return. */

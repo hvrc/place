@@ -1,22 +1,21 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { hexToHsl } from "@engine/settings/palette";
+import { prefersReducedMotion } from "@engine/lib/browser";
 
 /**
  * The signature XMB flowing-wave background: several translucent sine ribbons
  * drifting across a vertical gradient. Hue and light/dark come from settings.
  * Honors reduce-motion by drawing a single static frame.
  */
-export function Wave() {
+function WaveCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { palette } = useMenuModel();
   const theme = useMenu((s) => s.settings.theme);
   const colorIndex = useMenu((s) => s.settings.colorIndex);
   const { h: waveHue, s: sat } = hexToHsl(palette[colorIndex] ?? palette[0]);
   // still honour the OS "reduce motion" preference (no user-facing setting)
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = prefersReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -154,3 +153,10 @@ export function Wave() {
   // inset alone leaves it at its intrinsic 300x150 rather than stretching it.
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
+
+/**
+ * Memoised: it takes no props and reads its own store slices, so it has no
+ * reason to re-render with the rest of the menu on every navigation — and each
+ * render re-parses the palette colour.
+ */
+export const Wave = memo(WaveCanvas);

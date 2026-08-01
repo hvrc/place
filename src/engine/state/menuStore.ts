@@ -2,6 +2,7 @@ import { createStore, type StoreApi } from "zustand/vanilla";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { themeForColor, type Theme } from "@engine/settings/palette";
 import type { MenuModel } from "@engine/model/types";
+import { clamp } from "@engine/lib/browser";
 
 export type { Theme };
 
@@ -41,13 +42,11 @@ export interface MenuState {
   moveItem: (dir: -1 | 1) => "item" | "category" | null;
   setCategory: (index: number) => void;
   setItem: (index: number) => void;
-  currentItemIndex: () => number;
 
   openDrill: (id: string) => void;
   closeDrill: () => void;
   moveInDrill: (dir: -1 | 1) => boolean;
   setInDrill: (index: number) => void;
-  currentDrillIndex: () => number;
 
   /** Which of the focused leaf's actions (open / github) is highlighted. */
   drillActionIndex: number;
@@ -64,8 +63,6 @@ export interface MenuState {
   moveColor: (dir: -1 | 1) => boolean;
   setColor: (index: number) => void;
 }
-
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
 /** 0, 10, 20 … 100 */
 const VOLUME_STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
@@ -101,8 +98,6 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
           uiVolume: 20,
           fidelity: "soft",
         },
-
-        currentItemIndex: () => get().itemIndexByCategory[get().categoryIndex] ?? 0,
 
         moveCategory: (dir) => {
           let moved = false;
@@ -154,11 +149,6 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
               },
             };
           }),
-
-        currentDrillIndex: () => {
-          const g = get().openGroup;
-          return g ? get().itemIndexByGroup[g] ?? 0 : 0;
-        },
 
         openDrill: (id) => set({ openGroup: id, drillActionIndex: 0 }),
         closeDrill: () => set({ openGroup: null, drillActionIndex: 0 }),

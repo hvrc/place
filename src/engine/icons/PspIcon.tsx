@@ -21,7 +21,6 @@ export function PspIcon({
   name,
   focused,
   size,
-  className,
   keepSize = false,
   throb = false,
   hovered = false,
@@ -30,7 +29,6 @@ export function PspIcon({
   focused: boolean;
   /** display height of the focused icon, in px */
   size: number;
-  className?: string;
   /** keep full size when unfocused (only dim, don't shrink) */
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
@@ -46,11 +44,9 @@ export function PspIcon({
       alt=""
       aria-hidden="true"
       draggable={false}
-      className={className}
       style={{
         height: size,
         width: "auto",
-        // body renders at ~78% of focus size; focus fills to full size
         transformOrigin: "center",
         imageRendering: "auto",
       }}
