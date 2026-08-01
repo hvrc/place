@@ -52,7 +52,7 @@ export function ProjectBackdrop() {
   let target: Target | undefined;
   if (openGroup) {
     const p = groupProjects(openGroup)[projIndex];
-    if (p) target = { id: p.id, link: p.link, media: p.media };
+    if (p && !p.noBackdrop) target = { id: p.id, link: p.link, media: p.media };
   } else if (categories[categoryIndex]?.id === "experience") {
     const role = experience[itemIndex];
     if (role?.link) target = { id: role.id, link: role.link };

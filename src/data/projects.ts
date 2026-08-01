@@ -16,6 +16,8 @@ export interface Project {
   media?: Media;
   /** True when link points to a route inside this app rather than an external site. */
   internal?: boolean;
+  /** Suppress the live/media backdrop for this project (still used for thumbnails). */
+  noBackdrop?: boolean;
 }
 
 const V = "/videos/demos/optimized";
@@ -118,6 +120,7 @@ export const projects: Project[] = [
       "API that Generates custom loan reports and visualizes data<br/>Using <b>Python, Pandas, High charts, Django</b>",
     tech: "Python, Pandas, Highcharts, Django",
     media: { type: "image", src: `${IMG}/reports_demo.png`, alt: "Loan Reports Demo" },
+    noBackdrop: true,
   },
   {
     id: "midi-controller",
@@ -127,6 +130,7 @@ export const projects: Project[] = [
       "A MIDI controller with buttons and potentiometers to control a DAW<br/>Using <b>C++ and Arduino</b>",
     tech: "C++, Arduino",
     media: { type: "image", src: `${IMG}/midicontroller_demo.png`, alt: "MIDI Controller Demo" },
+    noBackdrop: true,
   },
   {
     id: "prims-organism",
