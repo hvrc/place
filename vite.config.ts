@@ -11,6 +11,7 @@ export default defineConfig({
       "@content": path.resolve(__dirname, "./src/content"),
       "@engine": path.resolve(__dirname, "./src/engine"),
       "@psp": path.resolve(__dirname, "./src/frontends/psp"),
+      "@wii": path.resolve(__dirname, "./src/frontends/wii"),
     },
   },
   server: {

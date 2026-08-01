@@ -24,7 +24,8 @@
       "@/*": ["./src/*"],
       "@content/*": ["./src/content/*"],
       "@engine/*": ["./src/engine/*"],
-      "@psp/*": ["./src/frontends/psp/*"]
+      "@psp/*": ["./src/frontends/psp/*"],
+      "@wii/*": ["./src/frontends/wii/*"]
     }
   },
   "include": ["src"]
