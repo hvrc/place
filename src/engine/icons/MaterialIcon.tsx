@@ -8,18 +8,8 @@ import { softBlurPx, useMetrics } from "@engine/layout/metrics";
 const DIM = 0.6;
 
 const FONT = '"Material Symbols Rounded"';
-/** Glyph size as a fraction of the icon's box — the canvas insets it, so the
- *  font span has to inset by the same amount or crisp renders visibly bigger. */
+/** The glyph is drawn at this fraction of the icon's box. */
 const GLYPH = 0.84;
-/**
- * The variable-font instance both paths draw. Pinned to the font's defaults
- * because the canvas CANNOT be told otherwise — a 2D context has no
- * font-variation-settings — so it always rasterises the default instance. The
- * font path has to ask for exactly that, or the same icon renders as a
- * different weight/fill between the two fidelities.
- *
- */
-const INSTANCE = '"FILL" 0, "wght" 400, "GRAD" 0';
 /**
  * Rasterise at the PSP art's own resolution — the icon PNGs are 64x64. Drawing
  * the glyph into the same size buffer means both icon sets upscale by exactly
@@ -33,9 +23,8 @@ const NATIVE = 64;
  * Renders a Google Material Symbol with the PSP body/focus behaviour (small +
  * dim -> full size + lit white).
  *
- * Soft fidelity rasterises it small and blows it up bilinearly, so it carries
- * the same low-res softness as the upscaled PSP PNGs beside it. Crisp draws the
- * glyph straight from the font at its real size — no canvas, no blur.
+ * Rasterised small and blown up bilinearly, so it carries the same low-res
+ * softness as the upscaled PSP PNGs beside it.
  */
 export function MaterialIcon({
   name,
@@ -44,7 +33,6 @@ export function MaterialIcon({
   keepSize = false,
   throb = false,
   hovered = false,
-  crisp = false,
 }: {
   name: string;
   focused: boolean;
@@ -54,8 +42,6 @@ export function MaterialIcon({
   throb?: boolean;
   /** the pointer is over this icon's row — show the lit look */
   hovered?: boolean;
-  /** draw from the font at native resolution instead of the upscaled raster */
-  crisp?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { scale, compact } = useMetrics();
@@ -67,7 +53,7 @@ export function MaterialIcon({
     dimOpacity: DIM,
     // no extra blur on a phone — the 64px raster already matches the PSP art's
     // own softness, and piling a filter blur on top is what over-softened it
-    prefix: crisp || compact ? "" : `blur(${softBlurPx(scale).toFixed(2)}px) `,
+    prefix: compact ? "" : `blur(${softBlurPx(scale).toFixed(2)}px) `,
   });
 
   useEffect(() => {
@@ -105,26 +91,7 @@ export function MaterialIcon({
     return () => {
       cancelled = true;
     };
-  }, [name, crisp]);
-
-  if (crisp) {
-    return (
-      <motion.span
-        className="material-symbols-rounded"
-        style={{
-          fontSize: size * GLYPH,
-          lineHeight: 1,
-          color: "#ffffff",
-          fontVariationSettings: INSTANCE,
-        }}
-        initial={false}
-        animate={light.animate}
-        transition={light.transition}
-      >
-        {name}
-      </motion.span>
-    );
-  }
+  }, [name]);
 
   return (
     <motion.canvas

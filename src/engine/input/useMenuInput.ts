@@ -9,9 +9,20 @@ interface InputHandlers {
   openDrillItem: () => void;
 }
 
-// accumulated pixels per move (higher = less sensitive) / min ms between moves
-const STEP = 85;
+/**
+ * Accumulated pixels per move, from the laziest setting to the quickest. The
+ * scroll-sensitivity setting picks a point on this range: 0% travels the whole
+ * SCROLL_STEP_PX[0] before committing a move, 100% only SCROLL_STEP_PX[1].
+ * The old fixed value of 85 sits at 60%, which is the default.
+ */
+const SCROLL_STEP_PX: [number, number] = [140, 48];
+/** Minimum ms between moves, so one flick can't run away with the menu. */
 const COOLDOWN = 160;
+/** Travel needed for one move at the given sensitivity (0-100). */
+const stepFor = (sensitivity: number) => {
+  const [lazy, quick] = SCROLL_STEP_PX;
+  return lazy + ((quick - lazy) * sensitivity) / 100;
+};
 
 /**
  * All menu input in one place: keyboard (←/→/↑/↓/Enter/Esc), wheel + trackpad
@@ -148,6 +159,7 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
 
     if (now - w.lastMove < COOLDOWN) return;
     const s = store.getState();
+    const STEP = stepFor(s.settings.scrollSensitivity);
     const horizontal = Math.abs(w.ax) > Math.abs(w.ay);
 
     if (s.colorOpen) {
@@ -192,8 +204,10 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStart.current.x;
     const dy = t.clientY - touchStart.current.y;
-    const THRESH = 40;
     const s = store.getState();
+    // a swipe is a shorter gesture than a wheel spin, so it tracks the same
+    // setting at roughly half the travel
+    const THRESH = stepFor(s.settings.scrollSensitivity) / 2;
 
     if (s.colorOpen) {
       if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > THRESH) {

@@ -81,7 +81,6 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const { scale, compact, density } = useMetrics();
 
   const theme = useMenu((s) => s.settings.theme);
-  const fidelity = useMenu((s) => s.settings.fidelity);
   const openGroup = useMenu((s) => s.openGroup);
   const colorOpen = useMenu((s) => s.colorOpen);
   const categoryIndex = useMenu((s) => s.categoryIndex);
@@ -132,13 +131,12 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   // Set on <body> rather than .root because the project meta is portalled out
   // to <body> and so can't inherit the variable from inside the menu.
   useEffect(() => {
-    const soft =
-      fidelity === "crisp" || compact ? "none" : `blur(${softBlurPx(scale).toFixed(2)}px)`;
+    const soft = compact ? "none" : `blur(${softBlurPx(scale).toFixed(2)}px)`;
     document.body.style.setProperty("--soft-text", soft);
     return () => {
       document.body.style.removeProperty("--soft-text");
     };
-  }, [fidelity, scale, compact]);
+  }, [scale, compact]);
 
   // As soon as the user navigates off the initial category, stop the intro so
   // nothing is held back on a timer — content just appears as it's available.
@@ -171,8 +169,8 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
         play("enter");
         return;
       }
-      if (item.setting === "fidelity") {
-        s.cycleFidelity();
+      if (item.setting === "sensitivity") {
+        s.cycleScrollSensitivity();
         play("enter");
         return;
       }

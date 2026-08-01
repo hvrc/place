@@ -34,7 +34,7 @@
    the element to its own composited layer, and a filtered layer inside a
    transformed ancestor gets rasterised at reduced resolution and scaled up.
    That is what made small labels mushy on phones, so there the filter has to
-   go away entirely rather than shrink. MenuShell sets it per fidelity/scale;
+   go away entirely rather than shrink. MenuShell sets it per layout scale;
    declared here so it has one default and so nodes portalled to <body> still
    resolve it. */
 :root {
