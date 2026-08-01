@@ -13,7 +13,8 @@ src/
   frontends/
     classic/      the original white-background grid portfolio (this branch's
                   default route "/"). A plain-React frontend — no engine.
-    psp/          the PSP cross-media-bar (route "/psp"). Built on the engine.
+    psp/          the PSP cross-media-bar, built on the engine. Not routed on
+                  this branch; it's the default "/" on main and psp.
 ```
 
 Path aliases: `@content/*`, `@engine/*`, `@psp/*`, `@/*`.
