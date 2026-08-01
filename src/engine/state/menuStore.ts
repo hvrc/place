@@ -242,6 +242,27 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
       {
         name: "xmb-settings",
         storage: createJSONStorage(() => localStorage),
+        /**
+         * Bumped whenever a stored value stops being meaningful — without it,
+         * `merge` below spreads the old value over the new default and the
+         * default can never take effect for anyone who has visited before.
+         *
+         * v1: the UI volume default moved 50 -> 20 and the steps moved to tens,
+         * so anything saved under v0 is either the old default or off the new
+         * grid entirely (25, 75). Drop just that key; colour and theme are the
+         * visitor's own choices and are kept.
+         */
+        version: 1,
+        migrate: (persisted, version) => {
+          const p = { ...(persisted as { settings?: Partial<MenuSettings> } | null) };
+          // a value stored before versioning existed comes back as undefined
+          if ((version ?? 0) < 1 && p.settings) {
+            const settings = { ...p.settings };
+            delete settings.uiVolume;
+            return { ...p, settings };
+          }
+          return p;
+        },
         // Only persist user settings, not transient navigation position.
         partialize: (s) => ({ settings: s.settings }),
         // Deep-merge so new setting keys keep their defaults for existing users;
