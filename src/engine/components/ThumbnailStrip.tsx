@@ -2,9 +2,14 @@ import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
 import type { MenuMedia } from "@engine/model/types";
-import { useMetrics } from "@engine/layout/metrics";
+import { useMetrics, lengthToPx } from "@engine/layout/metrics";
 import { openTab, viewportWidth } from "@engine/lib/browser";
+import { ProjectMeta } from "./ProjectMeta";
 import styles from "@engine/styles/menu.module.css";
+
+/** Room a folder's label + sub needs beside its icon. Roughly constant: the
+ *  text is set in rem, so it doesn't shrink with the layout. */
+const LABEL_CLEARANCE = 116;
 
 function Thumb({ media }: { media?: MenuMedia }) {
   if (!media) return <div className={styles.pmThumbFill} />;
@@ -37,12 +42,13 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const sel = useMenu((s) => s.itemIndexByGroup[groupId] ?? 0);
   const setInDrill = useMenu((s) => s.setInDrill);
   const openDrill = useMenu((s) => s.openDrill);
-  const actionIndex = useMenu((s) => s.drillActionIndex);
-  const setDrillAction = useMenu((s) => s.setDrillAction);
   const { play } = useSound();
   const {
     CATEGORY_TOP_VH,
     COL_LEFT,
+    PIVOT_LEFT,
+    ROW_PAD_LEFT,
+    ITEM_ICON_CELL,
     ITEM_SPACING,
     FIRST_ITEM_GAP,
     THUMB_W,
@@ -52,6 +58,7 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
     THUMB_META_LEFT,
     RULE_GAP_RIGHT,
     scale,
+    compact,
   } = useMetrics();
 
   // the rule runs from the title out to the right edge, less a small margin
@@ -62,8 +69,15 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   // when the active thumbnail expands, push its neighbours out by the extra
   // half-height so the visual gap around it matches the gap between the rest
   const push = drilled ? (THUMB_H * (THUMB_ACTIVE_SCALE - 1)) / 2 : 0;
-  // preview sits right of the folder labels; drilling in slides it left into place
-  const previewShift = viewportWidth() * 0.16;
+  // Preview sits right of the folder labels; drilling in slides it left into
+  // place. A plain fraction of the viewport isn't enough on its own: the labels
+  // are set in rem, so they take proportionally MORE room as the layout scales
+  // down, and on a tablet the fraction stops clearing them. Take whichever is
+  // further right — the fraction, or the end of the label column.
+  const vw = viewportWidth();
+  const colLeft = lengthToPx(COL_LEFT, vw);
+  const labelsEnd = lengthToPx(PIVOT_LEFT, vw) + ROW_PAD_LEFT + ITEM_ICON_CELL + LABEL_CLEARANCE;
+  const previewShift = Math.max(colLeft + vw * (compact ? 0.32 : 0.16), labelsEnd) - colLeft;
 
   return (
     <motion.div
@@ -126,41 +140,14 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               {highlight && <span className={styles.pmThumbGlow} />}
             </motion.button>
 
-            {highlight &&
-              (() => {
-                // the hints are indexed in the order they're shown, matching
-                // drillActionTargets() — that index is what ←/→ walk along
-                const openIdx = p.link ? 0 : -1;
-                const ghIdx = p.github ? (p.link ? 1 : 0) : -1;
-                const hint = (idx: number, url: string, extra?: string) => (
-                  <button
-                    className={`${styles.pmHint} ${extra ?? ""} ${
-                      actionIndex === idx ? styles.pmHintOn : ""
-                    }`}
-                    onClick={() => {
-                      setDrillAction(idx);
-                      play("enter");
-                      openTab(url);
-                    }}
-                  >
-                    {idx === ghIdx ? "▶ github" : "▶ open"}
-                  </button>
-                );
-                return (
-                  <div
-                    className={styles.pmMeta}
-                    style={{ left: THUMB_META_LEFT, top: THUMB_H / 2 }}
-                  >
-                    <div className={styles.pmTitle}>{p.title}</div>
-                    {p.blurb && <div className={styles.pmBlurb}>{p.blurb}</div>}
-                    <div className={styles.pmRule} style={{ width: ruleWidth }} />
-                    <div className={styles.pmHints}>
-                      {p.link && hint(openIdx, p.link)}
-                      {p.github && hint(ghIdx, p.github, styles.pmHintGithub)}
-                    </div>
-                  </div>
-                );
-              })()}
+            {highlight && (
+              <ProjectMeta
+                item={p}
+                compact={compact}
+                ruleWidth={ruleWidth}
+                style={{ left: THUMB_META_LEFT, top: THUMB_H / 2 }}
+              />
+            )}
           </motion.div>
         );
       })}

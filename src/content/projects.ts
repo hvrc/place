@@ -106,7 +106,7 @@ export const projects: Project[] = [
   {
     id: "rts",
     title: "RTS",
-    blurb: "Word association game powered by WordNet",
+    blurb: "Word association game",
     link: "https://rts0-462101.ue.r.appspot.com/",
     github: "https://github.com/hvrc/rts",
     description:

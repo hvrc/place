@@ -1,7 +1,14 @@
 .root {
   position: fixed;
   inset: 0;
+  /* dvh tracks iOS Safari's collapsing chrome, so the menu keeps reaching both
+     edges instead of coming up short by the height of the URL bar */
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
+  /* swipes drive the menu — the page itself must never pan or bounce */
+  touch-action: none;
+  overscroll-behavior: none;
   font-family: "New Rodin", "Manrope Variable", "Manrope", system-ui, sans-serif;
   user-select: none;
 }
@@ -265,6 +272,26 @@
 /* the quieter of the two links */
 .pmHintGithub {
   color: #b98cff;
+}
+
+/* phone: the project's details drop to the bottom edge, centred, instead of
+   squeezing in beside the thumbnail (portalled out — see ProjectMeta) */
+.pmMetaCompact {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 3.2rem;
+  z-index: 30;
+  transform: none;
+  padding: 0 1.1rem;
+  white-space: normal;
+  /* set from the left, as it is beside the thumbnail on a wide screen */
+  text-align: left;
+}
+
+.pmMetaCompact .pmRule {
+  width: 100%;
 }
 
 /* right-pointing triangle connecting the title label to the media rectangle */
@@ -646,6 +673,12 @@
   font-size: 1.05rem;
 }
 
+/* set from the left on a wide screen; centred once it's along the bottom */
+.noteCompact .noteLines {
+  align-items: center;
+  text-align: center;
+}
+
 /* the text itself is selectable — and clickable when the item has an action */
 .note span {
   pointer-events: auto;
@@ -711,19 +744,26 @@
     letter-spacing: 0.14em;
   }
 
+  /* a long role title has nowhere to go on a phone — let it wrap rather than
+     run off the right edge. min-width:0 is what lets the flex child shrink. */
+  .itemButton {
+    padding-right: 1.1rem;
+  }
+  .itemLabelWrap {
+    min-width: 0;
+  }
   .itemLabel {
     font-size: 0.95rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
   .itemSub {
     font-size: 0.75rem;
-    max-width: 20ch;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
   }
 
-  /* the project meta sits under a much smaller thumbnail — let it wrap */
-  .pmMeta {
-    white-space: normal;
-    max-width: 52vw;
-  }
   .pmTitle {
     font-size: 1.1rem;
   }

@@ -34,8 +34,12 @@ body {
   background: #fff;
   margin: 0;
   padding: 0;
-  /* stop horizontal trackpad scroll from triggering browser back/forward */
-  overscroll-behavior-x: none;
+  height: 100%;
+  /* No rubber-band on either axis: sideways it triggers browser back/forward,
+     and vertically iOS drags the fixed menu off the screen edges, showing this
+     background as a white gap. (The menu also paints body to its own base
+     colour while mounted — see MenuShell.) */
+  overscroll-behavior: none;
 }
 
 body {

@@ -60,6 +60,11 @@ export interface Metrics {
   RULE_GAP_RIGHT: number;
 }
 
+/** Resolve a metric length ("14%" or "61px") against a viewport width. */
+export function lengthToPx(value: string, width: number): number {
+  return value.trim().endsWith("%") ? (parseFloat(value) / 100) * width : parseFloat(value);
+}
+
 export function metricsFor(w: number, h: number): Metrics {
   const compact = w < COMPACT_W;
   const scale = clamp(Math.min(w / DESIGN_W, h / DESIGN_H), MIN_SCALE, 1);
@@ -67,7 +72,9 @@ export function metricsFor(w: number, h: number): Metrics {
 
   const CATEGORY_SPACING = px(196);
   const CATEGORY_ICON_SIZE = px(88);
-  const ITEM_SPACING = px(122);
+  // phones get more air between rows — at half scale the desktop grid packs the
+  // labels tight enough to read as one block
+  const ITEM_SPACING = Math.round(px(122) * (compact ? 1.3 : 1));
   const ITEM_ICON_CELL = px(104);
   const THUMB_W = px(132);
   // the blown-up thumbnail has to leave room for the title beside it
@@ -78,21 +85,25 @@ export function metricsFor(w: number, h: number): Metrics {
     compact,
 
     CATEGORY_SPACING,
-    // tighter pivot on a phone — the labels need the width more than the margin does
-    PIVOT_LEFT: compact ? "9%" : "14%",
+    // half a cell in, so the previous category's icon always peeks in at the
+    // left edge rather than vanishing entirely
+    PIVOT_LEFT: compact ? `${CATEGORY_SPACING / 2 + 6}px` : "14%",
     CATEGORY_TOP_VH: compact ? 17 : 22,
     CATEGORY_ICON_SIZE,
     CATEGORY_GRID_NUDGE: ITEM_SPACING / 2 - CATEGORY_ICON_SIZE / 2,
 
     ITEM_ICON_SIZE: px(76),
     ITEM_SPACING,
-    FIRST_ITEM_GAP: px(18),
+    // the category label sits between the row and the first item; on a phone
+    // the design gap leaves them almost touching
+    FIRST_ITEM_GAP: compact ? px(46) : px(18),
     ITEM_ICON_CELL,
     ROW_PAD_LEFT: CATEGORY_SPACING / 2 - ITEM_ICON_CELL / 2,
 
     SIDE_LEFT: "5%",
     SIDE_CELL: px(88),
-    COL_LEFT: compact ? "12%" : "16%",
+    // well clear of the drill-in side icons, which run to about SIDE_LEFT + SIDE_CELL
+    COL_LEFT: compact ? "32%" : "16%",
     THUMB_W,
     THUMB_H: px(74),
     THUMB_SPACING: px(118),

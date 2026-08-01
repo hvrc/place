@@ -83,6 +83,17 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
 
+  // The menu is position:fixed, so anything iOS exposes past its edges is the
+  // document's own background — white by default. Paint it the menu's base
+  // colour while mounted, and hand it back to the other routes on the way out.
+  useEffect(() => {
+    const previous = document.body.style.background;
+    document.body.style.background = theme === "dark" ? "#0c0c12" : "#e9e8ef";
+    return () => {
+      document.body.style.background = previous;
+    };
+  }, [theme]);
+
   // As soon as the user navigates off the initial category, stop the intro so
   // nothing is held back on a timer — content just appears as it's available.
   useEffect(() => {
