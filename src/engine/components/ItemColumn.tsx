@@ -26,7 +26,6 @@ export function ItemColumn({
   const { categories, palette } = useMenuModel();
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const activeItem = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
-  const scrubY = useMenu((s) => s.scrubY);
   const colorIndex = useMenu((s) => s.settings.colorIndex);
   const uiVolume = useMenu((s) => s.settings.uiVolume);
   const setItem = useMenu((s) => s.setItem);
@@ -67,7 +66,7 @@ export function ItemColumn({
               className={styles.itemRow}
               style={{ top: pivotTop, height: ITEM_SPACING }}
               initial={introStagger ? { opacity: 0, y: offset * ITEM_SPACING } : false}
-              animate={{ opacity: 1, y: offset * ITEM_SPACING + scrubY }}
+              animate={{ opacity: 1, y: offset * ITEM_SPACING }}
               transition={{
                 y: { type: "spring", stiffness: 520, damping: 38 },
                 opacity: {

@@ -96,8 +96,8 @@ function makePlayer(src: string, fallback: Blip) {
   };
 }
 
-const up = makePlayer("/sounds/up.ogg", UP);
-const down = makePlayer("/sounds/down.ogg", DOWN);
+const up = makePlayer("/sounds/psp/up.ogg", UP);
+const down = makePlayer("/sounds/psp/down.ogg", DOWN);
 
 export const sfx = {
   move: (v = 0.5) => up(v),
