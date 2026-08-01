@@ -2,22 +2,14 @@ import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
 import type { MenuMedia } from "@engine/model/types";
-import {
-  CATEGORY_TOP_VH,
-  COL_LEFT,
-  ITEM_SPACING,
-  FIRST_ITEM_GAP,
-  THUMB_W,
-  THUMB_H,
-  THUMB_SPACING,
-  THUMB_ACTIVE_SCALE,
-  THUMB_META_LEFT,
-} from "@engine/layout/metrics";
+import { lengthToPx, rowFade, useMetrics } from "@engine/layout/metrics";
+import { openTab, viewportWidth } from "@engine/lib/browser";
+import { ProjectMeta } from "./ProjectMeta";
 import styles from "@engine/styles/menu.module.css";
 
-function vw() {
-  return typeof window !== "undefined" ? window.innerWidth : 1440;
-}
+/** Room a folder's label + sub needs beside its icon. Roughly constant: the
+ *  text is set in rem, so it doesn't shrink with the layout. */
+const LABEL_CLEARANCE = 116;
 
 function Thumb({ media }: { media?: MenuMedia }) {
   if (!media) return <div className={styles.pmThumbFill} />;
@@ -51,14 +43,42 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const setInDrill = useMenu((s) => s.setInDrill);
   const openDrill = useMenu((s) => s.openDrill);
   const { play } = useSound();
+  const {
+    PIVOT_TOP,
+    COL_LEFT,
+    PIVOT_LEFT,
+    ROW_PAD_LEFT,
+    ITEM_ICON_CELL,
+    ITEM_SPACING,
+    THUMB_W,
+    THUMB_H,
+    THUMB_SPACING,
+    THUMB_ACTIVE_SCALE,
+    THUMB_META_LEFT,
+    RULE_GAP_RIGHT,
+    scale,
+    compact,
+  } = useMetrics();
+
+  // the rule runs from the title out to the right edge, less a small margin
+  const ruleWidth = `calc(100vw - ${COL_LEFT} - ${THUMB_META_LEFT + RULE_GAP_RIGHT}px)`;
 
   const items = groups[groupId]?.items ?? [];
   const drilled = openGroup === groupId;
   // when the active thumbnail expands, push its neighbours out by the extra
   // half-height so the visual gap around it matches the gap between the rest
   const push = drilled ? (THUMB_H * (THUMB_ACTIVE_SCALE - 1)) / 2 : 0;
-  // preview sits right of the folder labels; drilling in slides it left into place
-  const previewShift = vw() * 0.16;
+  // Preview sits right of the folder labels; drilling in slides it left into
+  // place. A plain fraction of the viewport isn't enough on its own: the labels
+  // are set in rem, so they take proportionally MORE room as the layout scales
+  // down, and on a tablet the fraction stops clearing them. Take whichever is
+  // further right — the fraction, or the end of the label column.
+  const vw = viewportWidth();
+  const colLeft = lengthToPx(COL_LEFT, vw);
+  const labelsEnd = lengthToPx(PIVOT_LEFT, vw) + ROW_PAD_LEFT + ITEM_ICON_CELL + LABEL_CLEARANCE;
+  const previewShift = Math.max(colLeft + vw * (compact ? 0.32 : 0.16), labelsEnd) - colLeft;
+  // the active thumbnail centres on the focused folder's row (loop-invariant)
+  const thumbTop = `calc(${PIVOT_TOP} + ${ITEM_SPACING / 2 - THUMB_H / 2}px)`;
 
   return (
     <motion.div
@@ -76,22 +96,26 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
         // triangle/meta; a previewed group just stacks its thumbnails
         const highlight = drilled && active;
         const offset = i - sel;
-        const opacity = active ? 1 : Math.max(0.38, 0.78 - Math.abs(offset) * 0.12);
+        const opacity = active ? 1 : rowFade(offset, 0.78, 0.38);
         return (
           <motion.div
             key={p.id}
             className={styles.pmRow}
             style={{
               left: COL_LEFT,
-              // align the active thumbnail's row with the active folder's row
-              top: `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP + ITEM_SPACING / 2 - THUMB_H / 2}px)`,
+              top: thumbTop,
               zIndex: highlight ? 30 : 1,
             }}
             initial={false}
             animate={{ y: offset * THUMB_SPACING + Math.sign(offset) * push }}
             transition={{ type: "spring", stiffness: 520, damping: 40 }}
           >
-            {highlight && <span className={styles.pmTriangle} />}
+            {highlight && (
+              <span
+                className={styles.pmTriangle}
+                style={{ left: -Math.round(42 * scale), top: THUMB_H / 2 }}
+              />
+            )}
             <motion.button
               className={styles.pmThumb}
               style={{ width: THUMB_W, height: THUMB_H, transformOrigin: "left center" }}
@@ -99,7 +123,13 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               animate={{ scale: highlight ? THUMB_ACTIVE_SCALE : 1, opacity, zIndex: highlight ? 20 : 1 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
               onClick={() => {
-                // works whether previewing (drill in + select) or already drilled (select)
+                // The selected thumbnail IS the project — it opens. Any other
+                // click is navigation: drill in and/or move the selection here.
+                if (highlight && p.link) {
+                  play("enter");
+                  openTab(p.link);
+                  return;
+                }
                 play("move");
                 openDrill(groupId);
                 setInDrill(i);
@@ -111,11 +141,12 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
             </motion.button>
 
             {highlight && (
-              <div className={styles.pmMeta} style={{ left: THUMB_META_LEFT }}>
-                <div className={styles.pmTitle}>{p.title}</div>
-                <div className={styles.pmTech}>{p.tech}</div>
-                {p.link && <div className={styles.pmHint}>▶ open</div>}
-              </div>
+              <ProjectMeta
+                item={p}
+                compact={compact}
+                ruleWidth={ruleWidth}
+                style={{ left: THUMB_META_LEFT, top: THUMB_H / 2 }}
+              />
             )}
           </motion.div>
         );

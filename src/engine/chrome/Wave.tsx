@@ -1,22 +1,21 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { hexToHsl } from "@engine/settings/palette";
+import { prefersReducedMotion } from "@engine/lib/browser";
 
 /**
  * The signature XMB flowing-wave background: several translucent sine ribbons
  * drifting across a vertical gradient. Hue and light/dark come from settings.
  * Honors reduce-motion by drawing a single static frame.
  */
-export function Wave() {
+function WaveCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { palette } = useMenuModel();
   const theme = useMenu((s) => s.settings.theme);
   const colorIndex = useMenu((s) => s.settings.colorIndex);
   const { h: waveHue, s: sat } = hexToHsl(palette[colorIndex] ?? palette[0]);
   // still honour the OS "reduce motion" preference (no user-facing setting)
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = prefersReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,7 +36,11 @@ export function Wave() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    window.addEventListener("resize", resize);
+    // A ResizeObserver, not a window listener: iOS grows and shrinks the
+    // viewport as its toolbars collapse without always firing `resize`, and a
+    // stale canvas leaves an unpainted strip at the screen edge.
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
 
     // Two gentle bands, PSP-style: long wavelength, slow drift.
     const RIBBONS = 2;
@@ -137,9 +140,23 @@ export function Wave() {
     raf = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      observer.disconnect();
     };
   }, [theme, waveHue, sat, reduceMotion]);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 h-full w-full" aria-hidden="true" />;
+  // Absolute, not fixed — that's the whole fix. h-full is 100% of the
+  // containing block: for a fixed element that's the initial containing block,
+  // which on iOS does not follow the collapsing toolbar, and the strip it left
+  // unpainted was the white gap at the top and bottom. Absolute makes .root the
+  // containing block instead, and .root already tracks the live viewport via
+  // 100dvh. The explicit size is required — a canvas is a replaced element, so
+  // inset alone leaves it at its intrinsic 300x150 rather than stretching it.
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
+
+/**
+ * Memoised: it takes no props and reads its own store slices, so it has no
+ * reason to re-render with the rest of the menu on every navigation — and each
+ * render re-parses the palette colour.
+ */
+export const Wave = memo(WaveCanvas);

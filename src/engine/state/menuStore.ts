@@ -2,11 +2,17 @@ import { createStore, type StoreApi } from "zustand/vanilla";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { themeForColor, type Theme } from "@engine/settings/palette";
 import type { MenuModel } from "@engine/model/types";
+import { clamp } from "@engine/lib/browser";
 
 export type { Theme };
 
+/** `soft` upscales low-res PSP art and blurs the type, as the handheld did;
+ *  `crisp` renders Google icons and text at native resolution. */
+export type Fidelity = "soft" | "crisp";
+
 export interface MenuSettings {
   theme: Theme;
+  fidelity: Fidelity;
   colorIndex: number; // index into model.palette
   uiVolume: number; // 0-100
 }
@@ -27,18 +33,30 @@ export interface MenuState {
 
   /** move functions return whether the selection actually changed (false at ends). */
   moveCategory: (dir: -1 | 1) => boolean;
-  moveItem: (dir: -1 | 1) => boolean;
+  /**
+   * Vertical move that spills over: past the end of a column it steps to the
+   * neighbouring category and lands on that column's near edge, so the whole
+   * menu reads as one continuous chain. Reports which axis actually moved
+   * (null at the very first/last item of the menu).
+   */
+  moveItem: (dir: -1 | 1) => "item" | "category" | null;
   setCategory: (index: number) => void;
   setItem: (index: number) => void;
-  currentItemIndex: () => number;
 
   openDrill: (id: string) => void;
   closeDrill: () => void;
   moveInDrill: (dir: -1 | 1) => boolean;
   setInDrill: (index: number) => void;
-  currentDrillIndex: () => number;
+
+  /** Which of the focused leaf's actions (open / github) is highlighted. */
+  drillActionIndex: number;
+  moveDrillAction: (dir: -1 | 1) => boolean;
+  setDrillAction: (index: number) => void;
+  /** The focused leaf's action targets, in the order they're shown. */
+  drillActionTargets: () => string[];
 
   cycleUiVolume: () => void;
+  cycleFidelity: () => void;
 
   openColor: () => void;
   closeColor: () => void;
@@ -46,12 +64,14 @@ export interface MenuState {
   setColor: (index: number) => void;
 }
 
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
-const VOLUME_STEPS = [0, 25, 50, 75, 100];
+/** 0, 10, 20 … 100 */
+const VOLUME_STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
 const nextVolume = (v: number) => {
+  // round an off-grid value (e.g. a 25 persisted before the steps changed) up
+  // to the next one on the grid rather than snapping back to the default
   const i = VOLUME_STEPS.indexOf(v);
-  return VOLUME_STEPS[i === -1 ? 2 : (i + 1) % VOLUME_STEPS.length];
+  if (i === -1) return VOLUME_STEPS.find((s) => s > v) ?? VOLUME_STEPS[0];
+  return VOLUME_STEPS[(i + 1) % VOLUME_STEPS.length];
 };
 
 /**
@@ -75,10 +95,9 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
         settings: {
           theme: themeForColor(palette[defaultColor]),
           colorIndex: defaultColor,
-          uiVolume: 50,
+          uiVolume: 20,
+          fidelity: "soft",
         },
-
-        currentItemIndex: () => get().itemIndexByCategory[get().categoryIndex] ?? 0,
 
         moveCategory: (dir) => {
           let moved = false;
@@ -91,14 +110,29 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
         },
 
         moveItem: (dir) => {
-          let moved = false;
+          let moved: "item" | "category" | null = null;
           set((s) => {
             const cat = s.categoryIndex;
             const count = categories[cat].items.length;
             const current = s.itemIndexByCategory[cat] ?? 0;
-            const next = clamp(current + dir, 0, count - 1);
-            moved = next !== current;
-            return { itemIndexByCategory: { ...s.itemIndexByCategory, [cat]: next } };
+            const next = current + dir;
+
+            if (next >= 0 && next < count) {
+              moved = "item";
+              return { itemIndexByCategory: { ...s.itemIndexByCategory, [cat]: next } };
+            }
+
+            // off the end of the column — carry on into the neighbouring category
+            const nextCat = cat + dir;
+            if (nextCat < 0 || nextCat >= categories.length) return {};
+            moved = "category";
+            const nextCount = categories[nextCat].items.length;
+            // enter from the edge we arrived at: top when descending, bottom when climbing
+            const landing = dir === 1 ? 0 : Math.max(0, nextCount - 1);
+            return {
+              categoryIndex: nextCat,
+              itemIndexByCategory: { ...s.itemIndexByCategory, [nextCat]: landing },
+            };
           });
           return moved;
         },
@@ -116,13 +150,8 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
             };
           }),
 
-        currentDrillIndex: () => {
-          const g = get().openGroup;
-          return g ? get().itemIndexByGroup[g] ?? 0 : 0;
-        },
-
-        openDrill: (id) => set({ openGroup: id }),
-        closeDrill: () => set({ openGroup: null }),
+        openDrill: (id) => set({ openGroup: id, drillActionIndex: 0 }),
+        closeDrill: () => set({ openGroup: null, drillActionIndex: 0 }),
 
         moveInDrill: (dir) => {
           let moved = false;
@@ -132,7 +161,11 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
             const current = s.itemIndexByGroup[s.openGroup] ?? 0;
             const next = clamp(current + dir, 0, count - 1);
             moved = next !== current;
-            return { itemIndexByGroup: { ...s.itemIndexByGroup, [s.openGroup]: next } };
+            // a different leaf has its own actions — start back at the first
+            return {
+              itemIndexByGroup: { ...s.itemIndexByGroup, [s.openGroup]: next },
+              drillActionIndex: 0,
+            };
           });
           return moved;
         },
@@ -146,8 +179,39 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
                 ...s.itemIndexByGroup,
                 [s.openGroup]: clamp(index, 0, count - 1),
               },
+              drillActionIndex: 0,
             };
           }),
+
+        drillActionIndex: 0,
+
+        drillActionTargets: () => {
+          const s = get();
+          if (!s.openGroup) return [];
+          const leaf = groupItems(s.openGroup)[s.itemIndexByGroup[s.openGroup] ?? 0];
+          return [leaf?.link, leaf?.github].filter(Boolean) as string[];
+        },
+
+        setDrillAction: (index) =>
+          set(() => ({
+            drillActionIndex: clamp(index, 0, Math.max(0, get().drillActionTargets().length - 1)),
+          })),
+
+        moveDrillAction: (dir) => {
+          let moved = false;
+          set((s) => {
+            const count = get().drillActionTargets().length;
+            const next = clamp(s.drillActionIndex + dir, 0, Math.max(0, count - 1));
+            moved = next !== s.drillActionIndex;
+            return { drillActionIndex: next };
+          });
+          return moved;
+        },
+
+        cycleFidelity: () =>
+          set((s) => ({
+            settings: { ...s.settings, fidelity: s.settings.fidelity === "soft" ? "crisp" : "soft" },
+          })),
 
         cycleUiVolume: () =>
           set((s) => ({ settings: { ...s.settings, uiVolume: nextVolume(s.settings.uiVolume) } })),

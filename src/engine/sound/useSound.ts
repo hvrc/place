@@ -11,7 +11,7 @@ export function useSound() {
   return useMemo(
     () => ({
       play(kind: SfxKind) {
-        const v = store.getState().settings.uiVolume ?? 50;
+        const v = store.getState().settings.uiVolume;
         if (v > 0) sfx[kind](v / 100);
       },
     }),

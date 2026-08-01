@@ -62,28 +62,44 @@ const UP: Blip = { freqs: [1046.5, 1568], dur: 0.08, peak: 0.32 };
 const DOWN: Blip = { freqs: [659.3, 494], slideTo: [523.3, 392], dur: 0.13, peak: 0.3 };
 
 const buffers: Record<string, AudioBuffer | undefined> = {};
+const loading: Record<string, Promise<void> | undefined> = {};
 
-async function preload(src: string) {
+/**
+ * Decode the first source the browser can handle, keyed by the sample's name.
+ * Safari (and every iOS browser, which is Safari underneath) cannot decode OGG
+ * Vorbis — decodeAudioData just rejects — so each sample also ships as AAC.
+ */
+function preload(name: string, sources: string[]): Promise<void> {
   const audio = getCtx();
-  if (!audio || buffers[src]) return;
-  try {
-    const res = await fetch(src);
-    const data = await res.arrayBuffer();
-    buffers[src] = await audio.decodeAudioData(data);
-  } catch {
-    /* leave undefined; play() falls back to the synth blip */
-  }
+  if (!audio || buffers[name]) return Promise.resolve();
+  if (loading[name]) return loading[name]!;
+
+  loading[name] = (async () => {
+    for (const src of sources) {
+      try {
+        const data = await (await fetch(src)).arrayBuffer();
+        buffers[name] = await audio.decodeAudioData(data);
+        return;
+      } catch {
+        /* unsupported or missing — try the next encoding */
+      }
+    }
+  })().finally(() => {
+    loading[name] = undefined;
+  });
+
+  return loading[name]!;
 }
 
-/** Play a sample; fall back to the synth blip if it isn't ready. */
-function makePlayer(src: string, fallback: Blip) {
-  void preload(src);
+/** Play a sample; fall back to the synth blip until one has decoded. */
+function makePlayer(name: string, sources: string[], fallback: Blip) {
+  void preload(name, sources);
   return (volume = 0.5) => {
     const audio = getCtx();
     if (!audio) return;
-    const buf = buffers[src];
+    const buf = buffers[name];
     if (!buf) {
-      void preload(src);
+      void preload(name, sources);
       blip(fallback, volume);
       return;
     }
@@ -96,8 +112,9 @@ function makePlayer(src: string, fallback: Blip) {
   };
 }
 
-const up = makePlayer("/sounds/psp/up.ogg", UP);
-const down = makePlayer("/sounds/psp/down.ogg", DOWN);
+// AAC first: every browser decodes it, and it saves Safari a failed round trip.
+const up = makePlayer("up", ["/sounds/psp/up.m4a", "/sounds/psp/up.ogg"], UP);
+const down = makePlayer("down", ["/sounds/psp/down.m4a", "/sounds/psp/down.ogg"], DOWN);
 
 export const sfx = {
   move: (v = 0.5) => up(v),

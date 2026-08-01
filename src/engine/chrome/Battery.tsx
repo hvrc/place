@@ -23,6 +23,9 @@ function levelToBars(level: number): number {
  * the level (0–3 bars); when charging (or when the API is unavailable) it plays
  * the charging loop 0 -> 1 -> 2 -> 3.
  */
+/** x offsets of the three level bars — fixed geometry. */
+const barX = [6.6, 12.1, 17.6];
+
 export function Battery({ className }: { className?: string }) {
   const [bars, setBars] = useState(0);
 
@@ -80,7 +83,7 @@ export function Battery({ className }: { className?: string }) {
   }, []);
 
   // bar left edges, left (terminal side) -> right; fill right -> left
-  const barX = [6.6, 12.1, 17.6];
+
 
   return (
     <svg

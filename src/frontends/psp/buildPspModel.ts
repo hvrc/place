@@ -10,6 +10,24 @@ import type {
 import { projectGroups, groupProjects } from "./projectGroups";
 import { pspPalette, pspDefaultColor } from "./pspTheme";
 
+/**
+ * Google stand-ins for the PSP icons, used when the menu runs crisp (that mode
+ * is Material-only — the PSP art exists solely at handheld resolution).
+ */
+const iconAlt: Record<string, string> = {
+  manual: "g:info",
+  umd: "g:album",
+  system: "g:business_center",
+  network: "g:public",
+  game: "g:sports_esports",
+  music: "g:music_note",
+  photo: "g:photo_camera",
+  video: "g:play_circle",
+  savedata: "g:save",
+  cnf_theme: "g:palette",
+  cnf_sound: "g:volume_up",
+};
+
 // Per-role Google Material Symbols for the Experience section.
 const experienceIcon: Record<string, string> = {
   iseehear: "g:genetics",
@@ -41,10 +59,10 @@ function toDrillItem(p: Project): DrillItem {
   return {
     id: p.id,
     title: p.title,
-    tech: p.tech,
+    blurb: p.blurb,
     media: p.media,
     link: p.link,
-    internal: p.internal,
+    github: p.github,
     backdrop: projectBackdrop(p),
   };
 }
@@ -59,12 +77,7 @@ export function buildPspModel(): MenuModel {
 
   const groups: Record<string, DrillGroup> = {};
   for (const g of projectGroups) {
-    groups[g.id] = {
-      id: g.id,
-      label: g.label,
-      icon: g.icon,
-      items: groupProjects(g.id).map(toDrillItem),
-    };
+    groups[g.id] = { id: g.id, items: groupProjects(g.id).map(toDrillItem) };
   }
 
   const categories: MenuCategory[] = [
@@ -73,13 +86,14 @@ export function buildPspModel(): MenuModel {
       label: "Profile",
       icon: "g:person",
       items: [
-        { id: "about", label: "About", icon: "manual" },
+        { id: "about", label: "About", icon: "manual", note: profile.about },
         {
           id: "email",
           label: "Email",
-          sub: profile.email,
           icon: "g:mark_email_read",
-          action: { type: "external", target: `mailto:${profile.email}` },
+          // the address itself is the note — selectable, and click/Enter copies it
+          action: { type: "copy", target: profile.email, done: "Copied to clipboard!" },
+          note: { lines: [profile.email] },
         },
         {
           id: "resume",
@@ -133,7 +147,7 @@ export function buildPspModel(): MenuModel {
             label: s.label,
             sub: s.href.replace(/^https?:\/\/(www\.)?/, ""),
             icon: socialIcon[s.id] ?? "network",
-            action: { type: s.internal ? "route" : "external", target: s.href },
+            action: { type: "external", target: s.href },
             backdrop: s.backdrop ? { link: s.backdrop, contain: s.backdropContain } : null,
           })
         ),
@@ -146,9 +160,10 @@ export function buildPspModel(): MenuModel {
       items: [
         { id: "wave", label: "Color", icon: "cnf_theme", setting: "color" },
         { id: "uiVolume", label: "UI volume", icon: "cnf_sound", setting: "volume" },
+        { id: "fidelity", label: "Fidelity", icon: "g:blur_on", setting: "fidelity" },
       ],
     },
   ];
 
-  return { categories, groups, palette: pspPalette, defaultColorHex: pspDefaultColor };
+  return { categories, groups, palette: pspPalette, defaultColorHex: pspDefaultColor, iconAlt };
 }

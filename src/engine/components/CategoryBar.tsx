@@ -2,20 +2,10 @@ import { motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { Icon } from "@engine/icons/Icon";
 import { useSound } from "@engine/sound/useSound";
-import {
-  CATEGORY_SPACING,
-  PIVOT_LEFT,
-  CATEGORY_TOP_VH,
-  CATEGORY_ICON_SIZE,
-  CATEGORY_GRID_NUDGE,
-} from "@engine/layout/metrics";
+import { useHoverIndex } from "@engine/input/useHoverIndex";
+import type { IntroStagger } from "@engine/model/types";
+import { useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
-
-/** Optional first-load reveal: each icon fades in `base + i*step` seconds in. */
-export interface IntroStagger {
-  base: number;
-  step: number;
-}
 
 /** The horizontal category row (the sideways menu): the active icon is pinned at
  *  the pivot and the whole row slides under it. */
@@ -24,12 +14,14 @@ export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | nu
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const setCategory = useMenu((s) => s.setCategory);
   const { play } = useSound();
+  const { hovered, hoverProps } = useHoverIndex();
+  const { CATEGORY_SPACING, PIVOT_LEFT, CATEGORY_TOP, CATEGORY_ICON_SIZE } = useMetrics();
 
   return (
     <motion.div
       className="absolute flex items-start"
       style={{
-        top: `calc(${CATEGORY_TOP_VH}vh + ${CATEGORY_GRID_NUDGE}px)`,
+        top: CATEGORY_TOP,
         left: PIVOT_LEFT,
         zIndex: 30,
       }}
@@ -39,9 +31,11 @@ export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | nu
     >
       {categories.map((cat, i) => {
         const active = i === categoryIndex;
+        const hot = hovered === i && !active;
         return (
           <motion.button
             key={cat.id}
+            {...hoverProps(i)}
             onClick={() => {
               if (i !== categoryIndex) play("category");
               setCategory(i);
@@ -59,7 +53,7 @@ export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | nu
             }}
           >
             <span className={styles.glyph}>
-              <Icon icon={cat.icon} focused={active} size={CATEGORY_ICON_SIZE} />
+              <Icon icon={cat.icon} focused={active} hovered={hot} size={CATEGORY_ICON_SIZE} />
             </span>
             <span className={`${styles.catLabel} ${active ? styles.labelShown : ""}`}>
               {cat.label}
