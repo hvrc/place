@@ -20,7 +20,7 @@ export function ChannelGrid({
 }: {
   page: number;
   setPage: (p: number) => void;
-  onOpen: (c: Channel) => void;
+  onOpen: (c: Channel, from: DOMRect) => void;
   onHover?: (c: Channel | null) => void;
 }) {
   const last = pages.length - 1;

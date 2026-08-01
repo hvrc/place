@@ -23,8 +23,14 @@ export interface Channel {
   description?: string;
   /** Banner art for the tile. Absent → the tile is drawn from `tile` instead. */
   media?: Media;
-  /** The live site loaded into the channel screen's banner. */
+  /** The live site, opened by the channel screen's Start button. */
   link?: string;
+  /**
+   * What the banner actually frames. Same site as `link`, but forced to https —
+   * a page served over https can't embed an http frame, and a couple of the
+   * older App Engine deploys are still written down as http.
+   */
+  frame?: string;
   /** `link` is a route inside this app rather than an external site. */
   internal?: boolean;
   /** Secondary link — the second button on the channel screen. */
@@ -80,6 +86,12 @@ function unframeable(link?: string): boolean {
   return !link || /github\.com/.test(link);
 }
 
+/** Relative routes stay as they are; absolute ones get upgraded to https. */
+function frameSrc(link?: string): string | undefined {
+  if (!link) return undefined;
+  return link.replace(/^http:\/\//, "https://");
+}
+
 /**
  * Display order, carried over from the legacy site's project grid. The content
  * layer's own order is authoring order; this is the order Harsh shows them in.
@@ -115,6 +127,7 @@ const projectChannels: Channel[] = ordered.map((p) => ({
   description: p.description,
   media: p.media,
   link: p.link,
+  frame: frameSrc(p.link),
   internal: p.internal,
   github: p.github,
   download: p.download,
@@ -130,6 +143,7 @@ const experienceChannels: Channel[] = experience.map((r) => ({
   blurb: `${r.title} · ${r.location}`,
   description: `${r.title}<br/><b>${r.period}</b> · ${r.location}`,
   link: r.link,
+  frame: frameSrc(r.link),
   noFrame: unframeable(r.link),
   tile: {
     from: "#ffffff",

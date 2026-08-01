@@ -135,11 +135,11 @@ function Banner({
 }) {
   if (channel.kind === "disc") return <AboutPanel />;
 
-  if (framed && channel.link) {
+  if (framed && channel.frame) {
     return (
       <iframe
         key={channel.id}
-        src={channel.link}
+        src={channel.frame}
         title={channel.title}
         onLoad={onLoaded}
         allow="accelerometer; autoplay; camera; clipboard-write; encrypted-media; fullscreen; gyroscope; microphone; midi; xr-spatial-tracking"

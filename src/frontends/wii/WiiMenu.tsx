@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { type Channel } from "./channels";
 import { ChannelGrid } from "./menu/ChannelGrid";
+import { ChannelZoom } from "./menu/ChannelZoom";
 import { ChannelScreen } from "./screens/ChannelScreen";
 import { DataScreen } from "./screens/DataScreen";
 import { MessageBoard } from "./board/MessageBoard";
@@ -49,14 +50,18 @@ export default function WiiMenu() {
     setFlash((n) => n + 1);
   }, []);
 
+  /* The tile that's mid-leap, if any — see ChannelZoom. */
+  const [zoom, setZoom] = useState<{ channel: Channel; from: DOMRect } | null>(null);
+
   const openChannel = useCallback(
-    (c: Channel) => {
+    (c: Channel, from: DOMRect) => {
       play("select");
       visit(c.id);
+      setZoom({ channel: c, from });
       setChannel(c);
-      go("channel");
+      setScreen("channel");
     },
-    [go, play, visit]
+    [play, visit]
   );
 
   const backToMenu = useCallback(() => {
@@ -180,6 +185,13 @@ export default function WiiMenu() {
         {screen === "data" && <DataScreen onExit={backToMenu} />}
       </div>
 
+      {zoom && (
+        <ChannelZoom
+          channel={zoom.channel}
+          from={zoom.from}
+          onDone={() => setZoom(null)}
+        />
+      )}
       {flash > 0 && <div key={flash} className={styles.flash} />}
       <Pointer />
     </div>

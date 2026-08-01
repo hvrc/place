@@ -17,7 +17,8 @@ export function ChannelTile({
 }: {
   channel: Channel;
   live: boolean;
-  onOpen: (c: Channel) => void;
+  /** The tile's on-screen box goes with it, so the open can zoom out of here. */
+  onOpen: (c: Channel, from: DOMRect) => void;
   onHover?: (c: Channel | null) => void;
 }) {
   const [hot, setHot] = useState(false);
@@ -54,7 +55,7 @@ export function ChannelTile({
         onPointerMove={track}
         onFocus={enter}
         onBlur={leave}
-        onClick={() => onOpen(channel)}
+        onClick={() => onOpen(channel, ref.current!.getBoundingClientRect())}
         aria-label={channel.title}
       >
         <ChannelArt channel={channel} live={live} />

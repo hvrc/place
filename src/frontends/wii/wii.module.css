@@ -18,7 +18,11 @@
   --cols: 4;
   --rows: 3;
   --gap: 0.7em;
-  --page-w: min(80vw, 138vh);
+  --page-w: min(80vw, 152vh);
+  /* Bar furniture, sized off the band rather than the em grid so the corner
+     buttons and the clock keep the console's proportions at any viewport. */
+  --orb: calc(var(--bar-h) * 0.5);
+  --clock: calc(var(--bar-h) * 0.42);
   /* The page sits left of centre; the slack on the right is where the next
      page's first column peeks through, exactly like the real menu. */
   --page-x: calc((100vw - var(--page-w)) * 0.38);
@@ -59,13 +63,35 @@
   cursor: none;
 }
 
+/* Portrait phones stack the same twelve slots two across and six down, so a
+   channel never changes page when the device turns. The bar's furniture has to
+   shrink harder than the band does or the clock runs into the orbs. */
 @media (orientation: portrait) and (max-width: 760px) {
   .root {
     --cols: 2;
     --rows: 6;
     --page-w: min(92vw, 44vh);
     --page-x: calc((100vw - var(--page-w)) * 0.4);
-    --bar-h: clamp(72px, 15vh, 150px);
+    --bar-h: clamp(68px, 13vh, 130px);
+    --orb: calc(var(--bar-h) * 0.44);
+    --clock: calc(var(--bar-h) * 0.3);
+  }
+
+  .barInner {
+    padding: 0 calc(var(--bar-h) * 0.14) calc(var(--bar-h) * 0.06);
+  }
+
+  .barSide {
+    gap: calc(var(--bar-h) * 0.1);
+  }
+
+  .channelFoot {
+    gap: 0.8em;
+    padding: 0.8em;
+  }
+
+  .bannerTitle h1 {
+    font-size: 2.6em;
   }
 }
 
@@ -289,8 +315,8 @@
 }
 
 .emptyMark {
-  width: 26%;
-  opacity: 0.5;
+  width: 38%;
+  opacity: 0.55;
   color: #d3d7d9;
 }
 
@@ -431,8 +457,8 @@
   position: relative;
   /* Sized off the bar, not the em grid, so the two corner buttons keep the
      console's proportion (about half the band's height) at every viewport. */
-  width: calc(var(--bar-h) * 0.5);
-  height: calc(var(--bar-h) * 0.5);
+  width: var(--orb);
+  height: var(--orb);
   border-radius: 50%;
   border: 0;
   padding: 0;
@@ -463,8 +489,8 @@
 }
 
 .orbSmall {
-  width: calc(var(--bar-h) * 0.3);
-  height: calc(var(--bar-h) * 0.3);
+  width: calc(var(--orb) * 0.6);
+  height: calc(var(--orb) * 0.6);
   box-shadow: none;
   background: none;
   color: #55b6dd;
@@ -508,7 +534,7 @@
 }
 
 .clockTime {
-  font-size: calc(var(--bar-h) * 0.42);
+  font-size: var(--clock);
   font-weight: 300;
   letter-spacing: 0.02em;
 }
@@ -522,13 +548,13 @@
 }
 
 .clockMeridiem {
-  font-size: calc(var(--bar-h) * 0.14);
+  font-size: calc(var(--clock) * 0.33);
   letter-spacing: 0.06em;
 }
 
 .clockDate {
   margin-top: 0.08em;
-  font-size: calc(var(--bar-h) * 0.2);
+  font-size: calc(var(--clock) * 0.48);
   font-weight: 300;
   color: #6f767a;
   letter-spacing: 0.03em;
@@ -1245,6 +1271,16 @@
     opacity: 0;
     transform: scale(0.82);
   }
+}
+
+/* The tile mid-leap on its way to becoming the channel screen. */
+.zoom {
+  position: fixed;
+  overflow: hidden;
+  z-index: 18;
+  pointer-events: none;
+  background: #fff;
+  box-shadow: 0 0.6em 2em rgba(20, 34, 44, 0.3);
 }
 
 /* Blanket "hold on" flash the real menu uses between screens. */

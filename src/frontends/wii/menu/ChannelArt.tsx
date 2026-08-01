@@ -39,6 +39,12 @@ export function ChannelArt({ channel, live = true }: { channel: Channel; live?: 
           loop
           playsInline
           preload="metadata"
+          // Several demos open on a blank frame while the sketch warms up.
+          // Start a little way in so the tile has something on it immediately.
+          onLoadedMetadata={(e) => {
+            const el = e.currentTarget;
+            if (el.currentTime === 0 && el.duration > 2) el.currentTime = el.duration * 0.12;
+          }}
         />
       </div>
     );
