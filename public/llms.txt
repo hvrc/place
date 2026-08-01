@@ -1,0 +1,38 @@
+# hvrc · place
+
+> The portfolio, playground and digital hub of Harsh Rajmachikar — a developer
+> working across software, games and music, who spends his time studying
+> technologies and building things with them.
+
+Harsh Rajmachikar (handle: **hvrc**) is a Creative Systems Developer at Iseehear.
+He has previously worked as a Freelance Software Developer at Getafix Design, an
+Integrations Engineer at Healthy Planet, and a Data Analyst at Gromor Finance.
+
+hvrc.place serves three purposes at once: it is his portfolio, a playground where
+he uploads experiments as he builds them, and the central hub linking the rest of
+his work online. The site itself is one of the experiments — the interface is a
+recreation of the PlayStation Portable's XMB menu, built in React.
+
+## What he builds
+
+- **Software** — web apps, tools and APIs (Python, TypeScript, React, Flask, Node)
+- **Games** — Carrom, RTS (a WordNet word-association game), Prim's Organism
+- **Generative art & simulation** — hॐ, Conway's Game of Life, flocking and dithering studies
+- **Music** — production, plus instruments like Boteh, a synthesiser played with hand gestures tracked by a camera
+- **Hardware** — a MIDI controller built with Arduino and C++
+
+## Pages
+
+- [Home](https://hvrc.place/): the XMB menu — profile, projects, experience, links and settings
+- [hॐ](https://hvrc.place/hom): generative art made with flocking and dithering
+- [Prim's Organism](https://hvrc.place/prim): a game built on Prim's maze generation
+- [Resume](https://hvrc.place/resume)
+
+## Elsewhere
+
+- [GitHub](https://github.com/hvrc)
+- [LinkedIn](https://www.linkedin.com/in/hvrc/)
+- [YouTube](https://www.youtube.com/@hvrc0)
+- [SoundCloud](https://soundcloud.com/hvrc0)
+- [Instagram](https://www.instagram.com/hvrc2000)
+- Email: harshrajmachikar@gmail.com
