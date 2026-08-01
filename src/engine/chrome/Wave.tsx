@@ -145,9 +145,12 @@ export function Wave() {
     };
   }, [theme, waveHue, sat, reduceMotion]);
 
-  // Absolute, not fixed: this fills .root exactly, and .root already tracks the
-  // live viewport via 100dvh. `h-full` resolved against the initial containing
-  // block instead, which on iOS does not follow the collapsing toolbar — the
-  // strip it left unpainted was the white gap at the top and bottom.
-  return <canvas ref={canvasRef} className="absolute inset-0" aria-hidden="true" />;
+  // Absolute, not fixed — that's the whole fix. h-full is 100% of the
+  // containing block: for a fixed element that's the initial containing block,
+  // which on iOS does not follow the collapsing toolbar, and the strip it left
+  // unpainted was the white gap at the top and bottom. Absolute makes .root the
+  // containing block instead, and .root already tracks the live viewport via
+  // 100dvh. The explicit size is required — a canvas is a replaced element, so
+  // inset alone leaves it at its intrinsic 300x150 rather than stretching it.
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
