@@ -41,10 +41,10 @@ function toDrillItem(p: Project): DrillItem {
   return {
     id: p.id,
     title: p.title,
-    tech: p.tech,
+    blurb: p.blurb,
     media: p.media,
     link: p.link,
-    internal: p.internal,
+    github: p.github,
     backdrop: projectBackdrop(p),
   };
 }
@@ -73,13 +73,14 @@ export function buildPspModel(): MenuModel {
       label: "Profile",
       icon: "g:person",
       items: [
-        { id: "about", label: "About", icon: "manual" },
+        { id: "about", label: "About", icon: "manual", note: profile.about },
         {
           id: "email",
           label: "Email",
-          sub: profile.email,
           icon: "g:mark_email_read",
-          action: { type: "external", target: `mailto:${profile.email}` },
+          // the address itself is the note — selectable, and click/Enter copies it
+          action: { type: "copy", target: profile.email, done: "Copied to clipboard!" },
+          note: { lines: [profile.email] },
         },
         {
           id: "resume",

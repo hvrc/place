@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useMenuStore } from "@engine/state/MenuContext";
 import { useSound } from "@engine/sound/useSound";
 
@@ -24,6 +24,14 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
   const { play } = useSound();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const wheel = useRef({ ax: 0, ay: 0, lastMove: 0, lastEvt: 0 });
+
+  /** A vertical move can spill into the next category — cue follows the axis. */
+  const playVertical = useCallback(
+    (moved: "item" | "category" | null) => {
+      if (moved) play(moved === "category" ? "category" : "move");
+    },
+    [play]
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -63,7 +71,19 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
             e.preventDefault();
             if (s.moveInDrill(1)) play("move");
             break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (s.moveDrillAction(1)) play("move");
+            break;
           case "ArrowLeft":
+            e.preventDefault();
+            // step back along the actions first; leave the group from the first
+            if (s.moveDrillAction(-1)) play("move");
+            else {
+              s.closeDrill();
+              play("back");
+            }
+            break;
           case "Escape":
             e.preventDefault();
             s.closeDrill();
@@ -89,11 +109,11 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
           break;
         case "ArrowUp":
           e.preventDefault();
-          if (s.moveItem(-1)) play("move");
+          playVertical(s.moveItem(-1));
           break;
         case "ArrowDown":
           e.preventDefault();
-          if (s.moveItem(1)) play("move");
+          playVertical(s.moveItem(1));
           break;
         case "Enter":
         case " ": {
@@ -105,7 +125,7 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [store, play, activate, openDrillItem]);
+  }, [store, play, playVertical, activate, openDrillItem]);
 
   const onWheel = (e: React.WheelEvent) => {
     const now = performance.now();
@@ -142,13 +162,20 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
 
     if (!horizontal && Math.abs(w.ay) >= STEP) {
       const dir = w.ay > 0 ? 1 : -1;
-      const moved = s.openGroup ? s.moveInDrill(dir) : s.moveItem(dir);
-      if (moved) play("move");
+      if (s.openGroup) {
+        if (s.moveInDrill(dir)) play("move");
+      } else {
+        playVertical(s.moveItem(dir));
+      }
       w.ax = 0;
       w.ay = 0;
       w.lastMove = now;
     } else if (horizontal && Math.abs(w.ax) >= STEP) {
-      if (!s.openGroup && s.moveCategory(w.ax > 0 ? 1 : -1)) play("category");
+      const dir = w.ax > 0 ? 1 : -1;
+      // drilled in, sideways walks the leaf's actions instead of the categories
+      if (s.openGroup) {
+        if (s.moveDrillAction(dir)) play("move");
+      } else if (s.moveCategory(dir)) play("category");
       w.ax = 0;
       w.ay = 0;
       w.lastMove = now;
@@ -193,7 +220,7 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > THRESH) {
       if (s.moveCategory(dx < 0 ? 1 : -1)) play("category");
     } else if (Math.abs(dy) > THRESH) {
-      if (s.moveItem(dy < 0 ? 1 : -1)) play("move");
+      playVertical(s.moveItem(dy < 0 ? 1 : -1));
     }
     touchStart.current = null;
   };

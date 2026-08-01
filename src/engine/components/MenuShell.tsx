@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useMenu, useMenuModel, useMenuStore } from "@engine/state/MenuContext";
 import { useMenuInput } from "@engine/input/useMenuInput";
 import { CategoryBar } from "./CategoryBar";
 import { ItemColumn } from "./ItemColumn";
+import { ItemNote } from "./ItemNote";
 import { DrillColumn } from "./DrillColumn";
 import { ThumbnailStrip } from "./ThumbnailStrip";
 import { Backdrop } from "./Backdrop";
 import { Wave } from "@engine/chrome/Wave";
 import { Clock } from "@engine/chrome/Clock";
 import { Wordmark } from "@engine/chrome/Wordmark";
+import { Hints } from "@engine/chrome/Hints";
 import { ColorPicker } from "@engine/settings/ColorPicker";
 import { useSound } from "@engine/sound/useSound";
 import styles from "@engine/styles/menu.module.css";
@@ -20,6 +22,29 @@ import styles from "@engine/styles/menu.module.css";
 // category icons, then the columns — so the essentials appear first even if the
 // rest is still loading.
 let introPlayed = false;
+
+/** How long a copy confirmation sits in place of the item's note. */
+const FLASH_MS = 2000;
+
+/** Clipboard write with a fallback for browsers/contexts without the async API. */
+async function copyText(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      /* fall through to the textarea trick */
+    }
+  }
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand("copy");
+  el.remove();
+}
 
 /**
  * The full cross-media-bar menu: ambient chrome (wave/clock/wordmark), the
@@ -39,12 +64,16 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
     return () => clearTimeout(t);
   }, []);
 
-  // The ONLY artificial staggering is the first-load reveal of the essentials:
-  // category icons cascade left→right, then — once the row is done — the first
-  // column's items cascade top→down. Everything past that appears as available
-  // (no timers), in natural order.
+  // The ONLY artificial staggering is the first-load reveal of the essentials,
+  // outside-in: wave, wordmark, clock, then the category icons cascading
+  // left→right, then — once the row is done — the first column's items cascading
+  // top→down. An item's note rides in with its own icon (never ahead of it), and
+  // the control legend brings up the rear. Everything past that appears as
+  // available (no timers), in natural order.
   const catIntro = introActive ? { base: 0.5, step: 0.08 } : null;
   const colIntro = introActive ? { base: 1.1, step: 0.08 } : null;
+  /** Last thing in: one beat after the deepest column item has landed. */
+  const HINTS_DELAY = 1.7;
 
   // Staggered fade-in props; a no-op (renders straight to visible) once the
   // intro has played, so nothing re-animates on later re-renders / drill toggles.
@@ -57,9 +86,14 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       ease: "easeOut" as const,
     },
   });
+  // Transient confirmation shown in place of an item's note (e.g. after a copy).
+  const [flash, setFlash] = useState<{ id: string; text: string } | null>(null);
+  const flashTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => clearTimeout(flashTimer.current), []);
+
   const navigate = useNavigate();
   const store = useMenuStore();
-  const { categories, groups } = useMenuModel();
+  const { categories } = useMenuModel();
   const { play } = useSound();
 
   const theme = useMenu((s) => s.settings.theme);
@@ -101,25 +135,30 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
         return;
       }
       if (item.action) {
+        const action = item.action;
         play("enter");
-        if (item.action.type === "route") navigate(item.action.target);
-        else window.open(item.action.target, "_blank", "noopener,noreferrer");
+        if (action.type === "copy") {
+          void copyText(action.target).then(() => {
+            setFlash({ id: item.id, text: action.done ?? "Copied" });
+            clearTimeout(flashTimer.current);
+            flashTimer.current = window.setTimeout(() => setFlash(null), FLASH_MS);
+          });
+        } else if (action.type === "route") navigate(action.target);
+        else window.open(action.target, "_blank", "noopener,noreferrer");
       }
     },
     [store, categories, navigate, play]
   );
 
-  // Activate the currently selected leaf inside an open drill-in group.
+  // Open the focused action (open / github) of the selected drill-in leaf. Both
+  // leave in a new tab, so the menu is still here when you come back.
   const openDrillItem = useCallback(() => {
     const s = store.getState();
-    if (!s.openGroup) return;
-    const list = groups[s.openGroup]?.items ?? [];
-    const p = list[s.itemIndexByGroup[s.openGroup] ?? 0];
-    if (!p?.link) return;
+    const target = s.drillActionTargets()[s.drillActionIndex];
+    if (!target) return;
     play("enter");
-    if (p.internal) navigate(p.link);
-    else window.open(p.link, "_blank", "noopener,noreferrer");
-  }, [store, groups, navigate, play]);
+    window.open(target, "_blank", "noopener,noreferrer");
+  }, [store, play]);
 
   const { onWheel, onTouchStart, onTouchEnd } = useMenuInput({ activate, openDrillItem });
 
@@ -130,11 +169,13 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {/* ── ambient ── */}
       <motion.div {...fadeIn(0, 0.6)}>
         <Wave />
       </motion.div>
       <Backdrop />
 
+      {/* ── frame chrome ── */}
       <motion.div {...fadeIn(0.3)}>
         <Wordmark text={wordmark} />
       </motion.div>
@@ -147,6 +188,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
         {thumbGroup && <ThumbnailStrip key={thumbGroup} groupId={thumbGroup} />}
       </AnimatePresence>
 
+      {/* ── the menu itself, and the note that belongs to the focused item ── */}
       <AnimatePresence mode="wait">
         {openGroup ? (
           <DrillColumn key="drill" groupId={openGroup} />
@@ -157,8 +199,14 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
           </motion.div>
         )}
       </AnimatePresence>
+      <ItemNote flash={flash} introStagger={colIntro} onActivate={activate} />
 
       {colorOpen && <ColorPicker />}
+
+      {/* ── last in ── */}
+      <motion.div {...fadeIn(HINTS_DELAY)}>
+        <Hints />
+      </motion.div>
     </div>
   );
 }

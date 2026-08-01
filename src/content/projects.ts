@@ -13,6 +13,8 @@ export interface Project {
   description: string;
   /** Short one-line tech summary, plain text (derived from description). */
   tech: string;
+  /** One-line summary shown under the title in the PSP menu. */
+  blurb?: string;
   media?: Media;
   /** True when link points to a route inside this app rather than an external site. */
   internal?: boolean;
@@ -27,6 +29,7 @@ export const projects: Project[] = [
   {
     id: "carrom",
     title: "Carrom",
+    blurb: "Indian tabletop game, a lot like billiards",
     link: "https://carrom-461712.ue.r.appspot.com/",
     github: "https://github.com/hvrc/carrom",
     description:
@@ -37,6 +40,7 @@ export const projects: Project[] = [
   {
     id: "hom",
     title: "hom",
+    blurb: "Generative art from flocking and dithering",
     link: "/hom",
     internal: true,
     description:
@@ -47,6 +51,7 @@ export const projects: Project[] = [
   {
     id: "game-of-life",
     title: "Game of Life",
+    blurb: "Conway's Game of Life, simulated",
     link: "https://generative-380518.ue.r.appspot.com/gameoflife",
     github: "https://github.com/hvrc/game-of-life",
     description:
@@ -57,6 +62,7 @@ export const projects: Project[] = [
   {
     id: "newsletter",
     title: "Newsletter Generator",
+    blurb: "Turns article links into .html newsletters",
     link: "https://newsletter-419717.an.r.appspot.com/newsletter-app/",
     github: "https://github.com/hvrc/newsletter",
     description:
@@ -67,7 +73,9 @@ export const projects: Project[] = [
   {
     id: "shutdowner",
     title: "Shutdown Scheduler",
+    blurb: "Windows app to schedule a shutdown",
     link: "https://github.com/hvrc/shutdowner",
+    github: "https://github.com/hvrc/shutdowner",
     download:
       "https://github.com/hvrc/shutdowner/releases/download/v1.1.0/shutdowner-windows.zip",
     description: "Windows app to schedule a shutdown<br/>Using <b>Python &amp; Tkinter</b>",
@@ -77,7 +85,9 @@ export const projects: Project[] = [
   {
     id: "pngtoplt",
     title: "PNG to PLT",
+    blurb: "Converts QR code PNGs for laser engravers",
     link: "https://github.com/hvrc/pngtoplt",
+    github: "https://github.com/hvrc/pngtoplt",
     description:
       "Converts a .png file of a qr code into a .plt file used by laser engravers<br/>Using <b>Python, Prolog, HP-GL</b>",
     tech: "Python, Prolog, HP-GL",
@@ -85,6 +95,7 @@ export const projects: Project[] = [
   {
     id: "boteh",
     title: "Boteh",
+    blurb: "Synthesizer played with hand gestures",
     link: "http://boteh-461905.appspot.com/",
     github: "https://github.com/hvrc/boteh",
     description:
@@ -95,6 +106,7 @@ export const projects: Project[] = [
   {
     id: "rts",
     title: "RTS",
+    blurb: "Word association game powered by WordNet",
     link: "https://rts0-462101.ue.r.appspot.com/",
     github: "https://github.com/hvrc/rts",
     description:
@@ -105,6 +117,7 @@ export const projects: Project[] = [
   {
     id: "bunshi",
     title: "Bunshi",
+    blurb: "Bond line structure of any chemical",
     link: "https://bunshi.ue.r.appspot.com/",
     github: "https://github.com/hvrc/bunshi",
     description:
@@ -115,7 +128,9 @@ export const projects: Project[] = [
   {
     id: "loan-reports",
     title: "Loan Reports",
+    blurb: "Generates and visualizes custom loan reports",
     link: "https://github.com/hvrc/reportsapi",
+    github: "https://github.com/hvrc/reportsapi",
     description:
       "API that Generates custom loan reports and visualizes data<br/>Using <b>Python, Pandas, High charts, Django</b>",
     tech: "Python, Pandas, Highcharts, Django",
@@ -125,7 +140,9 @@ export const projects: Project[] = [
   {
     id: "midi-controller",
     title: "Midi Controller",
+    blurb: "Hardware MIDI controller for a DAW",
     link: "https://github.com/hvrc/midicontroller",
+    github: "https://github.com/hvrc/midicontroller",
     description:
       "A MIDI controller with buttons and potentiometers to control a DAW<br/>Using <b>C++ and Arduino</b>",
     tech: "C++, Arduino",
@@ -135,7 +152,9 @@ export const projects: Project[] = [
   {
     id: "prims-organism",
     title: "Prim's Organism",
+    blurb: "A game built on Prim's maze generation",
     link: "/prim",
+    github: "https://github.com/hvrc/place",
     internal: true,
     description:
       "A game based on Prim's Maze Generation Algorithm<br/>Using <b>React with JSX</b>",

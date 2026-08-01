@@ -209,23 +209,63 @@
   filter: blur(0.45px);
 }
 
-.pmTech {
-  margin-top: 0.25rem;
-  font-size: 0.82rem;
+/* one-liner between the title and its rule */
+.pmBlurb {
+  margin-top: 0.22rem;
+  font-size: 0.85rem;
   font-weight: 300;
   color: #ffffff;
-  opacity: 0.7;
+  opacity: 0.75;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   filter: blur(0.45px);
 }
 
+/* XMB info rule: divides the title from the actions beneath it (width inline,
+   measured from the title out to the right edge of the screen) */
+.pmRule {
+  height: 1px;
+  margin: 0.4rem 0 0.42rem;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.12));
+}
+
+/* the actions sit on one line under the rule */
+.pmHints {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  pointer-events: auto;
+}
+
 .pmHint {
-  margin-top: 0.55rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: #ff8a5c;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  /* unfocused actions recede; ←/→ (or a click) brings one forward */
+  opacity: 0.45;
+  transition: opacity 0.16s ease-out;
+}
+.pmHint:hover {
+  opacity: 0.8;
+}
+.pmHint:focus {
+  outline: none;
+}
+
+.pmHintOn,
+.pmHintOn:hover {
+  opacity: 1;
+}
+
+/* the quieter of the two links */
+.pmHintGithub {
+  color: #b98cff;
 }
 
 /* right-pointing triangle connecting the title label to the media rectangle */
@@ -365,10 +405,16 @@
 .itemLabelWrap {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  /* Optical centring: the first line's caps leave slack above the ink while
+     the last line's descenders fill the space below, so a purely geometric
+     centre reads low against the icon. */
+  margin-top: -2px;
 }
 
 .itemLabel {
   font-size: 1.1rem;
+  line-height: 1.2;
   font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -378,7 +424,9 @@
 }
 
 .itemSub {
-  font-size: 0.72rem;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  margin-top: 0.08rem;
   font-weight: 300;
   opacity: 0.6;
   white-space: nowrap;
@@ -555,6 +603,67 @@
   font-weight: 600;
   letter-spacing: 0.4em;
   color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  filter: blur(0.45px);
+}
+
+/* focused item's note, set right of the column; left/top anchored inline */
+.note {
+  position: fixed;
+  z-index: 12;
+  /* only the glyph runs are live, so the note never blocks the backdrop behind it */
+  pointer-events: none;
+  user-select: text;
+  /* spans the open area right of the column, text set from its left edge */
+  right: 4vw;
+  display: flex;
+  align-items: flex-start;
+  /* the space that would follow the lead-in if it were one run of text */
+  gap: 0.5ch;
+  /* drop the first line onto the centre line of the active item's row */
+  padding-top: calc((var(--rowH) - 1.5em) / 2);
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  filter: blur(0.45px);
+}
+
+/* stacked lines, all hanging off the same left edge */
+.noteLines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* the text itself is selectable — and clickable when the item has an action */
+.note span {
+  pointer-events: auto;
+}
+
+.noteClickable span {
+  cursor: pointer;
+}
+
+/* a cycled word swaps in place, so it needs its own box to slide in */
+.noteWord {
+  display: inline-block;
+}
+
+/* control legend, bottom-right — same treatment as the clock, one step quieter */
+.hints {
+  position: fixed;
+  bottom: 1.1rem;
+  right: 1.4rem;
+  z-index: 40;
+  pointer-events: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  opacity: 0.72;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   filter: blur(0.45px);
 }

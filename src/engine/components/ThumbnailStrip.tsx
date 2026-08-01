@@ -12,11 +12,17 @@ import {
   THUMB_SPACING,
   THUMB_ACTIVE_SCALE,
   THUMB_META_LEFT,
+  RULE_GAP_RIGHT,
 } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
 function vw() {
   return typeof window !== "undefined" ? window.innerWidth : 1440;
+}
+
+/** Projects always leave in their own tab, so the menu stays where you left it. */
+function openTab(url: string) {
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function Thumb({ media }: { media?: MenuMedia }) {
@@ -50,7 +56,12 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   const sel = useMenu((s) => s.itemIndexByGroup[groupId] ?? 0);
   const setInDrill = useMenu((s) => s.setInDrill);
   const openDrill = useMenu((s) => s.openDrill);
+  const actionIndex = useMenu((s) => s.drillActionIndex);
+  const setDrillAction = useMenu((s) => s.setDrillAction);
   const { play } = useSound();
+
+  // the rule runs from the title out to the right edge, less a small margin
+  const ruleWidth = `calc(100vw - ${COL_LEFT} - ${THUMB_META_LEFT + RULE_GAP_RIGHT}px)`;
 
   const items = groups[groupId]?.items ?? [];
   const drilled = openGroup === groupId;
@@ -99,7 +110,13 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               animate={{ scale: highlight ? THUMB_ACTIVE_SCALE : 1, opacity, zIndex: highlight ? 20 : 1 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
               onClick={() => {
-                // works whether previewing (drill in + select) or already drilled (select)
+                // The selected thumbnail IS the project — it opens. Any other
+                // click is navigation: drill in and/or move the selection here.
+                if (highlight && p.link) {
+                  play("enter");
+                  openTab(p.link);
+                  return;
+                }
                 play("move");
                 openDrill(groupId);
                 setInDrill(i);
@@ -110,13 +127,38 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               {highlight && <span className={styles.pmThumbGlow} />}
             </motion.button>
 
-            {highlight && (
-              <div className={styles.pmMeta} style={{ left: THUMB_META_LEFT }}>
-                <div className={styles.pmTitle}>{p.title}</div>
-                <div className={styles.pmTech}>{p.tech}</div>
-                {p.link && <div className={styles.pmHint}>▶ open</div>}
-              </div>
-            )}
+            {highlight &&
+              (() => {
+                // the hints are indexed in the order they're shown, matching
+                // drillActionTargets() — that index is what ←/→ walk along
+                const openIdx = p.link ? 0 : -1;
+                const ghIdx = p.github ? (p.link ? 1 : 0) : -1;
+                const hint = (idx: number, url: string, extra?: string) => (
+                  <button
+                    className={`${styles.pmHint} ${extra ?? ""} ${
+                      actionIndex === idx ? styles.pmHintOn : ""
+                    }`}
+                    onClick={() => {
+                      setDrillAction(idx);
+                      play("enter");
+                      openTab(url);
+                    }}
+                  >
+                    {idx === ghIdx ? "▶ github" : "▶ open"}
+                  </button>
+                );
+                return (
+                  <div className={styles.pmMeta} style={{ left: THUMB_META_LEFT }}>
+                    <div className={styles.pmTitle}>{p.title}</div>
+                    {p.blurb && <div className={styles.pmBlurb}>{p.blurb}</div>}
+                    <div className={styles.pmRule} style={{ width: ruleWidth }} />
+                    <div className={styles.pmHints}>
+                      {p.link && hint(openIdx, p.link)}
+                      {p.github && hint(ghIdx, p.github, styles.pmHintGithub)}
+                    </div>
+                  </div>
+                );
+              })()}
           </motion.div>
         );
       })}

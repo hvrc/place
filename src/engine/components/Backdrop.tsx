@@ -4,7 +4,7 @@ import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import type { BackdropSpec, MenuMedia } from "@engine/model/types";
 import styles from "@engine/styles/menu.module.css";
 
-const DWELL_MS = 1000;
+const DWELL_MS = 4000;
 
 // lazily load SoundCloud's widget API (only when a SoundCloud backdrop is used)
 let scApi: Promise<unknown> | null = null;

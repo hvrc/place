@@ -24,6 +24,8 @@ export const FIRST_ITEM_GAP = 18;
 export const ITEM_ICON_CELL = 104;
 /** Shift the row so the icon centers on the same axis as the active category icon. */
 export const ROW_PAD_LEFT = CATEGORY_SPACING / 2 - ITEM_ICON_CELL / 2;
+/** Left edge of an item's note — just clear of the item label beside it. */
+export const NOTE_LEFT = "38%";
 
 // ── drill-in (tree submenu + thumbnail strip) ─────────────────────────────
 export const SIDE_LEFT = "5%";
@@ -38,3 +40,5 @@ export const THUMB_H = 74;
 export const THUMB_SPACING = 118;
 export const THUMB_ACTIVE_SCALE = 1.9;
 export const THUMB_META_LEFT = THUMB_W * THUMB_ACTIVE_SCALE + 22;
+/** Breathing room left between the title rule and the right edge of the screen. */
+export const RULE_GAP_RIGHT = 24;
