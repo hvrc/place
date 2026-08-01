@@ -6,13 +6,10 @@ import { clamp } from "@engine/lib/browser";
 
 export type { Theme };
 
-/** `soft` upscales low-res PSP art and blurs the type, as the handheld did;
- *  `crisp` renders Google icons and text at native resolution. */
-export type Fidelity = "soft" | "crisp";
-
 export interface MenuSettings {
   theme: Theme;
-  fidelity: Fidelity;
+  /** 0-100; higher means less wheel/swipe travel per move. */
+  scrollSensitivity: number;
   colorIndex: number; // index into model.palette
   uiVolume: number; // 0-100
 }
@@ -56,7 +53,7 @@ export interface MenuState {
   drillActionTargets: () => string[];
 
   cycleUiVolume: () => void;
-  cycleFidelity: () => void;
+  cycleScrollSensitivity: () => void;
 
   openColor: () => void;
   closeColor: () => void;
@@ -65,6 +62,18 @@ export interface MenuState {
 }
 
 /** 0, 10, 20 … 100 */
+/**
+ * Scroll sensitivity, as a percentage of the way from the laziest step to the
+ * quickest (see SCROLL_STEP_PX in the input hook). 60 is where the fixed value
+ * used to sit, so the default feel is unchanged.
+ */
+const SENSITIVITY_STEPS = [20, 40, 60, 80, 100];
+const nextSensitivity = (v: number) => {
+  const i = SENSITIVITY_STEPS.indexOf(v);
+  if (i === -1) return SENSITIVITY_STEPS.find((s) => s > v) ?? SENSITIVITY_STEPS[0];
+  return SENSITIVITY_STEPS[(i + 1) % SENSITIVITY_STEPS.length];
+};
+
 const VOLUME_STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
 const nextVolume = (v: number) => {
   // round an off-grid value (e.g. a 25 persisted before the steps changed) up
@@ -96,7 +105,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
           theme: themeForColor(palette[defaultColor]),
           colorIndex: defaultColor,
           uiVolume: 20,
-          fidelity: "soft",
+          scrollSensitivity: 60,
         },
 
         moveCategory: (dir) => {
@@ -208,9 +217,12 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
           return moved;
         },
 
-        cycleFidelity: () =>
+        cycleScrollSensitivity: () =>
           set((s) => ({
-            settings: { ...s.settings, fidelity: s.settings.fidelity === "soft" ? "crisp" : "soft" },
+            settings: {
+              ...s.settings,
+              scrollSensitivity: nextSensitivity(s.settings.scrollSensitivity),
+            },
           })),
 
         cycleUiVolume: () =>

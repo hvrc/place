@@ -40,7 +40,7 @@ export interface MenuAction {
 }
 
 /** A built-in control an item opens instead of navigating away. */
-export type SettingControl = "color" | "volume" | "fidelity";
+export type SettingControl = "color" | "volume" | "sensitivity";
 
 /** A leaf inside a drill-in group (rendered as the thumbnail strip). */
 export interface DrillItem {
@@ -102,10 +102,4 @@ export interface MenuModel {
   palette: string[];
   /** default wave colour (hex, no #) for a fresh visitor */
   defaultColorHex?: string;
-  /**
-   * Material Symbol to stand in for each frontend-specific icon when the menu
-   * runs crisp — that mode is Google icons only, so anything else needs a
-   * documented equivalent here rather than a silent fallback.
-   */
-  iconAlt?: Record<string, string>;
 }
