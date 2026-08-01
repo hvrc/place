@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { homImages } from "@/data/homManifest";
+import { homImages } from "@content/generated/homManifest";
 import { useEscapeTo } from "@/hooks/useEscapeTo";
 
 export default function Hom() {

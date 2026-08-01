@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@content": path.resolve(__dirname, "./src/content"),
+      "@menu": path.resolve(__dirname, "./src/menu-engine"),
+      "@psp": path.resolve(__dirname, "./src/frontends/psp"),
     },
   },
   server: {

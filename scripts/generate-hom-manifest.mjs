@@ -8,7 +8,7 @@ import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 const thumbsDir = path.join(root, "public", "thumbs");
-const outFile = path.join(root, "src", "data", "homManifest.ts");
+const outFile = path.join(root, "src", "content", "generated", "homManifest.ts");
 
 async function main() {
   let files = [];
@@ -29,7 +29,7 @@ export const homImages: string[] = ${JSON.stringify(images, null, 2)};
 
   await mkdir(path.dirname(outFile), { recursive: true });
   await writeFile(outFile, contents, "utf8");
-  console.log(`[generate-hom] wrote ${images.length} images -> src/data/homManifest.ts`);
+  console.log(`[generate-hom] wrote ${images.length} images -> src/content/generated/homManifest.ts`);
 }
 
 main().catch((err) => {

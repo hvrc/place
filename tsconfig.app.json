@@ -22,7 +22,10 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@content/*": ["./src/content/*"],
+      "@menu/*": ["./src/menu-engine/*"],
+      "@psp/*": ["./src/frontends/psp/*"]
     }
   },
   "include": ["src"]
