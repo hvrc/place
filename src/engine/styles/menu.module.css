@@ -214,7 +214,7 @@
   font-weight: 700;
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* one-liner between the title and its rule */
@@ -225,7 +225,7 @@
   color: #ffffff;
   opacity: 0.75;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* XMB info rule: divides the title from the actions beneath it (width inline,
@@ -362,7 +362,7 @@
   opacity: 0;
   transition: opacity 0.18s ease;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 .catButton:hover .catLabel {
@@ -449,7 +449,7 @@
   white-space: nowrap;
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 .itemSub {
@@ -464,7 +464,7 @@
   text-overflow: ellipsis;
   color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* wrapper handles positioning/centering so Framer can own the panel transform */
@@ -561,7 +561,7 @@
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   /* same soft, low-res upscale feel as the Google icons */
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* ===== wave colour picker (PSP-style right sidebar) ===== */
@@ -633,7 +633,7 @@
   letter-spacing: 0.4em;
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* focused item's note, set right of the column; left/top anchored inline */
@@ -659,7 +659,7 @@
   /* the dark shadow keeps it legible over any wallpaper; the white bloom is the
      lit glow the active icons carry, so the note reads as part of that state */
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 11px rgba(255, 255, 255, 0.5);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* stacked lines, all hanging off the same left edge */
@@ -709,7 +709,7 @@
   color: #ffffff;
   opacity: 0.72;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  filter: blur(var(--soft-blur));
+  filter: var(--soft-text);
 }
 
 /* PSP-style battery SVG; sized in em so it tracks the clock font-size */

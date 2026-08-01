@@ -29,11 +29,16 @@
   font-display: swap;
 }
 
-/* Soft-focus strength for the menu's type; MenuShell overrides it per
-   fidelity and layout scale. Declared here so it has one default, and so the
-   nodes the menu portals out to <body> still resolve it. */
+/* Soft-focus for the menu's type. A whole filter value, not a radius, because
+   it has to be able to be `none`: any filter — blur(0px) included — promotes
+   the element to its own composited layer, and a filtered layer inside a
+   transformed ancestor gets rasterised at reduced resolution and scaled up.
+   That is what made small labels mushy on phones, so there the filter has to
+   go away entirely rather than shrink. MenuShell sets it per fidelity/scale;
+   declared here so it has one default and so nodes portalled to <body> still
+   resolve it. */
 :root {
-  --soft-blur: 0.45px;
+  --soft-text: blur(0.45px);
 }
 
 html,

@@ -60,14 +60,16 @@ export function MaterialIcon({
   crisp?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { scale } = useMetrics();
+  const { scale, compact } = useMetrics();
   const light = useIconLight({
     focused,
     hovered,
     throb,
     keepSize,
     dimOpacity: DIM,
-    prefix: crisp ? "" : `blur(${softBlurPx(scale).toFixed(2)}px) `,
+    // no extra blur on a phone — the 64px raster already matches the PSP art's
+    // own softness, and piling a filter blur on top is what over-softened it
+    prefix: crisp || compact ? "" : `blur(${softBlurPx(scale).toFixed(2)}px) `,
   });
 
   useEffect(() => {

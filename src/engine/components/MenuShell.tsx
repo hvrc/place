@@ -77,7 +77,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const store = useMenuStore();
   const { categories } = useMenuModel();
   const { play } = useSound();
-  const { scale } = useMetrics();
+  const { scale, compact } = useMetrics();
 
   const theme = useMenu((s) => s.settings.theme);
   const fidelity = useMenu((s) => s.settings.fidelity);
@@ -113,15 +113,20 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
     };
   }, [theme]);
 
+  // `none`, not a smaller radius, on phones: the labels that read as mushy all
+  // sit inside transformed rows, and a filtered layer inside a transformed
+  // ancestor is rasterised at reduced resolution and scaled — so any filter
+  // costs the text its pixel density regardless of how small the blur is.
   // Set on <body> rather than .root because the project meta is portalled out
   // to <body> and so can't inherit the variable from inside the menu.
   useEffect(() => {
-    const blur = fidelity === "crisp" ? "0px" : `${softBlurPx(scale).toFixed(2)}px`;
-    document.body.style.setProperty("--soft-blur", blur);
+    const soft =
+      fidelity === "crisp" || compact ? "none" : `blur(${softBlurPx(scale).toFixed(2)}px)`;
+    document.body.style.setProperty("--soft-text", soft);
     return () => {
-      document.body.style.removeProperty("--soft-blur");
+      document.body.style.removeProperty("--soft-text");
     };
-  }, [fidelity, scale]);
+  }, [fidelity, scale, compact]);
 
   // As soon as the user navigates off the initial category, stop the intro so
   // nothing is held back on a timer — content just appears as it's available.
