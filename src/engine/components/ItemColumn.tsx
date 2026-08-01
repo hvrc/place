@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import { Icon } from "@menu/icons/Icon";
-import { useSound } from "@menu/sound/useSound";
-import type { MenuItem } from "@menu/model/types";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import { Icon } from "@engine/icons/Icon";
+import { useSound } from "@engine/sound/useSound";
+import type { MenuItem } from "@engine/model/types";
 import {
   CATEGORY_TOP_VH,
   PIVOT_LEFT,
@@ -11,12 +11,18 @@ import {
   ITEM_ICON_SIZE,
   ITEM_ICON_CELL,
   ROW_PAD_LEFT,
-} from "@menu/layout/metrics";
-import styles from "@menu/styles/menu.module.css";
+} from "@engine/layout/metrics";
+import styles from "@engine/styles/menu.module.css";
 
 /** The vertical items for the active category (the up/down menu): the active
  *  item rests at the pivot and the column scrolls above/below it. */
-export function ItemColumn({ onActivate }: { onActivate: (index: number) => void }) {
+export function ItemColumn({
+  onActivate,
+  introStagger,
+}: {
+  onActivate: (index: number) => void;
+  introStagger?: { base: number; step: number } | null;
+}) {
   const { categories, palette } = useMenuModel();
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const activeItem = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
@@ -59,9 +65,16 @@ export function ItemColumn({ onActivate }: { onActivate: (index: number) => void
               key={item.id}
               className={styles.itemRow}
               style={{ top: pivotTop, height: ITEM_SPACING }}
-              initial={false}
-              animate={{ y: offset * ITEM_SPACING }}
-              transition={{ type: "spring", stiffness: 520, damping: 38 }}
+              initial={introStagger ? { opacity: 0, y: offset * ITEM_SPACING } : false}
+              animate={{ opacity: 1, y: offset * ITEM_SPACING }}
+              transition={{
+                y: { type: "spring", stiffness: 520, damping: 38 },
+                opacity: {
+                  delay: introStagger ? introStagger.base + j * introStagger.step : 0,
+                  duration: introStagger ? 0.4 : 0,
+                  ease: "easeOut",
+                },
+              }}
             >
               <button
                 onClick={() => {

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useMenuStore } from "@menu/state/MenuContext";
+import { useMenuStore } from "@engine/state/MenuContext";
 import { sfx, type SfxKind } from "./sound";
 
 /**

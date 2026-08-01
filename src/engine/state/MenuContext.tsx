@@ -2,7 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand/vanilla";
 import type { MenuState } from "./menuStore";
-import type { MenuModel } from "@menu/model/types";
+import type { MenuModel } from "@engine/model/types";
 
 interface MenuContextValue {
   store: StoreApi<MenuState>;

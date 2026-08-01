@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import { hexToHsl } from "@menu/settings/palette";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import { hexToHsl } from "@engine/settings/palette";
 
 /**
  * The signature XMB flowing-wave background: several translucent sine ribbons

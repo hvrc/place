@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { createMenuStore } from "@menu/state/menuStore";
-import { MenuProvider } from "@menu/state/MenuContext";
-import { MenuShell } from "@menu/components/MenuShell";
+import { createMenuStore } from "@engine/state/menuStore";
+import { MenuProvider } from "@engine/state/MenuContext";
+import { MenuShell } from "@engine/components/MenuShell";
 import { buildPspModel } from "./buildPspModel";
 import { pspWordmark } from "./pspTheme";
 

@@ -1,4 +1,4 @@
-import { buildPalette } from "@menu/settings/palette";
+import { buildPalette } from "@engine/settings/palette";
 
 // The curated set of wave colours for the PSP frontend (the only colours). The
 // engine sorts them into the VIBGYOR ramp; the concrete list lives here.

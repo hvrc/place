@@ -6,7 +6,7 @@ import type {
   DrillGroup,
   DrillItem,
   BackdropSpec,
-} from "@menu/model/types";
+} from "@engine/model/types";
 import { projectGroups, groupProjects } from "./projectGroups";
 import { pspPalette, pspDefaultColor } from "./pspTheme";
 

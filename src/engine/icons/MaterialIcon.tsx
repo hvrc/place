@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useMenu } from "@menu/state/MenuContext";
+import { useMenu } from "@engine/state/MenuContext";
 import { iconFilter } from "./iconFilter";
 
 const FONT = '"Material Symbols Rounded"';
@@ -83,7 +83,9 @@ export function MaterialIcon({
       initial={false}
       animate={{
         scale: focused ? 1 : keepSize ? 1 : 0.78,
-        opacity: focused ? 1 : 0.82,
+        // Google icons render pure white; dim the inactive state more so it
+        // matches the softer inactive look of the PSP icon PNGs.
+        opacity: focused ? 1 : 0.6,
         filter: `blur(0.45px) ${iconFilter(theme, focused)}`,
       }}
       transition={{ duration: 0.16, ease: "easeOut" }}

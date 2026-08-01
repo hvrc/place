@@ -1,19 +1,25 @@
 import { motion } from "framer-motion";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import { Icon } from "@menu/icons/Icon";
-import { useSound } from "@menu/sound/useSound";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import { Icon } from "@engine/icons/Icon";
+import { useSound } from "@engine/sound/useSound";
 import {
   CATEGORY_SPACING,
   PIVOT_LEFT,
   CATEGORY_TOP_VH,
   CATEGORY_ICON_SIZE,
   CATEGORY_GRID_NUDGE,
-} from "@menu/layout/metrics";
-import styles from "@menu/styles/menu.module.css";
+} from "@engine/layout/metrics";
+import styles from "@engine/styles/menu.module.css";
+
+/** Optional first-load reveal: each icon fades in `base + i*step` seconds in. */
+export interface IntroStagger {
+  base: number;
+  step: number;
+}
 
 /** The horizontal category row (the sideways menu): the active icon is pinned at
  *  the pivot and the whole row slides under it. */
-export function CategoryBar() {
+export function CategoryBar({ introStagger }: { introStagger?: IntroStagger | null }) {
   const { categories } = useMenuModel();
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const setCategory = useMenu((s) => s.setCategory);
@@ -34,7 +40,7 @@ export function CategoryBar() {
       {categories.map((cat, i) => {
         const active = i === categoryIndex;
         return (
-          <button
+          <motion.button
             key={cat.id}
             onClick={() => {
               if (i !== categoryIndex) play("category");
@@ -44,6 +50,13 @@ export function CategoryBar() {
             className={`${styles.catButton} focus:outline-none`}
             aria-label={cat.label}
             aria-current={active}
+            initial={introStagger ? { opacity: 0 } : false}
+            animate={{ opacity: 1 }}
+            transition={{
+              delay: introStagger ? introStagger.base + i * introStagger.step : 0,
+              duration: introStagger ? 0.4 : 0,
+              ease: "easeOut",
+            }}
           >
             <span className={styles.glyph}>
               <Icon icon={cat.icon} focused={active} size={CATEGORY_ICON_SIZE} />
@@ -51,7 +64,7 @@ export function CategoryBar() {
             <span className={`${styles.catLabel} ${active ? styles.labelShown : ""}`}>
               {cat.label}
             </span>
-          </button>
+          </motion.button>
         );
       })}
     </motion.div>

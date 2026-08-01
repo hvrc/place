@@ -1,4 +1,4 @@
-import styles from "@menu/styles/menu.module.css";
+import styles from "@engine/styles/menu.module.css";
 
 /** Top-left wordmark. Text is supplied by the frontend. */
 export function Wordmark({ text }: { text: string }) {

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import { Icon } from "@menu/icons/Icon";
-import { useSound } from "@menu/sound/useSound";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import { Icon } from "@engine/icons/Icon";
+import { useSound } from "@engine/sound/useSound";
 import {
   SIDE_LEFT,
   SIDE_CELL,
@@ -9,8 +9,8 @@ import {
   CATEGORY_GRID_NUDGE,
   ITEM_SPACING,
   FIRST_ITEM_GAP,
-} from "@menu/layout/metrics";
-import styles from "@menu/styles/menu.module.css";
+} from "@engine/layout/metrics";
+import styles from "@engine/styles/menu.module.css";
 
 function vw() {
   return typeof window !== "undefined" ? window.innerWidth : 1440;

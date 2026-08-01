@@ -1,7 +1,7 @@
 import { createStore, type StoreApi } from "zustand/vanilla";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { themeForColor, type Theme } from "@menu/settings/palette";
-import type { MenuModel } from "@menu/model/types";
+import { themeForColor, type Theme } from "@engine/settings/palette";
+import type { MenuModel } from "@engine/model/types";
 
 export type { Theme };
 

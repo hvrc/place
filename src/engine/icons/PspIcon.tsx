@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useMenu } from "@menu/state/MenuContext";
+import { useMenu } from "@engine/state/MenuContext";
 import { iconFilter } from "./iconFilter";
 
 /**
@@ -8,7 +8,7 @@ import { iconFilter } from "./iconFilter";
  * to its focus size and "lights up white" (brightness + glow), per the PSP
  * Custom Theme Creation Guidelines.
  *
- * `name` is the icon stem, e.g. "game" -> /icons/tex_game.32bit.png
+ * `name` is the icon stem, e.g. "game" -> /icons/psp/tex_game.32bit.png
  */
 export function PspIcon({
   name,
@@ -28,7 +28,7 @@ export function PspIcon({
   const theme = useMenu((s) => s.settings.theme);
   return (
     <motion.img
-      src={`/icons/tex_${name}.32bit.png`}
+      src={`/icons/psp/tex_${name}.32bit.png`}
       alt=""
       aria-hidden="true"
       draggable={false}

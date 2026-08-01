@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useMenu, useMenuModel, useMenuStore } from "@menu/state/MenuContext";
-import { useMenuInput } from "@menu/input/useMenuInput";
+import { useMenu, useMenuModel, useMenuStore } from "@engine/state/MenuContext";
+import { useMenuInput } from "@engine/input/useMenuInput";
 import { CategoryBar } from "./CategoryBar";
 import { ItemColumn } from "./ItemColumn";
 import { DrillColumn } from "./DrillColumn";
 import { ThumbnailStrip } from "./ThumbnailStrip";
 import { Backdrop } from "./Backdrop";
-import { Wave } from "@menu/chrome/Wave";
-import { Clock } from "@menu/chrome/Clock";
-import { Wordmark } from "@menu/chrome/Wordmark";
-import { ColorPicker } from "@menu/settings/ColorPicker";
-import { useSound } from "@menu/sound/useSound";
-import styles from "@menu/styles/menu.module.css";
+import { Wave } from "@engine/chrome/Wave";
+import { Clock } from "@engine/chrome/Clock";
+import { Wordmark } from "@engine/chrome/Wordmark";
+import { ColorPicker } from "@engine/settings/ColorPicker";
+import { useSound } from "@engine/sound/useSound";
+import styles from "@engine/styles/menu.module.css";
 
 // Runs once per full page load (module-scoped so SPA re-navigation doesn't
 // replay it): the elements fade in in order — background/wave, wordmark, clock,
@@ -33,9 +33,14 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
     const t = setTimeout(() => {
       introPlayed = true;
       setIntroActive(false);
-    }, 1900);
+    }, 2400);
     return () => clearTimeout(t);
   }, []);
+
+  // Per-element stagger (first load only): category icons cascade left→right,
+  // then — once the row is done — the column items cascade top→down.
+  const catIntro = introActive ? { base: 0.85, step: 0.1 } : null;
+  const colIntro = introActive ? { base: 1.5, step: 0.09 } : null;
 
   // Staggered fade-in props; a no-op (renders straight to visible) once the
   // intro has played, so nothing re-animates on later re-renders / drill toggles.
@@ -136,12 +141,8 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
           <DrillColumn key="drill" groupId={openGroup} />
         ) : (
           <motion.div key="normal">
-            <motion.div {...fadeIn(0.95)}>
-              <CategoryBar />
-            </motion.div>
-            <motion.div {...fadeIn(1.2)}>
-              <ItemColumn onActivate={activate} />
-            </motion.div>
+            <CategoryBar introStagger={catIntro} />
+            <ItemColumn onActivate={activate} introStagger={colIntro} />
           </motion.div>
         )}
       </AnimatePresence>

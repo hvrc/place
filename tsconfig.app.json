@@ -23,7 +23,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@content/*": ["./src/content/*"],
-      "@menu/*": ["./src/menu-engine/*"],
+      "@engine/*": ["./src/engine/*"],
       "@psp/*": ["./src/frontends/psp/*"]
     }
   },

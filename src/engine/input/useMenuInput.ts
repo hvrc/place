@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { useMenuStore } from "@menu/state/MenuContext";
-import { useSound } from "@menu/sound/useSound";
+import { useMenuStore } from "@engine/state/MenuContext";
+import { useSound } from "@engine/sound/useSound";
 
 interface InputHandlers {
   /** activate the currently focused first-level item */

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import styles from "@menu/styles/menu.module.css";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import styles from "@engine/styles/menu.module.css";
 
 const SWATCH = 30;
 const GAP = 12;

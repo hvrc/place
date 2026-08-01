@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMenu, useMenuModel } from "@menu/state/MenuContext";
-import type { BackdropSpec, MenuMedia } from "@menu/model/types";
-import styles from "@menu/styles/menu.module.css";
+import { useMenu, useMenuModel } from "@engine/state/MenuContext";
+import type { BackdropSpec, MenuMedia } from "@engine/model/types";
+import styles from "@engine/styles/menu.module.css";
 
 const DWELL_MS = 1000;
 

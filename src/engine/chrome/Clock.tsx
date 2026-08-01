@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Battery } from "./Battery";
-import styles from "@menu/styles/menu.module.css";
+import styles from "@engine/styles/menu.module.css";
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());

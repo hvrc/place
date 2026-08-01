@@ -9,7 +9,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@content": path.resolve(__dirname, "./src/content"),
-      "@menu": path.resolve(__dirname, "./src/menu-engine"),
+      "@engine": path.resolve(__dirname, "./src/engine"),
       "@psp": path.resolve(__dirname, "./src/frontends/psp"),
     },
   },
