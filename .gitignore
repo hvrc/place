@@ -32,3 +32,5 @@ public/images/hom/*
 public/videos/demos/unoptimized
 public/images/logos
 migrate.md
+# Windows Explorer thumbnail cache
+Thumbs.db
