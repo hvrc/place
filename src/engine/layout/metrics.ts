@@ -8,16 +8,16 @@ import { clamp } from "@engine/lib/browser";
 /** The viewport these numbers were originally tuned against. */
 const DESIGN_W = 1180;
 const DESIGN_H = 760;
-/** Never shrink past this — smaller and the icons stop reading as icons. */
+/** Never shrink past this: smaller and the icons stop reading as icons. */
 const MIN_SCALE = 0.5;
 /** Under this width the note can't sit beside the column, so the menu rearranges. */
 const COMPACT_W = 720;
 /**
- * Above that width the menu is drawn this much smaller than the design — it
+ * Above that width the menu is drawn this much smaller than the design: it
  * reads better dense, and this is the same look as viewing it at 67% browser
  * zoom. Browser zoom shrinks the px layout AND the rem type together, so this
  * has to do both: metricsFor folds it into `scale`, and MenuShell applies the
- * matching root font-size. Phones are left at 1 — they're already at MIN_SCALE
+ * matching root font-size. Phones are left at 1: they're already at MIN_SCALE
  * and any denser is unreadable.
  */
 const DENSITY = 0.67;
@@ -27,7 +27,7 @@ const SOFT_BLUR = 0.45;
 
 /**
  * Soft-focus radius at a given layout scale, for the callers that build a
- * filter string themselves. Phones don't scale this down — they drop the
+ * filter string themselves. Phones don't scale this down: they drop the
  * filter altogether (see --soft-text in globals.css), because the softness
  * there comes from how a filtered layer is rasterised, not from the radius.
  */
@@ -38,7 +38,7 @@ export function softBlurPx(scale: number): number {
 export interface Metrics {
   /** px multiplier applied to the design values (1 at or above the design size) */
   scale: number;
-  /** how much smaller than the design the menu is drawn — see DENSITY. The rem
+  /** how much smaller than the design the menu is drawn: see DENSITY. The rem
    *  type has to follow this or it won't match the px layout. */
   density: number;
   /** narrow screen: the note moves out from beside the item column */
@@ -55,7 +55,7 @@ export interface Metrics {
   /** Nudge the top-aligned category icon onto the ITEM_SPACING grid, so every
    *  vertical gap stays equal. */
   CATEGORY_GRID_NUDGE: number;
-  /** Top of the category row — the line the sideways menu sits on. */
+  /** Top of the category row: the line the sideways menu sits on. */
   CATEGORY_TOP: string;
   /** Top of the focused item's row: one full row below the category line. The
    *  two together are what make the cross line up, so both are named here
@@ -115,7 +115,7 @@ function metricsFor(w: number, h: number): Metrics {
 
   const CATEGORY_SPACING = px(196);
   const CATEGORY_ICON_SIZE = px(88);
-  // phones get more air between rows — at half scale the desktop grid packs the
+  // phones get more air between rows: at half scale the desktop grid packs the
   // labels tight enough to read as one block
   const ITEM_SPACING = Math.round(px(122) * (compact ? 1.3 : 1));
   const ITEM_ICON_CELL = px(104);
@@ -187,7 +187,7 @@ function subscribe(fn: () => void) {
 }
 
 /**
- * The layout numbers for the current viewport. Destructure the ones you need —
+ * The layout numbers for the current viewport. Destructure the ones you need , 
  * the names match the design constants they scale from.
  */
 const getSnapshot = () => snapshot;

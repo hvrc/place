@@ -5,7 +5,7 @@ export interface Role {
   period: string;
   location: string;
   logo?: string;
-  /** company / product site — opened on select and shown as the live backdrop */
+  /** company / product site, opened on select and shown as the live backdrop */
   link?: string;
 }
 

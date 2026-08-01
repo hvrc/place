@@ -72,7 +72,7 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
   // place. A plain fraction of the viewport isn't enough on its own: the labels
   // are set in rem, so they take proportionally MORE room as the layout scales
   // down, and on a tablet the fraction stops clearing them. Take whichever is
-  // further right — the fraction, or the end of the label column.
+  // further right: the fraction, or the end of the label column.
   const vw = viewportWidth();
   const colLeft = lengthToPx(COL_LEFT, vw);
   const labelsEnd = lengthToPx(PIVOT_LEFT, vw) + ROW_PAD_LEFT + ITEM_ICON_CELL + LABEL_CLEARANCE;
@@ -123,7 +123,7 @@ export function ThumbnailStrip({ groupId }: { groupId: string }) {
               animate={{ scale: highlight ? THUMB_ACTIVE_SCALE : 1, opacity, zIndex: highlight ? 20 : 1 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
               onClick={() => {
-                // The selected thumbnail IS the project — it opens. Any other
+                // The selected thumbnail IS the project: it opens. Any other
                 // click is navigation: drill in and/or move the selection here.
                 if (highlight && p.link) {
                   play("enter");

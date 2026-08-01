@@ -131,7 +131,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
               return { itemIndexByCategory: { ...s.itemIndexByCategory, [cat]: next } };
             }
 
-            // off the end of the column — carry on into the neighbouring category
+            // off the end of the column: carry on into the neighbouring category
             const nextCat = cat + dir;
             if (nextCat < 0 || nextCat >= categories.length) return {};
             moved = "category";
@@ -170,7 +170,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
             const current = s.itemIndexByGroup[s.openGroup] ?? 0;
             const next = clamp(current + dir, 0, count - 1);
             moved = next !== current;
-            // a different leaf has its own actions — start back at the first
+            // a different leaf has its own actions: start back at the first
             return {
               itemIndexByGroup: { ...s.itemIndexByGroup, [s.openGroup]: next },
               drillActionIndex: 0,
@@ -255,7 +255,7 @@ export function createMenuStore(model: MenuModel): StoreApi<MenuState> {
         name: "xmb-settings",
         storage: createJSONStorage(() => localStorage),
         /**
-         * Bumped whenever a stored value stops being meaningful — without it,
+         * Bumped whenever a stored value stops being meaningful: without it,
          * `merge` below spreads the old value over the new default and the
          * default can never take effect for anyone who has visited before.
          *

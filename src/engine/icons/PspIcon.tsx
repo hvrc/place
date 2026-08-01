@@ -10,7 +10,7 @@ const DIM = 0.82;
  * to its focus size and "lights up white" (brightness + glow), per the PSP
  * Custom Theme Creation Guidelines.
  *
- * Those two looks — dim/no glow and lit/glowing — are the only ones an icon
+ * Those two looks (dim/no glow and lit/glowing) are the only ones an icon
  * has. The selected icon in a column swings between them (`throb`); every other
  * selected icon just holds the lit one; and hovering an unselected icon shows
  * the lit look too, as a promise of what clicking it would do.
@@ -33,7 +33,7 @@ export function PspIcon({
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
   throb?: boolean;
-  /** the pointer is over this icon's row — show the lit look */
+  /** the pointer is over this icon's row: show the lit look */
   hovered?: boolean;
 }) {
   const light = useIconLight({ focused, hovered, throb, keepSize, dimOpacity: DIM });

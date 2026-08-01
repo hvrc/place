@@ -91,7 +91,7 @@ function WaveCanvas() {
         const xAt = (k: number) => Math.min(k * 6, width);
 
         // filled region from the crest down to the bottom, with a bright sheen band
-        // hugging the crest that falls off fast — this is the dramatic edge.
+        // hugging the crest that falls off fast: this is the dramatic edge.
         const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + height * 0.32);
         if (theme === "dark") {
           grad.addColorStop(0, `hsla(${hue}, ${sc(32, 82)}%, 82%, 0.30)`); // crest sheen
@@ -114,7 +114,7 @@ function WaveCanvas() {
         ctx.fillStyle = grad;
         ctx.fill();
 
-        // crisp highlight line riding the crest — the sharp edge between shades
+        // crisp highlight line riding the crest: the sharp edge between shades
         ctx.beginPath();
         ctx.moveTo(0, crest[0]);
         for (let k = 1; k < crest.length; k++) ctx.lineTo(xAt(k), crest[k]);
@@ -144,19 +144,19 @@ function WaveCanvas() {
     };
   }, [theme, waveHue, sat, reduceMotion]);
 
-  // Absolute, not fixed — that's the whole fix. h-full is 100% of the
+  // Absolute, not fixed: that's the whole fix. h-full is 100% of the
   // containing block: for a fixed element that's the initial containing block,
   // which on iOS does not follow the collapsing toolbar, and the strip it left
   // unpainted was the white gap at the top and bottom. Absolute makes .root the
   // containing block instead, and .root already tracks the live viewport via
-  // 100dvh. The explicit size is required — a canvas is a replaced element, so
+  // 100dvh. The explicit size is required: a canvas is a replaced element, so
   // inset alone leaves it at its intrinsic 300x150 rather than stretching it.
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
 
 /**
  * Memoised: it takes no props and reads its own store slices, so it has no
- * reason to re-render with the rest of the menu on every navigation — and each
+ * reason to re-render with the rest of the menu on every navigation, and each
  * render re-parses the palette colour.
  */
 export const Wave = memo(WaveCanvas);

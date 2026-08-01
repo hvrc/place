@@ -56,7 +56,7 @@ export function ItemColumn({
       >
         {items.map((item, j) => {
           const active = j === activeItem;
-          // hovering anywhere on the row lights it fully — same look the active
+          // hovering anywhere on the row lights it fully: same look the active
           // row has, so it reads as "click to make this the active one"
           const hot = hovered === j && !active;
           const sub = liveSub(item);

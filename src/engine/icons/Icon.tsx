@@ -21,7 +21,7 @@ export function Icon({
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
   throb?: boolean;
-  /** the pointer is over this icon's row — show the lit look */
+  /** the pointer is over this icon's row: show the lit look */
   hovered?: boolean;
 }) {
   if (icon.startsWith("g:")) {

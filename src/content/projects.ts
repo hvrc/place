@@ -27,7 +27,7 @@ export const projects: Project[] = [
   {
     id: "carrom",
     title: "Carrom",
-    blurb: "Indian tabletop game, a lot like billiards",
+    blurb: "Digital version of a tabletop game",
     link: "https://carrom-461712.ue.r.appspot.com/",
     github: "https://github.com/hvrc/carrom",
     description:

@@ -11,7 +11,7 @@ const stamp = (d: Date) => `${d.getMonth() + 1}/${d.getDate()} ${TIME.format(d)}
 function useClock() {
   const [label, setLabel] = useState(() => stamp(new Date()));
   useEffect(() => {
-    // ticks every second, but 59 in 60 produce the same string — only commit
+    // ticks every second, but 59 in 60 produce the same string: only commit
     // the ones that actually change, so the chrome doesn't re-render for nothing
     const id = setInterval(() => {
       const next = stamp(new Date());
