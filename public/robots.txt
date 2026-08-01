@@ -1,0 +1,25 @@
+# hvrc.place — everything here is meant to be found, by people and by machines.
+User-agent: *
+Allow: /
+
+# Answer engines are welcome to read and cite this site.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://hvrc.place/sitemap.xml
