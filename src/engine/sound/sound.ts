@@ -1,5 +1,5 @@
 // XMB navigation sounds. Primary path is the authentic PSP samples (denoised &
-// trimmed via ffmpeg — hiss removed, timbre kept), decoded once into a buffer
+// trimmed via ffmpeg: hiss removed, timbre kept), decoded once into a buffer
 // and played through a throwaway buffer-source per hit so they overlap cleanly
 // under rapid navigation. If a sample hasn't loaded (or fails), we fall back to
 // a synthesised sine blip so navigation is never silent.

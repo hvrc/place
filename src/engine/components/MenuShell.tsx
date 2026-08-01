@@ -16,8 +16,8 @@ import { useSound } from "@engine/sound/useSound";
 import styles from "@engine/styles/menu.module.css";
 
 // Runs once per full page load (module-scoped so SPA re-navigation doesn't
-// replay it): the elements fade in in order — background/wave, wordmark, clock,
-// category icons, then the columns — so the essentials appear first even if the
+// replay it): the elements fade in in order, starting with background/wave, then
+// wordmark, clock, category icons and the columns, so the essentials appear first even if the
 // rest is still loading.
 let introPlayed = false;
 
@@ -40,7 +40,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   }, []);
 
   // The ONLY artificial staggering is the first-load reveal of the essentials:
-  // category icons cascade left→right, then — once the row is done — the first
+  // category icons cascade left→right, then (once the row is done) the first
   // column's items cascade top→down. Everything past that appears as available
   // (no timers), in natural order.
   const catIntro = introActive ? { base: 0.5, step: 0.08 } : null;
@@ -69,14 +69,14 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
 
   // As soon as the user navigates off the initial category, stop the intro so
-  // nothing is held back on a timer — content just appears as it's available.
+  // nothing is held back on a timer: content just appears as it's available.
   useEffect(() => {
     if (categoryIndex !== 0) endIntro();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIndex]);
 
-  // Thumbnails to show: the open group (drilled), or — while browsing a category
-  // whose items drill in — the focused item's group (previewed).
+  // Thumbnails to show: the open group (drilled), or: while browsing a category
+  // whose items drill in: the focused item's group (previewed).
   const previewGroup = categories[categoryIndex]?.items[itemIndex]?.drillId ?? null;
   const thumbGroup = openGroup ?? previewGroup;
 

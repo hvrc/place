@@ -56,7 +56,7 @@
 }
 
 /* fullscreen project media behind the menu (above the wave), shown after a
-   short dwell on a thumbnail — no vignette */
+   short dwell on a thumbnail: no vignette */
 .projBackdrop {
   position: fixed;
   inset: 0;
@@ -73,7 +73,7 @@
   border: 0;
 }
 
-/* contained "post" embed (e.g. an Instagram reel) — centered, not fullscreen */
+/* contained "post" embed (e.g. an Instagram reel): centered, not fullscreen */
 .projBackdropCenter {
   position: absolute;
   inset: 0;
@@ -100,7 +100,7 @@
   pointer-events: auto;
 }
 
-/* shown while the embed has control — click to hand it back to the menu */
+/* shown while the embed has control: click to hand it back to the menu */
 .projBackdropExit {
   position: fixed;
   bottom: 1.2rem;
@@ -337,7 +337,7 @@
 }
 
 /* each item is absolutely positioned at the pivot line, then translated by its
-   slot offset (Framer `y`) — the slot on the category line is skipped */
+   slot offset (Framer `y`): the slot on the category line is skipped */
 .itemRow {
   position: absolute;
   left: 0;
@@ -353,7 +353,7 @@
 }
 
 /* icon cell centers each item icon on the same vertical axis as the
-   active category icon above it — the "grid" alignment */
+   active category icon above it: the "grid" alignment */
 .itemIconCell {
   display: flex;
   justify-content: center;

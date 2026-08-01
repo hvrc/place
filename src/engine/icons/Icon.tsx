@@ -21,7 +21,7 @@ export function Icon({
   keepSize?: boolean;
 }) {
   if (icon.startsWith("g:")) {
-    // "g:name", "g:name@700", or "g:name@700,200" (weight, grade) — for
+    // "g:name", "g:name@700", or "g:name@700,200" (weight, grade): for
     // detail-heavy glyphs that need heavier strokes at our low resolution
     const [name, spec] = icon.slice(2).split("@");
     const [w, g] = (spec ?? "").split(",");

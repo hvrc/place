@@ -88,7 +88,7 @@ export function Wave() {
         const xAt = (k: number) => Math.min(k * 6, width);
 
         // filled region from the crest down to the bottom, with a bright sheen band
-        // hugging the crest that falls off fast — this is the dramatic edge.
+        // hugging the crest that falls off fast: this is the dramatic edge.
         const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + height * 0.32);
         if (theme === "dark") {
           grad.addColorStop(0, `hsla(${hue}, ${sc(32, 82)}%, 82%, 0.30)`); // crest sheen
@@ -111,7 +111,7 @@ export function Wave() {
         ctx.fillStyle = grad;
         ctx.fill();
 
-        // crisp highlight line riding the crest — the sharp edge between shades
+        // crisp highlight line riding the crest: the sharp edge between shades
         ctx.beginPath();
         ctx.moveTo(0, crest[0]);
         for (let k = 1; k < crest.length; k++) ctx.lineTo(xAt(k), crest[k]);

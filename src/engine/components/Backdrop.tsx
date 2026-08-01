@@ -63,7 +63,7 @@ export function Backdrop() {
   const [interacting, setInteracting] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
-  // clicking to interact is a user gesture — start playback with sound here
+  // clicking to interact is a user gesture: start playback with sound here
   const enterInteract = () => {
     setInteracting(true);
     const link = shown?.link ?? "";

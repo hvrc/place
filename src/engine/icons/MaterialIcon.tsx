@@ -4,7 +4,7 @@ import { useMenu } from "@engine/state/MenuContext";
 import { iconFilter } from "./iconFilter";
 
 const FONT = '"Material Symbols Rounded"';
-/** Low native resolution — the canvas is drawn small then upscaled *smoothly*
+/** Low native resolution: the canvas is drawn small then upscaled *smoothly*
  * (bilinear), giving Google icons the same soft, low-res feel as the upscaled
  * PSP PNGs (rather than a hard pixel grid). */
 const NATIVE = 48;
@@ -44,7 +44,7 @@ export function MaterialIcon({
     const draw = () => {
       if (cancelled) return;
       // Render a bit below device resolution so there's a gentle upscale (a
-      // little low-res "texture") — but nowhere near the ~3x griddiness of a
+      // little low-res "texture"), but nowhere near the ~3x griddiness of a
       // fixed tiny buffer. A small blur softens it toward the PSP look.
       const dpr = Math.min(window.devicePixelRatio || 1, 3);
       const buf = Math.max(NATIVE, Math.round(size * dpr * 0.5));

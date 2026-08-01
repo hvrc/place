@@ -1,6 +1,6 @@
 // The generic cross-media-bar menu model. This is what a *frontend* produces
 // (e.g. the PSP frontend maps portfolio content into this shape). The engine
-// knows nothing about portfolios, projects, experience, etc. — only this model.
+// knows nothing about portfolios, projects, experience, etc.: only this model.
 
 export interface MenuMedia {
   type: "image" | "video";

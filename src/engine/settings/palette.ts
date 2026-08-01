@@ -60,7 +60,7 @@ const byVibgyor = (a: string, b: string) => {
 
 /**
  * Order a raw set of hex colours into the wave palette: the dark colours first
- * (VIBGYOR), then the light colours (VIBGYOR) — dark to light overall.
+ * (VIBGYOR), then the light colours (VIBGYOR): dark to light overall.
  */
 export function buildPalette(rawColors: string[]): string[] {
   return [
