@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { letterPages, PIN_SPOTS, type Letter } from "./letters";
 import { LetterSheet } from "./LetterSheet";
+import { ComposeSheet } from "./ComposeSheet";
 import { CurvedBar } from "@wii/ui/CurvedBar";
 import { Orb } from "@wii/ui/Orb";
 import { CalendarMark, LetterMark, PencilMark, Triangle, WiiMark } from "@wii/ui/glyphs";
@@ -17,6 +18,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export function MessageBoard({ onExit }: { onExit: () => void }) {
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState<Letter | null>(null);
+  const [writing, setWriting] = useState(false);
   const read = useWii((s) => s.read);
   const markRead = useWii((s) => s.markRead);
   const last = letterPages.length - 1;
@@ -24,15 +26,17 @@ export function MessageBoard({ onExit }: { onExit: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (open) setOpen(null);
+        if (writing) setWriting(false);
+        else if (open) setOpen(null);
         else onExit();
       }
-      if (!open && e.key === "ArrowRight") setPage((p) => Math.min(last, p + 1));
-      if (!open && e.key === "ArrowLeft") setPage((p) => Math.max(0, p - 1));
+      const busy = open || writing;
+      if (!busy && e.key === "ArrowRight") setPage((p) => Math.min(last, p + 1));
+      if (!busy && e.key === "ArrowLeft") setPage((p) => Math.max(0, p - 1));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onExit, last]);
+  }, [open, writing, onExit, last]);
 
   // Page 0 is today, page 1 yesterday, and so on back through the board.
   const day = new Date();
@@ -98,7 +102,7 @@ export function MessageBoard({ onExit }: { onExit: () => void }) {
             <Orb aria-label="Calendar" onClick={() => setPage(0)}>
               <CalendarMark style={{ width: "45%" }} />
             </Orb>
-            <Orb aria-label="Write" onClick={() => openLetter(letterPages[0][0])}>
+            <Orb aria-label="Write a letter" onClick={() => setWriting(true)}>
               <PencilMark style={{ width: "42%" }} />
             </Orb>
           </>
@@ -116,6 +120,7 @@ export function MessageBoard({ onExit }: { onExit: () => void }) {
       />
 
       {open && <LetterSheet letter={open} onClose={() => setOpen(null)} />}
+      {writing && <ComposeSheet onClose={() => setWriting(false)} />}
     </div>
   );
 }

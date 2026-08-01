@@ -910,6 +910,25 @@
   color: var(--ink-strong);
 }
 
+.compose {
+  width: 100%;
+  resize: vertical;
+  font: inherit;
+  font-size: 1.05em;
+  line-height: 1.6;
+  color: #3f464a;
+  padding: 0.9em 1em;
+  border: 0;
+  border-radius: 0.5em;
+  background: #fbfcfc;
+  box-shadow: 0 0 0 0.08em #d9dcde inset;
+}
+
+.compose:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.12em #8ad4ef inset;
+}
+
 .sheetActions {
   display: flex;
   gap: 1em;
@@ -1206,6 +1225,27 @@
   font-size: 1.2em;
   line-height: 1.7;
   color: #616a6e;
+}
+
+.aboutLine {
+  font-size: 1.45em !important;
+  color: #3c4347 !important;
+}
+
+.cycleWord {
+  display: inline-block;
+  min-width: 5.2em;
+  text-align: left;
+  font-weight: 400;
+  color: var(--blue-deep);
+  animation: cycleIn 320ms ease-out;
+}
+
+@keyframes cycleIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
 }
 
 .aboutStats {
