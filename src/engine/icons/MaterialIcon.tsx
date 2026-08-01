@@ -75,7 +75,7 @@ export function MaterialIcon({
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       // NB: a 2D context has no font-variation-settings, so this draws the
-      // font's default instance, which is why INSTANCE exists.
+      // font's default instance: no weight, grade or fill can be applied here.
       ctx.font = `${Math.round(buf * GLYPH)}px ${FONT}`;
       ctx.fillText(name, buf / 2, buf / 2 + buf * 0.01);
     };
