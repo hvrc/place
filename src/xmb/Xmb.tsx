@@ -8,6 +8,8 @@ import { XmbWave } from "./XmbWave";
 import { XmbCategoryBar } from "./XmbCategoryBar";
 import { XmbItemColumn } from "./XmbItemColumn";
 import { ProjectThumbnails, GamesSideColumn } from "./GamesMenu";
+import { ProjectBackdrop } from "./ProjectBackdrop";
+import { ColorMenu } from "./ColorMenu";
 import { groupProjects, projectGroups } from "./projectsMenu";
 import { XmbBattery } from "./XmbBattery";
 import styles from "./Xmb.module.css";
@@ -27,12 +29,14 @@ export default function Xmb() {
   const navigate = useNavigate();
   const theme = useXmb((s) => s.settings.theme);
   const openGroup = useXmb((s) => s.openGroup);
+  const colorOpen = useXmb((s) => s.colorOpen);
   const categoryIndex = useXmb((s) => s.categoryIndex);
   const projectsItem = useXmb((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
   const moveCategory = useXmb((s) => s.moveCategory);
   const moveItem = useXmb((s) => s.moveItem);
   const clock = useClock();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const wheel = useRef({ ax: 0, ay: 0, lastMove: 0, lastEvt: 0 });
 
   // The group whose thumbnails to show: the open one (drilled), or — while
   // browsing the Projects folders — the focused folder (previewed).
@@ -57,11 +61,8 @@ export default function Xmb() {
       }
 
       if (category.id === "settings") {
-        if (item.id === "theme") state.cycleTheme();
-        else if (item.id === "wave") state.cycleWaveHue(1);
+        if (item.id === "wave") state.openColor();
         else if (item.id === "uiVolume") state.cycleUiVolume();
-        else if (item.id === "musicVolume") state.cycleMusicVolume();
-        else if (item.id === "motion") state.toggleReduceMotion();
         play(sfx.enter);
         return;
       }
@@ -91,18 +92,39 @@ export default function Xmb() {
     const onKey = (e: KeyboardEvent) => {
       const s = useXmb.getState();
 
+      // colour picker open (right-side swatches)
+      if (s.colorOpen) {
+        switch (e.key) {
+          case "ArrowUp":
+            e.preventDefault();
+            if (s.moveColor(-1)) play(sfx.move);
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            if (s.moveColor(1)) play(sfx.move);
+            break;
+          case "ArrowLeft":
+          case "Escape":
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            s.closeColor();
+            play(sfx.back);
+            break;
+        }
+        return;
+      }
+
       // "games menu" mode (a project group is open)
       if (s.openGroup) {
         switch (e.key) {
           case "ArrowUp":
             e.preventDefault();
-            s.moveProject(-1);
-            play(sfx.move);
+            if (s.moveProject(-1)) play(sfx.move);
             break;
           case "ArrowDown":
             e.preventDefault();
-            s.moveProject(1);
-            play(sfx.move);
+            if (s.moveProject(1)) play(sfx.move);
             break;
           case "ArrowLeft":
           case "Escape":
@@ -122,23 +144,19 @@ export default function Xmb() {
       switch (e.key) {
         case "ArrowLeft":
           e.preventDefault();
-          moveCategory(-1);
-          play(sfx.category);
+          if (moveCategory(-1)) play(sfx.category);
           break;
         case "ArrowRight":
           e.preventDefault();
-          moveCategory(1);
-          play(sfx.category);
+          if (moveCategory(1)) play(sfx.category);
           break;
         case "ArrowUp":
           e.preventDefault();
-          moveItem(-1);
-          play(sfx.move);
+          if (moveItem(-1)) play(sfx.move);
           break;
         case "ArrowDown":
           e.preventDefault();
-          moveItem(1);
-          play(sfx.move);
+          if (moveItem(1)) play(sfx.move);
           break;
         case "Enter":
         case " ": {
@@ -152,21 +170,56 @@ export default function Xmb() {
     return () => window.removeEventListener("keydown", onKey);
   }, [moveCategory, moveItem, activate, openProject]);
 
+  // Scroll: vertical wheel / trackpad -> items (like ↑/↓); horizontal trackpad or
+  // Shift+wheel -> categories (like ←/→). Deltas are accumulated and paced so a
+  // gesture makes one move at a time instead of firing on every event.
+  const STEP = 85; // accumulated pixels per move (higher = less sensitive)
+  const COOLDOWN = 160; // min ms between moves
   const onWheel = (e: React.WheelEvent) => {
+    const now = performance.now();
+    const w = wheel.current;
+    if (now - w.lastEvt > 180) {
+      w.ax = 0;
+      w.ay = 0;
+    }
+    w.lastEvt = now;
+
+    const scale = e.deltaMode === 1 ? 16 : 1; // normalize line-mode wheels
+    let dx = e.deltaX * scale;
+    let dy = e.deltaY * scale;
+    if (e.shiftKey && dx === 0) {
+      dx = dy; // Shift + wheel scrolls sideways (categories)
+      dy = 0;
+    }
+    w.ax += dx;
+    w.ay += dy;
+
+    if (now - w.lastMove < COOLDOWN) return;
     const s = useXmb.getState();
-    if (s.openGroup) {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        s.moveProject(e.deltaY > 0 ? 1 : -1);
-        play(sfx.move);
+    const horizontal = Math.abs(w.ax) > Math.abs(w.ay);
+
+    if (s.colorOpen) {
+      if (!horizontal && Math.abs(w.ay) >= STEP) {
+        if (s.moveColor(w.ay > 0 ? 1 : -1)) play(sfx.move);
+        w.ax = 0;
+        w.ay = 0;
+        w.lastMove = now;
       }
       return;
     }
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      moveItem(e.deltaY > 0 ? 1 : -1);
-      play(sfx.move);
-    } else if (e.deltaX) {
-      moveCategory(e.deltaX > 0 ? 1 : -1);
-      play(sfx.category);
+
+    if (!horizontal && Math.abs(w.ay) >= STEP) {
+      const dir = w.ay > 0 ? 1 : -1;
+      const moved = s.openGroup ? s.moveProject(dir) : moveItem(dir);
+      if (moved) play(sfx.move);
+      w.ax = 0;
+      w.ay = 0;
+      w.lastMove = now;
+    } else if (horizontal && Math.abs(w.ax) >= STEP) {
+      if (!s.openGroup && moveCategory(w.ax > 0 ? 1 : -1)) play(sfx.category);
+      w.ax = 0;
+      w.ay = 0;
+      w.lastMove = now;
     }
   };
 
@@ -182,10 +235,20 @@ export default function Xmb() {
     const THRESH = 40;
     const s = useXmb.getState();
 
+    if (s.colorOpen) {
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > THRESH) {
+        if (s.moveColor(dy < 0 ? 1 : -1)) play(sfx.move);
+      } else if (dx > THRESH) {
+        s.closeColor();
+        play(sfx.back);
+      }
+      touchStart.current = null;
+      return;
+    }
+
     if (s.openGroup) {
       if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > THRESH) {
-        s.moveProject(dy < 0 ? 1 : -1);
-        play(sfx.move);
+        if (s.moveProject(dy < 0 ? 1 : -1)) play(sfx.move);
       } else if (dx > THRESH) {
         s.closeProjectGroup();
         play(sfx.back);
@@ -195,11 +258,9 @@ export default function Xmb() {
     }
 
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > THRESH) {
-      moveCategory(dx < 0 ? 1 : -1);
-      play(sfx.category);
+      if (moveCategory(dx < 0 ? 1 : -1)) play(sfx.category);
     } else if (Math.abs(dy) > THRESH) {
-      moveItem(dy < 0 ? 1 : -1);
-      play(sfx.move);
+      if (moveItem(dy < 0 ? 1 : -1)) play(sfx.move);
     }
     touchStart.current = null;
   };
@@ -212,6 +273,9 @@ export default function Xmb() {
       onTouchEnd={onTouchEnd}
     >
       <XmbWave />
+      <ProjectBackdrop />
+
+      <div className={styles.brand}>hvrc·place</div>
 
       <div className={styles.clock}>
         <span>{clock}</span>
@@ -233,6 +297,8 @@ export default function Xmb() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {colorOpen && <ColorMenu />}
     </div>
   );
 }

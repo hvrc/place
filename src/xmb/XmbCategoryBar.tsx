@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { categories } from "@/xmb/xmbData";
 import { useXmb } from "@/xmb/xmbStore";
 import { XmbIcon } from "./XmbIcon";
+import { playSfx } from "./sound";
 import styles from "./Xmb.module.css";
 
 export const CATEGORY_SPACING = 196;
@@ -32,7 +33,10 @@ export function XmbCategoryBar() {
         return (
           <button
             key={cat.id}
-            onClick={() => setCategory(i)}
+            onClick={() => {
+              if (i !== categoryIndex) playSfx("category");
+              setCategory(i);
+            }}
             style={{ width: CATEGORY_SPACING }}
             className={`${styles.catButton} focus:outline-none`}
             aria-label={cat.label}

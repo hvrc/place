@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { categories } from "@/xmb/xmbData";
-import { useXmb } from "@/xmb/xmbStore";
+import { useXmb, WAVE_PALETTE } from "@/xmb/xmbStore";
 import { profile } from "@/data/socials";
 import { ProjectMedia } from "@/components/ProjectMedia";
 import styles from "./Xmb.module.css";
@@ -132,8 +132,8 @@ function SettingsDetail({
     },
     wave: {
       title: "Wave color",
-      value: `hue ${settings.waveHue}°`,
-      hint: "Press ← / → or Enter to shift the wave hue",
+      value: `#${WAVE_PALETTE[settings.waveIndex] ?? ""}`,
+      hint: "Press Enter to cycle the wave colour",
     },
     uiVolume: {
       title: "UI volume",
@@ -144,11 +144,6 @@ function SettingsDetail({
       title: "Music volume",
       value: `${settings.musicVolume}%`,
       hint: "Press Enter to cycle the music volume",
-    },
-    motion: {
-      title: "Reduce motion",
-      value: settings.reduceMotion ? "on" : "off",
-      hint: "Press Enter to freeze the wave & transitions",
     },
   };
   const s = map[id] ?? { title: id, value: "", hint: "" };

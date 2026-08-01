@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
 import { categories } from "@/xmb/xmbData";
-import { useXmb } from "@/xmb/xmbStore";
+import { useXmb, WAVE_PALETTE } from "@/xmb/xmbStore";
 import { CATEGORY_SPACING, CATEGORY_TOP_VH, PIVOT_LEFT } from "./XmbCategoryBar";
 import { XmbIcon } from "./XmbIcon";
+import { playSfx } from "./sound";
 import styles from "./Xmb.module.css";
 
 /** Focus (highlighted) icon height for first-level items. */
 const ITEM_ICON_SIZE = 76;
 
 export const ITEM_SPACING = 122;
+/** Extra room below the category label before the first sub-item. */
+export const FIRST_ITEM_GAP = 18;
 /** Fixed icon cell; independent of category spacing so labels stay close to the icon. */
 const ITEM_ICON_CELL = 104;
 /** Shift the row so the icon centers on the same axis as the active category icon. */
@@ -29,19 +32,16 @@ export function XmbItemColumn({ onActivate }: { onActivate: (index: number) => v
       case "theme":
         return settings.theme;
       case "wave":
-        return `${settings.waveHue}°`;
+        return `#${WAVE_PALETTE[settings.waveIndex] ?? ""}`;
       case "uiVolume":
         return `${settings.uiVolume}%`;
-      case "musicVolume":
-        return `${settings.musicVolume}%`;
-      case "motion":
-        return settings.reduceMotion ? "on" : "off";
     }
     return undefined;
   };
 
-  // Resting Y of the active item: one full row below the category bar.
-  const pivotTop = `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING}px)`;
+  // Resting Y of the active item: one full row below the category bar (plus a
+  // little extra so the category label isn't crowded by the first item).
+  const pivotTop = `calc(${CATEGORY_TOP_VH}vh + ${ITEM_SPACING + FIRST_ITEM_GAP}px)`;
 
   return (
     <div className={styles.itemColumn} style={{ left: PIVOT_LEFT }}>
@@ -69,7 +69,13 @@ export function XmbItemColumn({ onActivate }: { onActivate: (index: number) => v
               transition={{ type: "spring", stiffness: 520, damping: 38 }}
             >
                 <button
-                  onClick={() => (active ? onActivate(j) : setItem(j))}
+                  onClick={() => {
+                    if (active) onActivate(j);
+                    else {
+                      playSfx("move");
+                      setItem(j);
+                    }
+                  }}
                   className={`${styles.itemButton} text-left focus:outline-none`}
                   style={{ height: ITEM_SPACING, paddingLeft: ROW_PAD_LEFT }}
                   aria-current={active}

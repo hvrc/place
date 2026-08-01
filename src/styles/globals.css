@@ -34,6 +34,8 @@ body {
   background: #fff;
   margin: 0;
   padding: 0;
+  /* stop horizontal trackpad scroll from triggering browser back/forward */
+  overscroll-behavior-x: none;
 }
 
 body {

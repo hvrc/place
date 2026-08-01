@@ -31,12 +31,21 @@ export interface XmbCategory {
   items: XmbItem[];
 }
 
+// Per-role Google Material Symbols for the Experience section.
+const experienceIcon: Record<string, string> = {
+  iseehear: "g:genetics",
+  getafix: "g:qr_code",
+  "healthy-planet": "g:shopping_bag",
+  gromor: "g:bar_chart",
+};
+
 // Map each social to the closest authentic PSP icon.
 const socialIcon: Record<string, string> = {
-  instagram: "camera",
+  instagram: "photo",
   youtube: "video",
-  github: "browser",
-  linkedin: "network",
+  github: "g:commit",
+  linkedin: "g:work_history",
+  soundcloud: "g:graphic_eq",
   resume: "savedata",
 };
 
@@ -44,7 +53,7 @@ export const categories: XmbCategory[] = [
   {
     id: "profile",
     label: "Profile",
-    icon: "photo",
+    icon: "g:person",
     items: [
       {
         id: "about",
@@ -57,7 +66,7 @@ export const categories: XmbCategory[] = [
         id: "email",
         label: "Email",
         sub: profile.email,
-        icon: "sharing",
+        icon: "g:mark_email_read",
         detail: {
           kind: "link",
           href: `mailto:${profile.email}`,
@@ -69,7 +78,7 @@ export const categories: XmbCategory[] = [
         id: "resume",
         label: "Resume",
         sub: "the cv",
-        icon: "savedata",
+        icon: "g:description",
         detail: { kind: "app", route: "/resume", blurb: "Open my resume." },
         action: { type: "route", target: "/resume" },
       },
@@ -78,7 +87,7 @@ export const categories: XmbCategory[] = [
   {
     id: "projects",
     label: "Projects",
-    icon: "game",
+    icon: "umd",
     // grouped like the PSP "Game" menu; activating a group drills into its thumbnails
     items: projectGroups.map((g) => ({
       id: g.id,
@@ -91,42 +100,16 @@ export const categories: XmbCategory[] = [
   {
     id: "experience",
     label: "Experience",
-    // the one section that uses Google Material Symbols (rendered low-res)
-    icon: "g:workspace_premium",
+    // the PSP "system" toolbox reads like a briefcase — fitting for work history
+    icon: "system",
     items: experience.map((r) => ({
       id: r.id,
       label: r.title,
       sub: r.company,
-      icon: "g:work",
+      icon: experienceIcon[r.id] ?? "g:work",
       detail: { kind: "role", role: r },
+      action: r.link ? { type: "external" as const, target: r.link } : undefined,
     })),
-  },
-  {
-    id: "play",
-    label: "Play",
-    icon: "video",
-    items: [
-      {
-        id: "hom",
-        label: "hॐ",
-        sub: "generative art wall",
-        icon: "camera",
-        detail: { kind: "app", route: "/hom", blurb: "A wall of generative art made with p5.js. Press Enter to open." },
-        action: { type: "route", target: "/hom" },
-      },
-      {
-        id: "prim",
-        label: "Prim's Organism",
-        sub: "interactive canvas",
-        icon: "game",
-        detail: {
-          kind: "app",
-          route: "/prim",
-          blurb: "An interactive organism that grows via Prim's algorithm. Press Enter to play.",
-        },
-        action: { type: "route", target: "/prim" },
-      },
-    ],
   },
   {
     id: "links",
@@ -151,14 +134,11 @@ export const categories: XmbCategory[] = [
   {
     id: "settings",
     label: "Settings",
-    icon: "system",
+    icon: "g:build",
     // these map 1:1 to the PSP's own settings (cnf_*) icons
     items: [
-      { id: "theme", label: "Theme", icon: "cnf_theme", detail: { kind: "profile" } },
-      { id: "wave", label: "Wave color", icon: "cnf_video", detail: { kind: "profile" } },
+      { id: "wave", label: "Color", icon: "cnf_theme", detail: { kind: "profile" } },
       { id: "uiVolume", label: "UI volume", icon: "cnf_sound", detail: { kind: "profile" } },
-      { id: "musicVolume", label: "Music volume", icon: "music", detail: { kind: "profile" } },
-      { id: "motion", label: "Reduce motion", icon: "cnf_save_energy", detail: { kind: "profile" } },
     ],
   },
 ];

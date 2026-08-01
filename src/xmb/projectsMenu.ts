@@ -11,11 +11,10 @@ export interface ProjectGroup {
 }
 
 export const projectGroups: ProjectGroup[] = [
-  { id: "apps", label: "Apps", icon: "browser", projectIds: ["shutdowner", "bunshi"] },
+  { id: "apps", label: "Apps", icon: "g:apps", projectIds: ["bunshi", "shutdowner"] },
   { id: "games", label: "Games", icon: "game", projectIds: ["carrom", "rts", "prims-organism", "game-of-life"] },
   { id: "music", label: "Music", icon: "music", projectIds: ["boteh", "midi-controller"] },
-  { id: "art", label: "Art", icon: "photo", projectIds: ["hom"] },
-  { id: "misc", label: "Misc", icon: "savedata", projectIds: ["pngtoplt", "newsletter", "loan-reports"] },
+  { id: "misc", label: "Misc", icon: "g:package_2", projectIds: ["pngtoplt", "newsletter", "loan-reports", "hom"] },
 ];
 
 const byId = new Map(projects.map((p) => [p.id, p]));
