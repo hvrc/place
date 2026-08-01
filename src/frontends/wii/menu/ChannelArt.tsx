@@ -20,7 +20,7 @@ export function ChannelArt({ channel, live = true }: { channel: Channel; live?: 
     if (!el) return;
     if (live) {
       const p = el.play();
-      if (p) p.catch(() => {/* autoplay refused — the poster stands in */});
+      if (p) p.catch(() => {/* autoplay refused: the poster stands in */});
     } else {
       el.pause();
     }
@@ -68,7 +68,7 @@ export function ChannelArt({ channel, live = true }: { channel: Channel; live?: 
 /**
  * The text-only channel face, built from the channel's `tile` spec.
  *
- * `bare` drops the wording and keeps the backdrop — the channel screen wants
+ * `bare` drops the wording and keeps the backdrop: the channel screen wants
  * that, because its own title card is already carrying the name.
  */
 export function DrawnArt({ channel, bare }: { channel: Channel; bare?: boolean }) {

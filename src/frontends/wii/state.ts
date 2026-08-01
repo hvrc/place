@@ -18,7 +18,7 @@ export interface WiiSettings {
   pointerTilt: number;
   /** 16:9 or a pillarboxed 4:3, like the real Screen setting. */
   aspect: ScreenAspect;
-  /** The Wii's "screen burn-in reduction" — dims the menu after idling. */
+  /** The Wii's "screen burn-in reduction": dims the menu after idling. */
   burnIn: boolean;
   /** 12- or 24-hour clock. */
   clock24: boolean;
@@ -39,12 +39,12 @@ interface WiiState {
   set: <K extends keyof WiiSettings>(key: K, value: WiiSettings[K]) => void;
   reset: () => void;
 
-  /** Letter ids already opened — drives the mail badge. */
+  /** Letter ids already opened: drives the mail badge. */
   read: string[];
   markRead: (id: string) => void;
   markAllUnread: () => void;
 
-  /** Channels opened this browser, newest first — the SD card's "save data". */
+  /** Channels opened this browser, newest first: the SD card's "save data". */
   visited: string[];
   visit: (id: string) => void;
 }

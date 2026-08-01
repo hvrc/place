@@ -135,7 +135,7 @@ function SoundPanel() {
   const [sfx, setSfx] = useField("sfxVolume");
   return (
     <div className={styles.panel}>
-      <p>The menu theme is synthesised in the browser — nothing is downloaded.</p>
+      <p>The menu theme is synthesised in the browser: nothing is downloaded.</p>
       <Row label="Menu Music">
         <Slider value={music} onChange={setMusic} label="Menu music volume" />
       </Row>
@@ -224,7 +224,7 @@ function ConsolePanel() {
     <div className={styles.panel}>
       <h3>Console Information</h3>
       <Row label="Owner">{profile.name}</Row>
-      <Row label="Menu Version">4.3H — Wii frontend</Row>
+      <Row label="Menu Version">4.3H: Wii frontend</Row>
       <Row label="Region">NTSC-U / Toronto</Row>
       <Row label="Built with">React · Vite · a lot of reference screenshots</Row>
     </div>
@@ -259,8 +259,8 @@ function UpdatePanel() {
     <div className={styles.panel}>
       <h3>Wii System Update</h3>
       <p>
-        Your Wii console is up to date. New channels arrive whenever the next project ships —
-        the Mii, Forecast and Photo Channels on page two are still downloading.
+        Your Wii console is up to date. New channels arrive whenever the next project ships. The
+        Mii, Forecast and Photo Channels on page two are still downloading.
       </p>
     </div>
   );

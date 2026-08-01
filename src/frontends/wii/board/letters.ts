@@ -39,7 +39,7 @@ const SOCIAL_COPY: Record<string, { title: string; body: string[] }> = {
   },
   linkedin: {
     title: "LinkedIn",
-    body: ["The formal version of the work history — the same roles, fewer jokes."],
+    body: ["The formal version of the work history: the same roles, fewer jokes."],
   },
   soundcloud: {
     title: "SoundCloud",
@@ -69,7 +69,7 @@ const hello: Letter = {
   body: [
     "Thanks for switching this thing on.",
     profile.bio,
-    "Every tile on the menu is a real project — pick one and it loads live, right there on the shelf. The ones that won't sit still in a frame play their demo instead.",
+    "Every tile on the menu is a real project: pick one and it loads live, right there on the shelf. The ones that won't sit still in a frame play their demo instead.",
     "If something here is useful to you, or you want one built, the letters on this board are all the ways to reach me.",
   ],
   copy: profile.email,
@@ -99,7 +99,7 @@ const playRecord: Letter = {
   body: [
     "Play history for this console:",
     ...experience.map(
-      (r) => `<b>${r.company}</b> — ${r.title}<br/>${r.period} · ${r.location}`
+      (r) => `<b>${r.company}</b>: ${r.title}<br/>${r.period} · ${r.location}`
     ),
     "Each of these is also a channel on page two, if you'd rather see where they lead.",
   ],
@@ -119,7 +119,7 @@ const email: Letter = {
 
 export const letters: Letter[] = [hello, manual, ...social, email, playRecord];
 
-/** Letters per corkboard page — one page is one day, like the console's. */
+/** Letters per corkboard page: one page is one day, like the console's. */
 export const LETTERS_PER_PAGE = 4;
 
 export const letterPages: Letter[][] = Array.from(

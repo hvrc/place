@@ -24,7 +24,7 @@ const BURN_IN_MS = 60_000;
 /**
  * The Wii frontend.
  *
- * One screen at a time, swapped in place — the console has no history stack, so
+ * One screen at a time, swapped in place: the console has no history stack, so
  * neither does this. The grid, the channel screen, the message board, System
  * Settings and the SD card are all siblings here; each is self-contained and
  * takes only the callbacks it needs to hand control back.
@@ -50,7 +50,7 @@ export default function WiiMenu() {
     setFlash((n) => n + 1);
   }, []);
 
-  /* The tile that's mid-leap, if any — see ChannelZoom. */
+  /* The tile that's mid-leap, if any: see ChannelZoom. */
   const [zoom, setZoom] = useState<{ channel: Channel; from: DOMRect } | null>(null);
 
   const openChannel = useCallback(
@@ -78,7 +78,7 @@ export default function WiiMenu() {
     [page, play]
   );
 
-  /* Paint the document — and Safari's chrome — the menu's own grey while it's
+  /* Paint the document (and Safari's chrome) the menu's own grey while it's
      mounted, so the safe areas and the collapsing toolbar don't show white. */
   useEffect(() => {
     const base = "#e7eaec";

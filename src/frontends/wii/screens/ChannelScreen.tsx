@@ -15,7 +15,7 @@ import styles from "@wii/wii.module.css";
 const TITLE_HOLD_MS = 6000;
 
 /**
- * The channel screen: banner on top, black rule, then the buttons — the
+ * The channel screen: banner on top, black rule, then the buttons. The
  * console's "you picked a channel, now what" page.
  *
  * The banner is the project itself. Anything that can be framed loads live in

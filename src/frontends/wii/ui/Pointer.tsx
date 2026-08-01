@@ -8,7 +8,7 @@ import styles from "@wii/wii.module.css";
  * into the direction of travel, which is what sells it as a pointed remote
  * rather than a mouse: the console's hand rolls because your wrist does.
  *
- * Positioned by writing straight to the node's transform in a rAF loop — this
+ * Positioned by writing straight to the node's transform in a rAF loop: this
  * runs on every mouse move, so it never touches React state.
  */
 export function Pointer() {
@@ -44,7 +44,7 @@ export function Pointer() {
       const a = at.current;
       const dx = t.x - a.x;
       const dy = t.y - a.y;
-      // Chase with a fixed fraction per frame — a spring without the bookkeeping.
+      // Chase with a fixed fraction per frame: a spring without the bookkeeping.
       a.x += dx * 0.34;
       a.y += dy * 0.34;
 

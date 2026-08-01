@@ -16,7 +16,7 @@ export interface IconLight {
 
 /**
  * An XMB icon only ever wears two looks: dim (greyed, no glow) and lit (bright
- * white with a glow). This resolves which one applies, and how to get there , 
+ * white with a glow). This resolves which one applies, and how to get there ,
  *
  *   focused, in a column   → pulses between the two
  *   focused, anywhere else → holds lit

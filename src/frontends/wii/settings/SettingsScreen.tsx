@@ -112,8 +112,8 @@ export function SettingsScreen({
           <div className={`${styles.modalCard} ${styles.zoomIn}`}>
             <h3>Format Wii System Memory?</h3>
             <p>
-              Everything this console remembers about you — settings, read letters, channel
-              history — will be erased. This cannot be undone.
+              Everything this console remembers about you (settings, read letters, channel
+              history) will be erased. This cannot be undone.
             </p>
             <div className={styles.modalActions}>
               <Pill ghost onClick={() => setConfirmFormat(false)}>

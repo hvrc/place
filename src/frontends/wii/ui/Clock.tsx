@@ -6,7 +6,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 /**
  * The bar's clock: big thin numerals with a colon that blinks once a second,
- * and the abbreviated date beneath — `Tue 5/31`, exactly the real format.
+ * and the abbreviated date beneath: `Tue 5/31`, exactly the real format.
  */
 export function Clock() {
   const clock24 = useWii((s) => s.settings.clock24);

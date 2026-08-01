@@ -9,7 +9,7 @@ import styles from "@wii/wii.module.css";
  * The pages of channels and the two triangles that move between them.
  *
  * The pages sit on one horizontal track that slides, so the next page's first
- * column is always half-visible at the right edge — the console's own hint that
+ * column is always half-visible at the right edge: the console's own hint that
  * there's more over there.
  */
 export function ChannelGrid({

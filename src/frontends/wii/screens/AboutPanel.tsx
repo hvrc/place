@@ -15,7 +15,7 @@ export function AboutPanel() {
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
-  // The content layer's rotating line — "Harsh Rajmachikar is making {}" —
+  // The content layer's rotating line, "Harsh Rajmachikar is making {}",
   // shared with the other frontends.
   const words = profile.about.cycle;
   const [word, setWord] = useState(0);

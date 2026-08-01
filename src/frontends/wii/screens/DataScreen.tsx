@@ -8,8 +8,8 @@ import styles from "@wii/wii.module.css";
 
 /**
  * The SD card slot: Data Management. On the console this is where saves and
- * downloaded channels live; here it's the things you can actually take away —
- * the resume, the release builds — plus the save data this browser has made by
+ * downloaded channels live; here it's the things you can actually take away:
+ * the resume, the release builds, plus the save data this browser has made by
  * opening channels.
  */
 export function DataScreen({ onExit }: { onExit: () => void }) {
@@ -29,7 +29,7 @@ export function DataScreen({ onExit }: { onExit: () => void }) {
     {
       id: "resume",
       name: "resume.pdf",
-      hint: `${profile.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())} — one page`,
+      hint: `${profile.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}: one page`,
       size: "2 blocks",
       href: "/files/resume.pdf",
     },

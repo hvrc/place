@@ -3,7 +3,7 @@ import { projects, experience, profile, type Media } from "@content/index";
 // The Wii frontend's presentation model. The Wii Menu is a fixed grid of
 // *slots*, so unlike the PSP's nested columns this layer is flat: one ordered
 // list of channels that gets chunked into pages of PER_PAGE. Everything here is
-// derived from src/content — no portfolio facts live in this file.
+// derived from src/content: no portfolio facts live in this file.
 
 /** Slots per page. Four across, three down, exactly like the real menu. */
 export const PER_PAGE = 12;
@@ -26,14 +26,14 @@ export interface Channel {
   /** The live site, opened by the channel screen's Start button. */
   link?: string;
   /**
-   * What the banner actually frames. Same site as `link`, but forced to https —
+   * What the banner actually frames. Same site as `link`, but forced to https:
    * a page served over https can't embed an http frame, and a couple of the
    * older App Engine deploys are still written down as http.
    */
   frame?: string;
   /** `link` is a route inside this app rather than an external site. */
   internal?: boolean;
-  /** Secondary link — the second button on the channel screen. */
+  /** Secondary link: the second button on the channel screen. */
   github?: string;
   /** A direct download, when the project ships one. */
   download?: string;
@@ -43,7 +43,7 @@ export interface Channel {
   tile: TileArt;
 }
 
-/** A channel tile drawn in CSS — the Wii's own text-only channels look like this. */
+/** A channel tile drawn in CSS: the Wii's own text-only channels look like this. */
 export interface TileArt {
   /** Background gradient stops, top → bottom. */
   from: string;
@@ -135,7 +135,7 @@ const projectChannels: Channel[] = ordered.map((p) => ({
   tile: TILES[p.id] ?? { ...NEUTRAL, label: p.title },
 }));
 
-/** Work experience, after the projects — one channel per role. */
+/** Work experience, after the projects: one channel per role. */
 const experienceChannels: Channel[] = experience.map((r) => ({
   id: `job-${r.id}`,
   kind: "experience" as const,
@@ -169,7 +169,7 @@ const discChannel: Channel = {
   tile: { from: "#ffffff", to: "#ededed", ink: "#8a8a8a", label: "" },
 };
 
-/** Wii channels not built yet — they open a "coming soon" screen and look the part. */
+/** Wii channels not built yet: they open a "coming soon" screen and look the part. */
 const soonChannels: Channel[] = [
   {
     id: "mii",

@@ -6,7 +6,7 @@ import { music, sfx, unlockAudio, type SfxKind } from "./wiiAudio";
  * Binds the synth to the System Settings volumes.
  *
  * Browsers won't make a sound before a gesture, so the loop doesn't start on
- * mount — it waits for the first click anywhere in the menu and starts there.
+ * mount: it waits for the first click anywhere in the menu and starts there.
  */
 export function useWiiSound() {
   const musicVolume = useWii((s) => s.settings.musicVolume);

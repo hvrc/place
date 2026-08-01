@@ -2,9 +2,9 @@
    The Wii Menu's visual language, in one place.
 
    Everything is sized off two things so the whole UI scales as a unit:
-   • `--u` — the root em, clamped against both viewport axes. All type and
+   • `--u`: the root em, clamped against both viewport axes. All type and
      small chrome is expressed in em, so one clamp moves the entire interface.
-   • `--page-w` — the width of one 4x3 page of channels, capped against the
+   • `--page-w`: the width of one 4x3 page of channels, capped against the
      viewport height as well as its width so the tiles keep their proportion on
      wide-and-short screens instead of overflowing the stage.
 
@@ -199,7 +199,7 @@
   display: block;
 }
 
-/* Drawn tiles — the Wii's own text channels (Forecast, News) look like this. */
+/* Drawn tiles: the Wii's own text channels (Forecast, News) look like this. */
 .drawn {
   position: absolute;
   inset: 0;
@@ -627,7 +627,7 @@
   justify-content: center;
 }
 
-/* Edge to edge, as on the console — the arrows ride on top of the banner
+/* Edge to edge, as on the console: the arrows ride on top of the banner
    rather than sitting in a margin beside it. */
 .banner {
   position: relative;
@@ -685,7 +685,7 @@
   opacity: 0;
 }
 
-/* The shelf reflection under the banner — the menu's signature. */
+/* The shelf reflection under the banner: the menu's signature. */
 .reflection {
   position: relative;
   width: 100%;

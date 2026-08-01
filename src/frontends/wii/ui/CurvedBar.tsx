@@ -6,7 +6,7 @@ import styles from "@wii/wii.module.css";
  * shoulder under each corner button and sags across the middle, outlined in the
  * system's pale blue.
  *
- * It's a layout primitive, not a screen — the Wii Menu, the message board and
+ * It's a layout primitive, not a screen: the Wii Menu, the message board and
  * the settings screens all sit on the same band with different things in the
  * three wells (`left`, `centre`, `right`).
  */

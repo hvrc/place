@@ -187,7 +187,7 @@ function subscribe(fn: () => void) {
 }
 
 /**
- * The layout numbers for the current viewport. Destructure the ones you need , 
+ * The layout numbers for the current viewport. Destructure the ones you need ,
  * the names match the design constants they scale from.
  */
 const getSnapshot = () => snapshot;

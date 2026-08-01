@@ -1,4 +1,4 @@
-// The menu's sound, synthesised in the browser — no samples, nothing to load,
+// The menu's sound, synthesised in the browser: no samples, nothing to load,
 // nothing copyrighted. Two halves: the interface blips, and a slow four-bar
 // lounge loop written in the spirit of the console's own menu music.
 //
@@ -40,7 +40,7 @@ interface Blip {
   to?: number;
   dur: number;
   peak: number;
-  /** Adds a short filtered-noise transient — the Wii's clicks have one. */
+  /** Adds a short filtered-noise transient: the Wii's clicks have one. */
   tick?: boolean;
 }
 
@@ -87,7 +87,7 @@ function play(b: Blip, volume: number) {
 export const sfx = {
   /** Sweeping the pointer across a channel. */
   hover: (v: number) => play({ type: "sine", from: 1180, to: 1560, dur: 0.055, peak: 0.16, tick: true }, v),
-  /** Opening a channel — the little rising pop. */
+  /** Opening a channel: the little rising pop. */
   select: (v: number) => play({ type: "triangle", from: 660, to: 1320, dur: 0.16, peak: 0.3, tick: true }, v),
   /** Backing out. */
   back: (v: number) => play({ type: "triangle", from: 700, to: 380, dur: 0.18, peak: 0.26 }, v),
@@ -106,7 +106,7 @@ const STEP = 60 / BPM / 4; // a sixteenth
 const BARS = 4;
 const STEPS = BARS * 16;
 
-/** Cmaj7 · Am7 · Dm7 · G7 — one bar each, the console's easy-listening harmony. */
+/** Cmaj7 · Am7 · Dm7 · G7: one bar each, the console's easy-listening harmony. */
 const CHORDS = [
   [60, 64, 67, 71],
   [57, 60, 64, 67],
