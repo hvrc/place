@@ -73,7 +73,7 @@ export function buildPspModel(): MenuModel {
       label: "Profile",
       icon: "g:person",
       items: [
-        { id: "about", label: "About", sub: "who is this", icon: "manual" },
+        { id: "about", label: "About", icon: "manual" },
         {
           id: "email",
           label: "Email",
@@ -84,7 +84,6 @@ export function buildPspModel(): MenuModel {
         {
           id: "resume",
           label: "Resume",
-          sub: "the cv",
           icon: "g:description",
           action: { type: "route", target: "/resume" },
           backdrop: { link: "/resume" },

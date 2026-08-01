@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import PspMenu from "@psp/PspMenu";
-import Home from "@/legacy/Home";
+import Home from "@/frontends/classic/Home";
 import Hom from "@/routes/Hom";
 import Prim from "@/routes/Prim";
 import Resume from "@/routes/Resume";

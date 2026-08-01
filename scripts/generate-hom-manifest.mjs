@@ -1,5 +1,5 @@
 // Build-time replacement for the old server-side fs.readdir in app/hom/page.tsx.
-// Scans public/thumbs for hom<N>.jpeg files and writes a sorted manifest that
+// Scans public/images/hom/thumbs for hom<N>.jpeg files and writes a sorted manifest that
 // the SPA imports directly, so no server filesystem access is needed at runtime.
 import { readdir, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -7,7 +7,7 @@ import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const thumbsDir = path.join(root, "public", "thumbs");
+const thumbsDir = path.join(root, "public", "images", "hom", "thumbs");
 const outFile = path.join(root, "src", "content", "generated", "homManifest.ts");
 
 async function main() {
@@ -15,7 +15,7 @@ async function main() {
   try {
     files = await readdir(thumbsDir);
   } catch {
-    console.warn("[generate-hom] public/thumbs not found; writing empty manifest");
+    console.warn("[generate-hom] public/images/hom/thumbs not found; writing empty manifest");
   }
 
   const images = files

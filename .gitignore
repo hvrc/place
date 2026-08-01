@@ -27,7 +27,8 @@ next-env.d.ts
 # .gitignore
 node_modules/
 misc/
-public/images/hom
+public/images/hom/*
+!public/images/hom/thumbs/
 public/videos/demos/unoptimized
 public/images/logos
 migrate.md

@@ -8,10 +8,13 @@
 
 .rootDark {
   color: #f4f6ff;
+  /* neutral base shown before the wave paints / fades in (no blank flash) */
+  background: #0c0c12;
 }
 
 .rootLight {
   color: #1a1a22;
+  background: #e9e8ef;
 }
 
 /* project media shown as a plain rectangle, top-left anchored to the title */

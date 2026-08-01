@@ -17,4 +17,4 @@ export const pspPalette = buildPalette(RAW_WAVE_COLORS);
 export const pspDefaultColor = "E37383";
 
 /** Top-left wordmark. */
-export const pspWordmark = "hvrc · place";
+export const pspWordmark = "hvrc·place";

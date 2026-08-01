@@ -18,7 +18,7 @@ export default function Hom() {
         {homImages.map((name) => (
           <div key={name} className="image-item">
             <img
-              src={`/thumbs/${name}.jpeg`}
+              src={`/images/hom/thumbs/${name}.jpeg`}
               alt={name}
               loading="lazy"
               className="w-full h-auto object-cover cursor-pointer"

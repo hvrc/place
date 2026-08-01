@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useMenu, useMenuModel, useMenuStore } from "@menu/state/MenuContext";
@@ -15,12 +15,39 @@ import { ColorPicker } from "@menu/settings/ColorPicker";
 import { useSound } from "@menu/sound/useSound";
 import styles from "@menu/styles/menu.module.css";
 
+// Runs once per full page load (module-scoped so SPA re-navigation doesn't
+// replay it): the elements fade in in order — background/wave, wordmark, clock,
+// category icons, then the columns — so the essentials appear first even if the
+// rest is still loading.
+let introPlayed = false;
+
 /**
  * The full cross-media-bar menu: ambient chrome (wave/clock/wordmark), the
  * category bar + item column, the drill-in tree + thumbnail strip, the dwell
  * backdrop and the colour picker. Entirely driven by the model from context.
  */
 export function MenuShell({ wordmark }: { wordmark: string }) {
+  const [introActive, setIntroActive] = useState(!introPlayed);
+  useEffect(() => {
+    if (introPlayed) return;
+    const t = setTimeout(() => {
+      introPlayed = true;
+      setIntroActive(false);
+    }, 1900);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Staggered fade-in props; a no-op (renders straight to visible) once the
+  // intro has played, so nothing re-animates on later re-renders / drill toggles.
+  const fadeIn = (delay: number, duration = 0.6) => ({
+    initial: introActive ? { opacity: 0 } : false,
+    animate: { opacity: 1 },
+    transition: {
+      delay: introActive ? delay : 0,
+      duration: introActive ? duration : 0,
+      ease: "easeOut" as const,
+    },
+  });
   const navigate = useNavigate();
   const store = useMenuStore();
   const { categories, groups } = useMenuModel();
@@ -87,11 +114,17 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <Wave />
+      <motion.div {...fadeIn(0, 0.7)}>
+        <Wave />
+      </motion.div>
       <Backdrop />
 
-      <Wordmark text={wordmark} />
-      <Clock />
+      <motion.div {...fadeIn(0.45)}>
+        <Wordmark text={wordmark} />
+      </motion.div>
+      <motion.div {...fadeIn(0.7)}>
+        <Clock />
+      </motion.div>
 
       {/* thumbnails persist across preview -> drill-in so they just slide over */}
       <AnimatePresence>
@@ -103,8 +136,12 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
           <DrillColumn key="drill" groupId={openGroup} />
         ) : (
           <motion.div key="normal">
-            <CategoryBar />
-            <ItemColumn onActivate={activate} />
+            <motion.div {...fadeIn(0.95)}>
+              <CategoryBar />
+            </motion.div>
+            <motion.div {...fadeIn(1.2)}>
+              <ItemColumn onActivate={activate} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

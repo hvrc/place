@@ -11,8 +11,8 @@ export interface ProjectGroup {
 }
 
 export const projectGroups: ProjectGroup[] = [
-  { id: "apps", label: "Apps", icon: "g:apps", projectIds: ["bunshi", "shutdowner"] },
   { id: "games", label: "Games", icon: "game", projectIds: ["carrom", "rts", "prims-organism", "game-of-life"] },
+  { id: "apps", label: "Apps", icon: "g:apps", projectIds: ["bunshi", "shutdowner"] },
   { id: "music", label: "Music", icon: "music", projectIds: ["boteh", "midi-controller"] },
   { id: "misc", label: "Misc", icon: "g:package_2", projectIds: ["hom", "newsletter", "pngtoplt", "loan-reports"] },
 ];
