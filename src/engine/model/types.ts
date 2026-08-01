@@ -1,6 +1,6 @@
 // The generic cross-media-bar menu model. This is what a *frontend* produces
 // (e.g. the PSP frontend maps portfolio content into this shape). The engine
-// knows nothing about portfolios, projects, experience, etc. — only this model.
+// knows nothing about portfolios, projects, experience, etc.: only this model.
 
 export interface MenuMedia {
   type: "image" | "video";
@@ -23,8 +23,20 @@ export interface BackdropSpec {
  * inline and `lines` stack to its right, so a shared opener reads into each
  * line ("<name> is a" → "Photoshop GOAT" / "Ableton GOAT" / …).
  */
+/** A clickable link rendered as part of a note. */
+export interface NoteAction {
+  label: string;
+  target: string;
+  /** save the target to the device instead of opening it */
+  download?: boolean;
+  /** render in the secondary colour rather than white */
+  accent?: boolean;
+}
+
 export interface MenuNote {
-  lines: string[];
+  lines?: string[];
+  /** links shown under the note's text */
+  actions?: NoteAction[];
   /** Words swapped through the `{}` slot in a line, one at a time, forever. */
   cycle?: string[];
 }

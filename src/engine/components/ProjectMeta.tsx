@@ -11,7 +11,7 @@ import styles from "@engine/styles/menu.module.css";
  * next to it.
  *
  * The compact form is portalled to <body> on purpose. It would otherwise sit
- * inside the thumbnail row, which carries a Framer transform — and a
+ * inside the thumbnail row, which carries a Framer transform, and a
  * transformed ancestor becomes the containing block for position:fixed, so it
  * would anchor to the row instead of the viewport.
  */
@@ -32,7 +32,7 @@ export function ProjectMeta({
   const { play } = useSound();
 
   // the hints are indexed in the order they're shown, matching
-  // drillActionTargets() — that index is what ←/→ walk along
+  // drillActionTargets(): that index is what ←/→ walk along
   const openIdx = item.link ? 0 : -1;
   const ghIdx = item.github ? (item.link ? 1 : 0) : -1;
   const hint = (idx: number, url: string, extra?: string) => (
@@ -44,7 +44,7 @@ export function ProjectMeta({
         openTab(url);
       }}
     >
-      {idx === ghIdx ? "▶ github" : "▶ open"}
+      {idx === ghIdx ? "github" : "open"}
     </button>
   );
 
@@ -53,14 +53,17 @@ export function ProjectMeta({
       className={`${styles.pmMeta} ${compact ? styles.pmMetaCompact : ""}`}
       style={compact ? undefined : style}
     >
-      <div className={styles.pmTitle}>{item.title}</div>
-      {item.blurb && <div className={styles.pmBlurb}>{item.blurb}</div>}
+      {/* the links ride on the title's line, set back from it */}
+      <div className={styles.pmTitleRow}>
+        <span className={styles.pmTitle}>{item.title}</span>
+        <span className={styles.pmHints}>
+          {item.link && hint(openIdx, item.link)}
+          {item.github && hint(ghIdx, item.github, styles.pmHintGithub)}
+        </span>
+      </div>
       {/* full width along the bottom; measured out to the screen edge beside a thumbnail */}
       <div className={styles.pmRule} style={compact ? undefined : { width: ruleWidth }} />
-      <div className={styles.pmHints}>
-        {item.link && hint(openIdx, item.link)}
-        {item.github && hint(ghIdx, item.github, styles.pmHintGithub)}
-      </div>
+      {item.blurb && <div className={styles.pmBlurb}>{item.blurb}</div>}
     </div>
   );
 

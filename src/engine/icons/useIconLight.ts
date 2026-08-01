@@ -16,7 +16,7 @@ export interface IconLight {
 
 /**
  * An XMB icon only ever wears two looks: dim (greyed, no glow) and lit (bright
- * white with a glow). This resolves which one applies, and how to get there —
+ * white with a glow). This resolves which one applies, and how to get there , 
  *
  *   focused, in a column   → pulses between the two
  *   focused, anywhere else → holds lit
@@ -24,7 +24,7 @@ export interface IconLight {
  *   otherwise              → dim
  *
  * It returns the whole animate/transition pair rather than just the light, so
- * every renderer moves and lights identically — they only differ in what they
+ * every renderer moves and lights identically: they only differ in what they
  * draw. `prefix` is prepended to every filter (the soft raster softens itself
  * with a blur) and `dimOpacity` differs per renderer, because the two icon sets
  * don't sit back equally.

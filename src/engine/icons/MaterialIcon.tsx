@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useIconLight } from "./useIconLight";
 import { softBlurPx, useMetrics } from "@engine/layout/metrics";
 
-/** Google icons render pure white — sit them further back than the PSP PNGs
+/** Google icons render pure white: sit them further back than the PSP PNGs
  *  when unfocused, so the two icon sets read as equally dim. */
 const DIM = 0.6;
 
@@ -11,7 +11,7 @@ const FONT = '"Material Symbols Rounded"';
 /** The glyph is drawn at this fraction of the icon's box. */
 const GLYPH = 0.84;
 /**
- * Rasterise at the PSP art's own resolution — the icon PNGs are 64x64. Drawing
+ * Rasterise at the PSP art's own resolution: the icon PNGs are 64x64. Drawing
  * the glyph into the same size buffer means both icon sets upscale by exactly
  * the same factor at any display size or DPR, which is what makes them read as
  * one set. (Sizing this off the display size instead left Google icons
@@ -40,7 +40,7 @@ export function MaterialIcon({
   keepSize?: boolean;
   /** pulse between the dim and lit looks while focused (column icons only) */
   throb?: boolean;
-  /** the pointer is over this icon's row — show the lit look */
+  /** the pointer is over this icon's row: show the lit look */
   hovered?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -51,7 +51,7 @@ export function MaterialIcon({
     throb,
     keepSize,
     dimOpacity: DIM,
-    // no extra blur on a phone — the 64px raster already matches the PSP art's
+    // no extra blur on a phone: the 64px raster already matches the PSP art's
     // own softness, and piling a filter blur on top is what over-softened it
     prefix: compact ? "" : `blur(${softBlurPx(scale).toFixed(2)}px) `,
   });
@@ -65,7 +65,7 @@ export function MaterialIcon({
 
     const draw = () => {
       if (cancelled) return;
-      // Fixed at the PSP art's resolution — see NATIVE. Deliberately NOT tied
+      // Fixed at the PSP art's resolution: see NATIVE. Deliberately NOT tied
       // to size/DPR: matching the PNGs matters more than matching the screen.
       const buf = NATIVE;
       canvas.width = buf;
@@ -74,7 +74,7 @@ export function MaterialIcon({
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      // NB: a 2D context has no font-variation-settings — this draws the
+      // NB: a 2D context has no font-variation-settings, so this draws the
       // font's default instance, which is why INSTANCE exists.
       ctx.font = `${Math.round(buf * GLYPH)}px ${FONT}`;
       ctx.fillText(name, buf / 2, buf / 2 + buf * 0.01);

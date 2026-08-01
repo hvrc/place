@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import { NOTE_SLOT, type IntroStagger } from "@engine/model/types";
 import { useScramble } from "@engine/text/useScramble";
+import { useSound } from "@engine/sound/useSound";
 import { useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
@@ -14,7 +15,7 @@ const CYCLE_MS = 3000;
  * row, so its first line reads across from the item you're resting on.
  *
  * The text is selectable, and clicking it activates the item (the Email note is
- * the address itself — clicking copies it). `flash` briefly replaces the note
+ * the address itself: clicking copies it). `flash` briefly replaces the note
  * with a confirmation.
  */
 export function ItemNote({
@@ -31,12 +32,13 @@ export function ItemNote({
   const categoryIndex = useMenu((s) => s.categoryIndex);
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
   const { compact } = useMetrics();
+  const { play } = useSound();
 
   const item = categories[categoryIndex]?.items[itemIndex];
   // drilled-in leaves have their own right-hand column (the thumbnail strip)
   const note = openGroup ? undefined : item?.note;
   const flashing = !!note && flash?.id === item?.id;
-  const shown = flashing ? { lines: [flash!.text], cycle: undefined } : note;
+  const shown = flashing ? { lines: [flash!.text], cycle: undefined, actions: undefined } : note;
 
   // Rotate the cycled words forever while this note is up.
   const cycle = shown?.cycle;
@@ -49,7 +51,7 @@ export function ItemNote({
   }, [cycle]);
   const word = cycle?.length ? cycle[tick % cycle.length] : "";
   const scrambled = useScramble(word);
-  // recomputed only when the word list changes — this component re-renders
+  // recomputed only when the word list changes: this component re-renders
   // on every scramble frame, ~60x a second while a word resolves
   const slotWidth = useMemo(
     () => (cycle?.length ? Math.max(...cycle.map((w) => w.length)) : 0),
@@ -98,9 +100,30 @@ export function ItemNote({
           onClick={click}
         >
           <span className={styles.noteLines}>
-            {shown.lines.map((line) => (
+            {shown.lines?.map((line) => (
               <span key={line}>{renderLine(line)}</span>
             ))}
+            {shown.actions?.length ? (
+              <span className={styles.noteActions}>
+                {shown.actions.map((a) => (
+                  <a
+                    key={a.label}
+                    className={`${styles.noteAction} ${a.accent ? styles.noteActionAccent : ""}`}
+                    href={a.target}
+                    {...(a.download
+                      ? { download: "" }
+                      : { target: "_blank", rel: "noopener noreferrer" })}
+                    // the note itself activates the item; a link click is its own thing
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      play("enter");
+                    }}
+                  >
+                    {a.label}
+                  </a>
+                ))}
+              </span>
+            ) : null}
           </span>
         </motion.div>
       )}

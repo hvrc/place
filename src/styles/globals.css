@@ -30,7 +30,7 @@
 }
 
 /* Soft-focus for the menu's type. A whole filter value, not a radius, because
-   it has to be able to be `none`: any filter — blur(0px) included — promotes
+   it has to be able to be `none`: any filter (blur(0px) included) promotes
    the element to its own composited layer, and a filtered layer inside a
    transformed ancestor gets rasterised at reduced resolution and scaled up.
    That is what made small labels mushy on phones, so there the filter has to
@@ -50,7 +50,7 @@ body {
   /* No rubber-band on either axis: sideways it triggers browser back/forward,
      and vertically iOS drags the fixed menu off the screen edges, showing this
      background as a white gap. (The menu also paints body to its own base
-     colour while mounted — see MenuShell.) */
+     colour while mounted: see MenuShell.) */
   overscroll-behavior: none;
 }
 

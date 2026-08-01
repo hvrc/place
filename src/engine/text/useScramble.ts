@@ -6,7 +6,7 @@ const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789#%&/*+<>";
 /**
  * Resolves one string into another the way a decoder does: each position runs
  * through random glyphs before locking to its final letter, staggered left to
- * right so the word settles rather than sliding. Returns this frame's text —
+ * right so the word settles rather than sliding. Returns this frame's text , 
  * the element it renders into never moves.
  */
 export function useScramble(target: string, frames = 68): string {

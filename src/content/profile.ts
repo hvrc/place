@@ -9,7 +9,7 @@ export interface Profile {
 export const profile: Profile = {
   name: "HARSH RAJMACHIKAR",
   email: "harshrajmachikar@gmail.com",
-  bio: "Software developer & generative artist. I build games, tools, simulators and interactive toys — on the web, on hardware, and everywhere in between.",
+  bio: "Software developer & generative artist. I build games, tools, simulators and interactive toys, on the web, on hardware, and everywhere in between.",
   about: {
     lines: ["Harsh Rajmachikar is making {}"],
     cycle: ["software", "games", "music"],

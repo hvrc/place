@@ -1,4 +1,4 @@
-# hvrc.place — everything here is meant to be found, by people and by machines.
+# hvrc.place: everything here is meant to be found, by people and by machines.
 User-agent: *
 Allow: /
 

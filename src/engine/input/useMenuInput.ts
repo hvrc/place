@@ -36,7 +36,7 @@ export function useMenuInput({ activate, openDrillItem }: InputHandlers) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const wheel = useRef({ ax: 0, ay: 0, lastMove: 0, lastEvt: 0 });
 
-  /** A vertical move can spill into the next category — cue follows the axis. */
+  /** A vertical move can spill into the next category: cue follows the axis. */
   const playVertical = useCallback(
     (moved: "item" | "category" | null) => {
       if (moved) play(moved === "category" ? "category" : "move");

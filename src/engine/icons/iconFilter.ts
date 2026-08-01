@@ -3,12 +3,12 @@ import type { Theme } from "@engine/settings/palette";
 /**
  * CSS filter for the white XMB icons, shared by PspIcon and MaterialIcon.
  * - A light drop shadow on every icon for depth / legibility.
- * - On focus the icon lights up (brighter) with a soft white glow — in both
+ * - On focus the icon lights up (brighter) with a soft white glow: in both
  *   themes (the glow reads as a gentle bloom even on the pale wallpaper).
  *
  * `glow` scales that bloom, 0 (none) through ~1.2 (full). The glow shadow is
  * always in the string, at zero when unlit, so the filter's shape never changes
- * between states and Framer can interpolate one into the next — that's what
+ * between states and Framer can interpolate one into the next: that's what
  * lets the lit icon throb and an inactive one bloom under the pointer.
  */
 export function iconFilter(theme: Theme, focused: boolean, glow = focused ? 1 : 0): string {
@@ -30,5 +30,5 @@ export function iconFilter(theme: Theme, focused: boolean, glow = focused ? 1 : 
  */
 export const THROB_SEC = 0.95;
 
-/** How long an icon takes to light up or fall back — a fade, not a switch. */
+/** How long an icon takes to light up or fall back: a fade, not a switch. */
 export const LIGHT_SEC = 0.34;

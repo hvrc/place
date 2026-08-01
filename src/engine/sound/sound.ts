@@ -1,5 +1,5 @@
 // XMB navigation sounds. Primary path is the authentic PSP samples (denoised &
-// trimmed via ffmpeg — hiss removed, timbre kept), decoded once into a buffer
+// trimmed via ffmpeg: hiss removed, timbre kept), decoded once into a buffer
 // and played through a throwaway buffer-source per hit so they overlap cleanly
 // under rapid navigation. If a sample hasn't loaded (or fails), we fall back to
 // a synthesised sine blip so navigation is never silent.
@@ -67,7 +67,7 @@ const loading: Record<string, Promise<void> | undefined> = {};
 /**
  * Decode the first source the browser can handle, keyed by the sample's name.
  * Safari (and every iOS browser, which is Safari underneath) cannot decode OGG
- * Vorbis — decodeAudioData just rejects — so each sample also ships as AAC.
+ * Vorbis (decodeAudioData just rejects) so each sample also ships as AAC.
  */
 function preload(name: string, sources: string[]): Promise<void> {
   const audio = getCtx();
@@ -81,7 +81,7 @@ function preload(name: string, sources: string[]): Promise<void> {
         buffers[name] = await audio.decodeAudioData(data);
         return;
       } catch {
-        /* unsupported or missing — try the next encoding */
+        /* unsupported or missing: try the next encoding */
       }
     }
   })().finally(() => {

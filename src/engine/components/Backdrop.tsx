@@ -2,11 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMenu, useMenuModel } from "@engine/state/MenuContext";
 import type { BackdropSpec, MenuMedia } from "@engine/model/types";
+import { DWELL_MS, DwellArc } from "./DwellArc";
 import styles from "@engine/styles/menu.module.css";
 
-const DWELL_MS = 3000;
-/** Longest we wait for an embed to report itself loaded before fading in anyway. */
-const LOAD_GRACE_MS = 2500;
+/**
+ * Rest this long on an item and its frame is mounted, hidden, so it has the
+ * remainder of the dwell to load. Short enough that scrolling straight past an
+ * item never starts a request.
+ */
+const ARM_MS = 400;
 /** The backdrop's fade, in and out. */
 const FADE_SEC = 0.9;
 
@@ -35,9 +39,9 @@ interface Shown {
 }
 
 /**
- * When resting on an item that declares a backdrop for ~1s, fade it in behind
- * the menu: a live site, an embed (post/video/player), or media. The frontend
- * decides *what* each item's backdrop is; this component only renders it.
+ * When resting on an item that declares a backdrop, fade it in behind the menu:
+ * a live site, an embed (post/video/player), or media. The frontend decides
+ * *what* each item's backdrop is; this component only renders it.
  *
  * The embed stays NON-interactive (input goes to the menu) until you click it;
  * then it's live and navigating away hands control back.
@@ -65,12 +69,13 @@ export function Backdrop() {
 
   const [shown, setShown] = useState<Shown | null>(null);
   const [interacting, setInteracting] = useState(false);
-  // held at 0 opacity until the embed/media has actually painted, so the fade
-  // carries the content in rather than running on an empty frame
-  const [ready, setReady] = useState(false);
+  // Mounted hidden first, revealed when the dwell is up. Loading through the
+  // wait instead of after it is what lets the backdrop actually be there at
+  // DWELL_MS, which is when the arc beside the title finishes its sweep.
+  const [revealed, setRevealed] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
-  // clicking to interact is a user gesture — start playback with sound here
+  // clicking to interact is a user gesture: start playback with sound here
   const enterInteract = () => {
     setInteracting(true);
     const link = shown?.link ?? "";
@@ -88,21 +93,17 @@ export function Backdrop() {
 
   useEffect(() => {
     setShown(null);
+    setRevealed(false);
     setInteracting(false);
     if (!target?.link && !target?.media) return;
     const t = target;
-    const id = window.setTimeout(() => setShown(t), DWELL_MS);
-    return () => clearTimeout(id);
+    const arm = window.setTimeout(() => setShown(t), ARM_MS);
+    const reveal = window.setTimeout(() => setRevealed(true), DWELL_MS);
+    return () => {
+      clearTimeout(arm);
+      clearTimeout(reveal);
+    };
   }, [target?.id, target?.link, target?.media]);
-
-  // Some embeds never fire load (cross-origin quirks, blocked frames) — reveal
-  // on a timer rather than leave the backdrop permanently blank.
-  useEffect(() => {
-    setReady(false);
-    if (!shown) return;
-    const t = window.setTimeout(() => setReady(true), LOAD_GRACE_MS);
-    return () => clearTimeout(t);
-  }, [shown]);
 
   // Esc releases interaction (works for same-origin frames like /hom, /prim)
   useEffect(() => {
@@ -137,13 +138,17 @@ export function Backdrop() {
   const frameStyle = { pointerEvents: interacting ? ("auto" as const) : ("none" as const) };
 
   return (
-    <AnimatePresence>
+    <>
+      {/* the wait, made visible: it runs from the moment an item with a
+          backdrop takes focus until that backdrop is revealed */}
+      {target && !revealed && <DwellArc key={target.id} />}
+      <AnimatePresence>
       {shown && (embeddable || shown.media) && (
         <motion.div
           key={shown.id}
           className={styles.projBackdrop}
           initial={{ opacity: 0 }}
-          animate={{ opacity: ready ? 1 : 0 }}
+          animate={{ opacity: revealed ? 1 : 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: FADE_SEC, ease: "easeInOut" }}
         >
@@ -158,7 +163,6 @@ export function Backdrop() {
                     src={shown.link}
                     title={shown.id}
                     allow="autoplay"
-                    onLoad={() => setReady(true)}
                   />
                 </div>
               ) : (
@@ -169,12 +173,11 @@ export function Backdrop() {
                   src={shown.link}
                   title={shown.id}
                   allow="autoplay"
-                  onLoad={() => setReady(true)}
                 />
               )}
 
               {/* catches the click that hands control to the embed */}
-              {!interacting && (
+              {revealed && !interacting && (
                 <button
                   className={styles.projBackdropCatch}
                   onClick={enterInteract}
@@ -191,18 +194,13 @@ export function Backdrop() {
               loop
               muted
               playsInline
-              onLoadedData={() => setReady(true)}
             />
           ) : shown.media ? (
-            <img
-              className={styles.projBackdropMedia}
-              src={shown.media.src}
-              alt=""
-              onLoad={() => setReady(true)}
-            />
+            <img className={styles.projBackdropMedia} src={shown.media.src} alt="" />
           ) : null}
         </motion.div>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }

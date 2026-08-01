@@ -52,7 +52,7 @@ function toDrillItem(p: Project): DrillItem {
 /**
  * Bind the portfolio content to the generic menu model, choosing PSP icons and
  * each item's backdrop. This is the single seam between the data layer and the
- * PSP frontend — a different frontend would provide its own mapping.
+ * PSP frontend: a different frontend would provide its own mapping.
  */
 export function buildPspModel(): MenuModel {
   const { profile, experience, socials } = portfolio;
@@ -73,7 +73,7 @@ export function buildPspModel(): MenuModel {
           id: "email",
           label: "Email",
           icon: "g:mark_email_read",
-          // the address itself is the note — selectable, and click/Enter copies it
+          // the address itself is the note: selectable, and click/Enter copies it
           action: { type: "copy", target: profile.email, done: "Copied to clipboard!" },
           note: { lines: [profile.email] },
         },
@@ -83,6 +83,12 @@ export function buildPspModel(): MenuModel {
           icon: "g:description",
           action: { type: "route", target: "/resume" },
           backdrop: { link: "/resume" },
+          note: {
+            actions: [
+              { label: "Open", target: "/resume" },
+              { label: "Download", target: "/files/resume.pdf", download: true, accent: true },
+            ],
+          },
         },
       ],
     },
@@ -104,7 +110,7 @@ export function buildPspModel(): MenuModel {
     {
       id: "experience",
       label: "Experience",
-      // the PSP "system" toolbox reads like a briefcase — fitting for work history
+      // the PSP "system" toolbox reads like a briefcase: fitting for work history
       icon: "system",
       items: experience.map(
         (r): MenuItem => ({

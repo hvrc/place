@@ -6,7 +6,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  /* swipes drive the menu — the page itself must never pan or bounce */
+  /* swipes drive the menu: the page itself must never pan or bounce */
   touch-action: none;
   overscroll-behavior: none;
   font-family: "New Rodin", "Manrope Variable", "Manrope", system-ui, sans-serif;
@@ -34,7 +34,7 @@
 }
 
 /* fullscreen project media behind the menu (above the wave), shown after a
-   short dwell on a thumbnail — no vignette */
+   short dwell on a thumbnail: no vignette */
 .projBackdrop {
   position: fixed;
   inset: 0;
@@ -51,7 +51,7 @@
   border: 0;
 }
 
-/* contained "post" embed (e.g. an Instagram reel) — centered, not fullscreen */
+/* contained "post" embed (e.g. an Instagram reel): centered, not fullscreen */
 .projBackdropCenter {
   position: absolute;
   inset: 0;
@@ -141,23 +141,78 @@
 /* left-pointing triangle sitting just left of the thumbnail column */
 .pmTriangle {
   position: absolute;
-  /* left / top set inline — they track the thumbnail's size */
+  /* left / top set inline: they track the thumbnail's size */
   transform: translateY(-50%);
   width: 0;
   height: 0;
   border-top: 11px solid transparent;
   border-bottom: 11px solid transparent;
   border-right: 15px solid #ffffff;
-  /* no soft-focus blur: this is a CSS triangle, not upscaled art — blurring a
+  /* no soft-focus blur: this is a CSS triangle, not upscaled art: blurring a
      hard vector edge just makes it mushy, badly so at phone sizes */
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
 .pmMeta {
   position: absolute;
-  /* left / top set inline — they track the thumbnail's size */
+  /* left / top set inline: they track the thumbnail's size */
   transform: translateY(-50%);
   white-space: nowrap;
+}
+
+/* title and its links share a line, the links set back and sitting on the
+   title's baseline so they read as attached to it */
+/* Draws itself once over the dwell, so a pending backdrop reads as loading.
+   Centred on the screen rather than pinned to a title: it belongs to the frame
+   that is arriving, not to any one row. */
+.dwellArcWrap {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dwellArc {
+  width: clamp(15px, 2.1vmin, 24px);
+  height: clamp(15px, 2.1vmin, 24px);
+  /* start the sweep at twelve o'clock rather than three */
+  transform: rotate(-90deg);
+  overflow: visible;
+  /* the same bloom the lit icons and the note text carry */
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.65));
+}
+
+/* r=9 gives a circumference of 2*pi*9 = 56.55, which is the dash length */
+.dwellArcHead {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 56.55;
+  stroke-dashoffset: 56.55;
+  /* one sweep, then it gets out of the way as the backdrop arrives */
+  animation: dwellFill 3s linear forwards, dwellDone 0.45s ease-out 3s forwards;
+}
+
+@keyframes dwellFill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dwellDone {
+  to {
+    opacity: 0;
+  }
+}
+
+.pmTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 1.7rem;
 }
 
 .pmTitle {
@@ -168,10 +223,9 @@
   filter: var(--soft-text);
 }
 
-/* one-liner between the title and its rule */
+/* one-liner below the rule */
 .pmBlurb {
-  margin-top: 0.22rem;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 300;
   color: #ffffff;
   opacity: 0.75;
@@ -183,11 +237,10 @@
    measured from the title out to the right edge of the screen) */
 .pmRule {
   height: 1px;
-  margin: 0.4rem 0 0.42rem;
+  margin: 0.45rem 0 0.5rem;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.12));
 }
 
-/* the actions sit on one line under the rule */
 .pmHints {
   display: flex;
   align-items: center;
@@ -200,9 +253,9 @@
   border: 0;
   background: transparent;
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: #ff8a5c;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   cursor: pointer;
@@ -228,7 +281,7 @@
 }
 
 /* phone: the project's details drop to the bottom edge, centred, instead of
-   squeezing in beside the thumbnail (portalled out — see ProjectMeta) */
+   squeezing in beside the thumbnail (portalled out: see ProjectMeta) */
 .pmMetaCompact {
   position: fixed;
   left: 0;
@@ -328,7 +381,7 @@
 }
 
 /* each item is absolutely positioned at the pivot line, then translated by its
-   slot offset (Framer `y`) — the slot on the category line is skipped */
+   slot offset (Framer `y`): the slot on the category line is skipped */
 .itemRow {
   position: absolute;
   left: 0;
@@ -344,7 +397,7 @@
 }
 
 /* icon cell centers each item icon on the same vertical axis as the
-   active category icon above it — the "grid" alignment */
+   active category icon above it: the "grid" alignment */
 .itemIconCell {
   display: flex;
   justify-content: center;
@@ -530,7 +583,35 @@
   text-align: center;
 }
 
-/* the text itself is selectable — and clickable when the item has an action */
+/* links under a note's text, set on one row */
+.noteActions {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  pointer-events: auto;
+}
+
+.noteAction {
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.16s ease-out;
+}
+.noteAction:hover {
+  opacity: 1;
+}
+
+/* the secondary of the pair, matching the github link in the project meta */
+.noteActionAccent {
+  color: #b98cff;
+}
+
+/* the text itself is selectable: and clickable when the item has an action */
 .note span {
   pointer-events: auto;
 }
@@ -544,7 +625,7 @@
   display: inline-block;
 }
 
-/* control legend, bottom-right — same treatment as the clock, one step quieter */
+/* control legend, bottom-right: same treatment as the clock, one step quieter */
 .hints {
   position: fixed;
   bottom: 1.1rem;
@@ -590,7 +671,7 @@
     letter-spacing: 0.14em;
   }
 
-  /* a long role title has nowhere to go on a phone — let it wrap rather than
+  /* a long role title has nowhere to go on a phone: let it wrap rather than
      run off the right edge. min-width:0 is what lets the flex child shrink. */
   .itemButton {
     padding-right: 1.1rem;

@@ -21,8 +21,8 @@ import { softBlurPx, useMetrics } from "@engine/layout/metrics";
 import styles from "@engine/styles/menu.module.css";
 
 // Runs once per full page load (module-scoped so SPA re-navigation doesn't
-// replay it): the elements fade in in order — background/wave, wordmark, clock,
-// category icons, then the columns — so the essentials appear first even if the
+// replay it): the elements fade in in order, starting with background/wave, then wordmark, clock,
+// category icons, then the columns, so the essentials appear first even if the
 // rest is still loading.
 let introPlayed = false;
 
@@ -49,7 +49,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
 
   // The ONLY artificial staggering is the first-load reveal of the essentials,
   // outside-in: wave, wordmark, clock, then the category icons cascading
-  // left→right, then — once the row is done — the first column's items cascading
+  // left→right, then (once the row is done) the first column's items cascading
   // top→down. An item's note rides in with its own icon (never ahead of it), and
   // the control legend brings up the rear. Everything past that appears as
   // available (no timers), in natural order.
@@ -87,8 +87,8 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   const itemIndex = useMenu((s) => s.itemIndexByCategory[s.categoryIndex] ?? 0);
 
   // Paint the whole document the menu's base colour, not just the menu. iOS
-  // exposes strips past a fixed element — the safe areas, and the gap the
-  // toolbar leaves as it collapses — and whatever shows there is the document's
+  // exposes strips past a fixed element: the safe areas, and the gap the
+  // toolbar leaves as it collapses, and whatever shows there is the document's
   // background (white by default) plus the browser's own chrome, which Safari
   // tints from theme-color. Cover all three, and hand them back to the other
   // routes on the way out.
@@ -114,7 +114,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   }, [theme]);
 
   // The rem half of the layout density (see DENSITY in metrics.ts): rem is
-  // root-relative by definition, so this can't be scoped with a selector — set
+  // root-relative by definition, so this can't be scoped with a selector: set
   // it while the menu is mounted and give it back to the other routes after.
   useEffect(() => {
     const previous = document.documentElement.style.fontSize;
@@ -126,7 +126,7 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
 
   // `none`, not a smaller radius, on phones: the labels that read as mushy all
   // sit inside transformed rows, and a filtered layer inside a transformed
-  // ancestor is rasterised at reduced resolution and scaled — so any filter
+  // ancestor is rasterised at reduced resolution and scaled, so any filter
   // costs the text its pixel density regardless of how small the blur is.
   // Set on <body> rather than .root because the project meta is portalled out
   // to <body> and so can't inherit the variable from inside the menu.
@@ -139,13 +139,13 @@ export function MenuShell({ wordmark }: { wordmark: string }) {
   }, [scale, compact]);
 
   // As soon as the user navigates off the initial category, stop the intro so
-  // nothing is held back on a timer — content just appears as it's available.
+  // nothing is held back on a timer: content just appears as it's available.
   useEffect(() => {
     if (categoryIndex !== 0) endIntro();
   }, [categoryIndex]);
 
-  // Thumbnails to show: the open group (drilled), or — while browsing a category
-  // whose items drill in — the focused item's group (previewed).
+  // Thumbnails to show: the open group (drilled), or, while browsing a category
+  // whose items drill in, the focused item's group (previewed).
   const previewGroup = categories[categoryIndex]?.items[itemIndex]?.drillId ?? null;
   const thumbGroup = openGroup ?? previewGroup;
 

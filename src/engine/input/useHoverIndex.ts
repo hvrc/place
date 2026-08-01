@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 
 /**
  * Tracks which row of a list the pointer is over. Spread `hoverProps(i)` onto
- * the row so hovering anywhere on it — icon or label — counts, which is what
+ * the row so hovering anywhere on it (icon or label) counts, which is what
  * lets a whole row light up together.
  */
 export function useHoverIndex() {
