@@ -28,10 +28,10 @@ export const projects: Project[] = [
     id: "carrom",
     title: "Carrom",
     blurb: "Digital version of a tabletop game",
-    link: "https://carrom-461712.ue.r.appspot.com/",
+    link: "https://carrom.hvrc.place/playground",
     github: "https://github.com/hvrc/carrom",
     description:
-      "Indian tabletop game similar to billiards<br/>Using <b>Phaser.js, Express.js, Node.js</b>",
+      "Indian tabletop game similar to billiards, played solo or against someone else<br/>Using <b>Canvas, Socket.IO, Node.js</b>",
     media: { type: "video", src: `${V}/carrom_demo_optimized.mp4` },
   },
   {
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     id: "game-of-life",
     title: "Game of Life",
     blurb: "Conway's Game of Life, simulated",
-    link: "https://generative-380518.ue.r.appspot.com/gameoflife",
+    link: "https://life.hvrc.place/",
     github: "https://github.com/hvrc/game-of-life",
     description:
       "Simulates Conway's Game of Life<br/>Using <b>p5.js, Flask, Google Cloud Platform</b>. Github version uses <b>Python &amp; Pygame</b>",
@@ -58,7 +58,7 @@ export const projects: Project[] = [
     id: "newsletter",
     title: "Newsletter Generator",
     blurb: "Turns article links into .html newsletters",
-    link: "https://newsletter-419717.an.r.appspot.com/newsletter-app/",
+    link: "https://zawya.hvrc.place/newsletter-app/",
     github: "https://github.com/hvrc/newsletter",
     description:
       "Web application that takes links to articles from client's news website and generates .html newsletters<br/>Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>",
@@ -88,7 +88,7 @@ export const projects: Project[] = [
     id: "boteh",
     title: "Boteh",
     blurb: "Synthesizer played with hand gestures",
-    link: "http://boteh-461905.appspot.com/",
+    link: "https://boteh.hvrc.place/",
     github: "https://github.com/hvrc/boteh",
     description:
       "Synthesizer played with hand gestures tracked by a camera<br/>Using <b>Google MediaPipe, Web Audio API, Node.js</b>",
@@ -98,7 +98,7 @@ export const projects: Project[] = [
     id: "rts",
     title: "RTS",
     blurb: "Word association game",
-    link: "https://rts0-462101.ue.r.appspot.com/",
+    link: "https://rts.hvrc.place/",
     github: "https://github.com/hvrc/rts",
     description:
       "A word association game powered by WordNet and natural language processing<br/>Using <b>Python, WebNet, React, Vite</b>",
@@ -108,7 +108,7 @@ export const projects: Project[] = [
     id: "bunshi",
     title: "Bunshi",
     blurb: "Bond line structure of any chemical",
-    link: "https://bunshi.ue.r.appspot.com/",
+    link: "https://bunshi.hvrc.place/",
     github: "https://github.com/hvrc/bunshi",
     description:
       "Displays the bond line structure of any chemical<br/>Using <b>Python, Flask, BeautifulSoup, Google Cloud Platform</b>",
